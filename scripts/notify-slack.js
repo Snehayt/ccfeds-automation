@@ -52,56 +52,17 @@ const envLabel = {
   stage: 'Stage',
 }[ENV_NAME] || ENV_NAME;
 
+// Slack Workflow Trigger format — matches the 9 variables set up in Workflow Builder
 const payload = {
-  blocks: [
-    {
-      type: 'header',
-      text: {
-        type: 'plain_text',
-        text: `${statusEmoji} FEDS QA — ${statusText}`,
-        emoji: true,
-      },
-    },
-    {
-      type: 'section',
-      fields: [
-        { type: 'mrkdwn', text: `*Suite*\n\`${SUITE}\`` },
-        { type: 'mrkdwn', text: `*Environment*\n${envLabel}` },
-        { type: 'mrkdwn', text: `*Browser*\n${browserLabel}` },
-        { type: 'mrkdwn', text: `*Device*\n${deviceLabel}` },
-        {
-          type: 'mrkdwn',
-          text: `*Results*\n✅ ${passed} passed  ❌ ${failed} failed  📊 ${passRate}% pass rate`,
-        },
-        { type: 'mrkdwn', text: `*Triggered by*\n${TRIGGERED_BY}` },
-      ],
-    },
-    {
-      type: 'actions',
-      elements: [
-        {
-          type: 'button',
-          text: { type: 'plain_text', text: '📊 Open Dashboard', emoji: true },
-          url: DASHBOARD_URL,
-          style: 'primary',
-        },
-        {
-          type: 'button',
-          text: { type: 'plain_text', text: '🔍 View CI Run', emoji: true },
-          url: RUN_URL,
-        },
-      ],
-    },
-    {
-      type: 'context',
-      elements: [
-        {
-          type: 'mrkdwn',
-          text: `Run #${process.env.GITHUB_RUN_NUMBER || '—'} · ${new Date().toUTCString()}`,
-        },
-      ],
-    },
-  ],
+  status_emoji: statusEmoji,
+  suite: SUITE,
+  browser: browserLabel,
+  device: deviceLabel,
+  passed: String(passed),
+  failed: String(failed),
+  pass_rate: `${passRate}%`,
+  dashboard_url: DASHBOARD_URL || 'https://snehayt.github.io/ccfeds-automation/',
+  run_url: RUN_URL,
 };
 
 const parsedUrl = new url.URL(SLACK_WH);
