@@ -1,0 +1,315 @@
+name: Run Automation Tests
+
+on:
+  # Triggered from GitHub UI manually
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Which suite to run'
+        required: true
+        type: choice
+        default: 'all'
+        options:
+          - all
+          - feds
+          - feds-lnav
+          - feds-cmp-banner
+          - feds-header
+          - feds-footer
+          - feds-search
+          - feds-a11y
+          - feds-sanity
+          - feds-jarvis
+          - cc
+          - cc-firefly
+          - cc-doodlebug
+          - cc-merch
+          - cc-lingo
+          - cc-sanity
+          - express
+          - cmp
+      browser:
+        description: 'Browser'
+        required: true
+        type: choice
+        default: 'chrome'
+        options:
+          - all
+          - chrome
+          - firefox
+          - safari
+      device:
+        description: 'Device'
+        required: true
+        type: choice
+        default: 'desktop'
+        options:
+          - all
+          - desktop
+          - mobile
+          - tablet
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        default: 'aem-live'
+        options:
+          - aem-live
+          - prod
+          - stage
+      locale:
+        description: 'Locale (us, gb, de, fr, jp, all)'
+        required: false
+        default: 'us'
+
+  # Triggered from Slack #automation-tests channel (anyone in the channel)
+  # Slack Workflow posts: { "event_type": "run-tests", "client_payload": { suite, browser, device, environment, locale, triggered_by } }
+  repository_dispatch:
+    types: [run-tests]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      # ── Resolve config + test path from suite input ──────────────────────────
+      - name: Resolve suite config and test path
+        id: resolve
+        run: |
+          SUITE="${{ github.event.inputs.suite }}"
+          BROWSER="${{ github.event.inputs.browser }}"
+          DEVICE="${{ github.event.inputs.device }}"
+          ENV="${{ github.event.inputs.environment }}"
+
+          # ── Config auto-detection (no config knowledge needed from user) ────
+          case "$SUITE" in
+            cc*|express-cc)
+              CONFIG="configs/cc.config.js"
+              ;;
+            *)
+              CONFIG="configs/feds.config.js"
+              ;;
+          esac
+
+          # ── Test path resolution ─────────────────────────────────────────────
+          case "$SUITE" in
+            all)
+              TEST_PATH=""
+              CONFIG="all"
+              ;;
+            feds)
+              TEST_PATH="tests/feds"
+              ;;
+            feds-lnav)
+              TEST_PATH="tests/feds/feds-lnav"
+              ;;
+            feds-cmp-banner)
+              TEST_PATH="tests/feds/cmp-banner.test.js"
+              ;;
+            feds-header)
+              TEST_PATH="tests/feds/header.test.js"
+              ;;
+            feds-footer)
+              TEST_PATH="tests/feds/footer.test.js"
+              ;;
+            feds-search)
+              TEST_PATH="tests/feds/search.test.js"
+              ;;
+            feds-a11y)
+              TEST_PATH="tests/feds/a11y.test.js"
+              ;;
+            feds-sanity)
+              TEST_PATH="tests/feds/homePageSanity.test.js tests/feds/bacomsanity.test.js"
+              ;;
+            feds-jarvis)
+              TEST_PATH="tests/feds/jarvis.desktop.test.js tests/feds/jarvis.mobile.test.js"
+              ;;
+            cc)
+              TEST_PATH="tests/cc"
+              ;;
+            cc-firefly)
+              TEST_PATH="tests/cc/firefly.test.js"
+              ;;
+            cc-doodlebug)
+              TEST_PATH="tests/cc/doodlebug_prompt_based_imagegen_verbs.test.js tests/cc/doodlebugimageupload.test.js"
+              ;;
+            cc-merch)
+              TEST_PATH="tests/cc/merchcard.test.js tests/cc/merchtable.test.js"
+              ;;
+            cc-lingo)
+              TEST_PATH="tests/cc/lingo.test.js"
+              ;;
+            cc-sanity)
+              TEST_PATH="tests/cc/productionsanity.test.js tests/cc/INTLstagesanity.test.js"
+              ;;
+            express)
+              TEST_PATH="tests/express/lingo.test.js"
+              CONFIG="configs/feds.config.js"
+              ;;
+            cmp)
+              TEST_PATH="tests/cmp/cmp-banner.test.js"
+              CONFIG="configs/feds.config.js"
+              ;;
+          esac
+
+          # ── Project flags — FEDs config project names ─────────────────────
+          if [[ "$CONFIG" == "configs/feds.config.js" ]]; then
+            case "$BROWSER-$DEVICE" in
+              chrome-desktop)   PROJECTS="--project=feds-chrome" ;;
+              firefox-desktop)  PROJECTS="--project=feds-firefox" ;;
+              safari-desktop)   PROJECTS="--project=feds-webkit" ;;
+              chrome-mobile)    PROJECTS="--project=feds-iphone --project=feds-android" ;;
+              firefox-mobile)   PROJECTS="--project=feds-iphone --project=feds-android" ;;
+              safari-mobile)    PROJECTS="--project=feds-iphone" ;;
+              chrome-tablet)    PROJECTS="--project=feds-ipad-air-portrait --project=feds-ipad-air-landscape" ;;
+              safari-tablet)    PROJECTS="--project=feds-ipad-air-portrait --project=feds-ipad-air-landscape" ;;
+              all-desktop)      PROJECTS="--project=feds-chrome --project=feds-firefox --project=feds-webkit" ;;
+              all-mobile)       PROJECTS="--project=feds-iphone --project=feds-android" ;;
+              all-tablet)       PROJECTS="--project=feds-ipad-air-portrait --project=feds-ipad-air-landscape" ;;
+              all-all)          PROJECTS="" ;;
+              chrome-all)       PROJECTS="--project=feds-chrome --project=feds-iphone --project=feds-android --project=feds-ipad-air-portrait" ;;
+              firefox-all)      PROJECTS="--project=feds-firefox --project=feds-iphone" ;;
+              safari-all)       PROJECTS="--project=feds-webkit --project=feds-iphone --project=feds-ipad-air-portrait" ;;
+              *)                PROJECTS="--project=feds-chrome" ;;
+            esac
+          fi
+
+          # ── Project flags — CC config project names ───────────────────────
+          if [[ "$CONFIG" == "configs/cc.config.js" ]]; then
+            case "$BROWSER-$DEVICE" in
+              chrome-desktop)   PROJECTS="--project=cc-live-chrome" ;;
+              firefox-desktop)  PROJECTS="--project=cc-live-firefox" ;;
+              safari-desktop)   PROJECTS="--project=cc-live-webkit" ;;
+              chrome-mobile)    PROJECTS="--project=cc-live-Android-mobile" ;;
+              safari-mobile)    PROJECTS="--project=cc-live-IOS-mobile" ;;
+              all-mobile)       PROJECTS="--project=cc-live-IOS-mobile --project=cc-live-Android-mobile" ;;
+              all-desktop)      PROJECTS="--project=cc-live-chrome --project=cc-live-firefox --project=cc-live-webkit" ;;
+              all-all)          PROJECTS="" ;;
+              *)                PROJECTS="--project=cc-live-chrome" ;;
+            esac
+          fi
+
+          # ── Base URL from environment ─────────────────────────────────────
+          case "$ENV" in
+            aem-live)  BASE_URL="https://main--upp--adobecom.aem.live" ;;
+            prod)      BASE_URL="https://www.adobe.com" ;;
+            stage)     BASE_URL="https://www.stage.adobe.com" ;;
+          esac
+
+          echo "config=$CONFIG" >> $GITHUB_OUTPUT
+          echo "test_path=$TEST_PATH" >> $GITHUB_OUTPUT
+          echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
+          echo "base_url=$BASE_URL" >> $GITHUB_OUTPUT
+
+      # ── Run FEDs tests ───────────────────────────────────────────────────────
+      - name: Run FEDs tests
+        if: steps.resolve.outputs.config == 'configs/feds.config.js'
+        run: |
+          npx playwright test ${{ steps.resolve.outputs.test_path }} \
+            --config=configs/feds.config.js \
+            ${{ steps.resolve.outputs.projects }} \
+            --reporter=json \
+            --output=test-results
+        env:
+          BASE_URL: ${{ steps.resolve.outputs.base_url }}
+          CI: true
+          SLACK_WH: ${{ secrets.SLACK_WH }}
+        continue-on-error: true
+
+      # ── Run CC tests ─────────────────────────────────────────────────────────
+      - name: Run CC tests
+        if: steps.resolve.outputs.config == 'configs/cc.config.js'
+        run: |
+          npx playwright test ${{ steps.resolve.outputs.test_path }} \
+            --config=configs/cc.config.js \
+            ${{ steps.resolve.outputs.projects }} \
+            --reporter=json \
+            --output=test-results
+        env:
+          BASE_URL: ${{ steps.resolve.outputs.base_url }}
+          CI: true
+          SLACK_WH: ${{ secrets.SLACK_WH }}
+        continue-on-error: true
+
+      # ── Run ALL suites ───────────────────────────────────────────────────────
+      - name: Run all FEDs tests
+        if: steps.resolve.outputs.config == 'all'
+        run: npx playwright test tests/feds --config=configs/feds.config.js --reporter=json
+        env:
+          BASE_URL: ${{ steps.resolve.outputs.base_url }}
+          CI: true
+          SLACK_WH: ${{ secrets.SLACK_WH }}
+        continue-on-error: true
+
+      - name: Run all CC tests
+        if: steps.resolve.outputs.config == 'all'
+        run: npx playwright test tests/cc --config=configs/cc.config.js --reporter=json
+        env:
+          BASE_URL: ${{ steps.resolve.outputs.base_url }}
+          CI: true
+          SLACK_WH: ${{ secrets.SLACK_WH }}
+        continue-on-error: true
+
+      # ── Parse results ────────────────────────────────────────────────────────
+      - name: Parse test results
+        id: results
+        if: always()
+        run: |
+          if [ -f "nala-results.json" ]; then
+            PASSED=$(node -e "const r=require('./nala-results.json'); console.log(r.results.filter(t=>t.status==='passed').length)")
+            FAILED=$(node -e "const r=require('./nala-results.json'); console.log(r.results.filter(t=>t.status==='failed').length)")
+            TOTAL=$(node -e "const r=require('./nala-results.json'); console.log(r.results.length)")
+          else
+            PASSED=0; FAILED=0; TOTAL=0
+          fi
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+
+      # ── Build dashboard ──────────────────────────────────────────────────────
+      - name: Copy results for dashboard
+        if: always()
+        run: |
+          cp nala-results.json dashboard/nala-results.json 2>/dev/null || true
+
+      # ── Deploy dashboard to GitHub Pages ────────────────────────────────────
+      - name: Deploy dashboard to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dashboard
+          keep_files: false
+
+      # ── Notify Slack private channel ─────────────────────────────────────────
+      - name: Notify Slack
+        if: always()
+        env:
+          SLACK_WH: ${{ secrets.SLACK_WH }}
+          PASSED: ${{ steps.results.outputs.passed }}
+          FAILED: ${{ steps.results.outputs.failed }}
+          TOTAL: ${{ steps.results.outputs.total }}
+          SUITE: ${{ github.event.inputs.suite }}
+          BROWSER: ${{ github.event.inputs.browser }}
+          DEVICE: ${{ github.event.inputs.device }}
+          ENV_NAME: ${{ github.event.inputs.environment }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          DASHBOARD_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          TRIGGERED_BY: ${{ github.actor }}
+        run: node scripts/notify-slack.js
