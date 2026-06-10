@@ -366,7 +366,7 @@ function filtered() {
 // ══════════════════════════════════════════════════
 //  LOAD DATA
 // ══════════════════════════════════════════════════
-fetch('../nala-results.json')
+fetch('./nala-results.json')
   .then(r => { if (!r.ok) throw 0; return r.json(); })
   .then(json => { DATA = json; renderAll(); })
   .catch(() => renderAll());
