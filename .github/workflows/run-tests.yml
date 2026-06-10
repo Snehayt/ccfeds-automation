@@ -247,7 +247,6 @@ jobs:
             --config=configs/feds.config.js \
             ${{ steps.resolve.outputs.projects }} \
             ${{ steps.resolve.outputs.grep_flag }} \
-            --reporter=json \
             --output=test-results
         env:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
@@ -263,7 +262,6 @@ jobs:
             --config=configs/cc.config.js \
             ${{ steps.resolve.outputs.projects }} \
             ${{ steps.resolve.outputs.grep_flag }} \
-            --reporter=json \
             --output=test-results
         env:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
@@ -274,7 +272,7 @@ jobs:
       # ── Run ALL suites ───────────────────────────────────────────────────────
       - name: Run all FEDs tests
         if: steps.resolve.outputs.config == 'all'
-        run: npx playwright test tests/feds --config=configs/feds.config.js --reporter=json
+        run: npx playwright test tests/feds --config=configs/feds.config.js
         env:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
           CI: true
@@ -283,7 +281,7 @@ jobs:
 
       - name: Run all CC tests
         if: steps.resolve.outputs.config == 'all'
-        run: npx playwright test tests/cc --config=configs/cc.config.js --reporter=json
+        run: npx playwright test tests/cc --config=configs/cc.config.js
         env:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
           CI: true
