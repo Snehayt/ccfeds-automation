@@ -8,7 +8,7 @@ const envs = require('../envs/envs.js');
  * @type {import('@playwright/test').PlaywrightTestConfig}
  */
 const config = {
-  testDir: '../tests/cc',
+  testDir: '../tests',
   outputDir: '../test-results',
   globalSetup: '../global.setup.js',
   /* Maximum time one test can run for. */
