@@ -61,6 +61,20 @@ on:
         description: 'Locale (us, gb, de, fr, jp, all)'
         required: false
         default: 'us'
+      grep:
+        description: |
+          Filter by tag or test name (leave empty to run all in suite).
+          Examples:
+            @feds-lnav-us          → only US locale
+            @feds-lnav-de          → only Germany locale
+            @feds-lnav-jp          → only Japan locale
+            "Sign In"              → only Sign In step tests
+            "Dropdown"             → only dropdown tests
+            @cmp-banner-fr         → CMP banner France
+            @express-lingo-us      → Express Lingo US
+            @feds-lnav             → all feds-lnav tests
+        required: false
+        default: ''
 
   # Triggered from Slack #automation-tests channel (anyone in the channel)
   # Slack Workflow posts: { "event_type": "run-tests", "client_payload": { suite, browser, device, environment, locale, triggered_by } }
@@ -92,10 +106,18 @@ jobs:
       - name: Resolve suite config and test path
         id: resolve
         run: |
-          SUITE="${{ github.event.inputs.suite }}"
-          BROWSER="${{ github.event.inputs.browser }}"
-          DEVICE="${{ github.event.inputs.device }}"
-          ENV="${{ github.event.inputs.environment }}"
+          SUITE="${{ github.event.inputs.suite || github.event.client_payload.suite }}"
+          BROWSER="${{ github.event.inputs.browser || github.event.client_payload.browser }}"
+          DEVICE="${{ github.event.inputs.device || github.event.client_payload.device }}"
+          ENV="${{ github.event.inputs.environment || github.event.client_payload.environment }}"
+          GREP="${{ github.event.inputs.grep || github.event.client_payload.grep }}"
+
+          # ── Grep flag (filter by tag or test name) ───────────────────────────
+          GREP_FLAG=""
+          if [ -n "$GREP" ]; then
+            GREP_FLAG="--grep \"$GREP\""
+          fi
+          echo "grep_flag=$GREP_FLAG" >> $GITHUB_OUTPUT
 
           # ── Config auto-detection (no config knowledge needed from user) ────
           case "$SUITE" in
@@ -224,6 +246,7 @@ jobs:
           npx playwright test ${{ steps.resolve.outputs.test_path }} \
             --config=configs/feds.config.js \
             ${{ steps.resolve.outputs.projects }} \
+            ${{ steps.resolve.outputs.grep_flag }} \
             --reporter=json \
             --output=test-results
         env:
@@ -239,6 +262,7 @@ jobs:
           npx playwright test ${{ steps.resolve.outputs.test_path }} \
             --config=configs/cc.config.js \
             ${{ steps.resolve.outputs.projects }} \
+            ${{ steps.resolve.outputs.grep_flag }} \
             --reporter=json \
             --output=test-results
         env:
