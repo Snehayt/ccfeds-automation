@@ -41,6 +41,7 @@
   "devDependencies": {
     "@babel/core": "7.21.3",
     "@babel/eslint-parser": "7.21.3",
+    "allure-playwright": "^3.10.0",
     "browserstack-node-sdk": "^1.31.24",
     "eslint": "8.37.0",
     "eslint-config-airbnb-base": "15.0.0",
