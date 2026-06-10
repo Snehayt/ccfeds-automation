@@ -8,6 +8,11 @@ class JSONReporter extends BaseReporter {
     super({ persist: { type: 'json-reporter', path: JSON_PATH } });
   }
 
+  async onEnd() {
+    await this.persistData();
+    await super.onEnd();
+  }
+
   async persistData() {
     const persistedObject = this.getPersistedDataObject();
 
