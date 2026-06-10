@@ -16,6 +16,7 @@ const {
   ENV_NAME = 'aem-live',
   RUN_URL = '',
   DASHBOARD_URL = '',
+  TEST_URL = '',
   TRIGGERED_BY = 'GitHub Actions',
 } = process.env;
 
@@ -55,7 +56,7 @@ const envLabel = {
 // Slack Workflow Trigger format — 9 variables with embedded labels for readability
 const payload = {
   status_emoji: `${statusEmoji} ${statusText}`,
-  suite: `Suite: ${SUITE}`,
+  suite: TEST_URL ? `Suite: ${SUITE} | URL: ${TEST_URL}` : `Suite: ${SUITE}`,
   browser: `Browser: ${browserLabel}`,
   device: `Device: ${deviceLabel}`,
   passed: `Passed: ${passed}`,

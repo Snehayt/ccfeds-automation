@@ -61,6 +61,10 @@ on:
         description: 'Locale (us, gb, de, fr, jp, all)'
         required: false
         default: 'us'
+      url:
+        description: 'Custom base URL to run tests against (overrides environment selection). e.g. https://main--milo--adobecom.aem.live'
+        required: false
+        default: ''
       grep:
         description: |
           Filter by tag or test name (leave empty to run all in suite).
@@ -234,6 +238,12 @@ jobs:
             stage)     BASE_URL="https://www.stage.adobe.com" ;;
           esac
 
+          # ── Custom URL overrides environment selection ────────────────────
+          CUSTOM_URL="${{ github.event.inputs.url || github.event.client_payload.url }}"
+          if [ -n "$CUSTOM_URL" ]; then
+            BASE_URL="$CUSTOM_URL"
+          fi
+
           echo "config=$CONFIG" >> $GITHUB_OUTPUT
           echo "test_path=$TEST_PATH" >> $GITHUB_OUTPUT
           echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
@@ -333,5 +343,6 @@ jobs:
           ENV_NAME: ${{ github.event.inputs.environment }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           DASHBOARD_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          TEST_URL: ${{ github.event.inputs.url || steps.resolve.outputs.base_url }}
           TRIGGERED_BY: ${{ github.actor }}
         run: node scripts/notify-slack.js
