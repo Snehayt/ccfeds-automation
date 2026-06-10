@@ -368,7 +368,17 @@ function filtered() {
 // ══════════════════════════════════════════════════
 fetch('./nala-results.json')
   .then(r => { if (!r.ok) throw 0; return r.json(); })
-  .then(json => { DATA = json; renderAll(); })
+  .then(json => {
+    DATA = json;
+    // Derive missing top-level fields from individual test results
+    const first = (DATA.results || [])[0];
+    if (first) {
+      if (!DATA.browser)     DATA.browser     = first.browser;
+      if (!DATA.environment) DATA.environment = first.env === 'live' ? 'aem-live' : (first.env || 'aem-live');
+      if (!DATA.baseURL)     DATA.baseURL     = first.url;
+    }
+    renderAll();
+  })
   .catch(() => renderAll());
 
 // ══════════════════════════════════════════════════
