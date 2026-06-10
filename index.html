@@ -28,11 +28,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 }
 .fg{display:flex;align-items:center;gap:5px}
 .fg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-right:2px}
-.pill{
-  padding:4px 11px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--muted);font-size:11px;font-weight:500;
-  cursor:pointer;transition:all .15s;white-space:nowrap;
-}
+.pill{padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
 .pill:hover{border-color:var(--accent1);color:var(--text)}
 .pill.on{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-color:transparent;color:#fff}
 .fsep{width:1px;height:22px;background:var(--border);flex-shrink:0}
@@ -45,6 +41,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .badge-br{background:rgba(124,58,237,.18);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
 .badge-env{background:rgba(37,99,235,.18);color:#60a5fa;border:1px solid rgba(37,99,235,.3)}
+.badge-url{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.2);max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .live{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--pass)}
 .live::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--pass);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
@@ -58,69 +55,43 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 /* ── LAYOUT ── */
 .main{padding:0 28px 48px;display:flex;flex-direction:column;gap:20px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-@media(max-width:1200px){.g5{grid-template-columns:repeat(3,1fr)}.g3{grid-template-columns:1fr 1fr}}
-@media(max-width:800px){.g2,.g3,.g5{grid-template-columns:1fr}}
+@media(max-width:1200px){.g5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.g2,.g5{grid-template-columns:1fr}}
 
 /* ── CARD ── */
-.card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:20px;backdrop-filter:blur(20px);transition:box-shadow .2s;
-}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;backdrop-filter:blur(20px);transition:box-shadow .2s}
 .card:hover{box-shadow:0 0 0 1px rgba(124,58,237,.15),0 8px 32px rgba(0,0,0,.45)}
 .ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:14px}
 
 /* ── KPI ── */
 .kpi-v{font-size:34px;font-weight:800;line-height:1}
 .kpi-lbl{font-size:12px;color:var(--muted);margin-top:3px}
-.kpi-d{font-size:11px;margin-top:5px}
-.kpi-d.up{color:var(--pass)}.kpi-d.dn{color:var(--fail)}
 .spark{height:38px;margin-top:8px}
 
 /* ── SCORE ── */
 .score-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
-.score-stats{display:flex;flex-direction:column;gap:10px}
+.score-stats{display:flex;flex-direction:column;gap:12px}
 .ss-v{font-size:20px;font-weight:700}
 .ss-l{font-size:11px;color:var(--muted);margin-top:1px}
 
-/* ── ENV HEALTH ── */
-.env-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
-.env-row:last-child{border-bottom:none}
-.env-info .env-name{font-weight:600;font-size:14px}
-.env-info .env-meta{font-size:12px;color:var(--muted);margin-top:2px}
-.env-status{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:12px;font-weight:600}
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
-/* ── TABLES ── */
+/* ── TABLE ── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap}
-.tbl th:hover{color:var(--text)}
+.tbl th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap}
 .tbl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
 .tbl tbody tr:hover td{background:rgba(255,255,255,.025)}
 .expandable{cursor:pointer}
-.err-row td{padding:0}
-.err-detail{
-  display:none;background:rgba(239,68,68,.06);border-left:3px solid var(--fail);
-  padding:10px 14px;font-size:11px;color:#fca5a5;font-family:monospace;white-space:pre-wrap;
-}
+.err-detail{display:none;background:rgba(239,68,68,.06);border-left:3px solid var(--fail);padding:10px 14px;font-size:11px;color:#fca5a5;font-family:monospace;white-space:pre-wrap}
 .err-detail.open{display:block}
 
-/* ── PILLS / BADGES ── */
+/* ── STATUS PILLS ── */
 .sp{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
 .sp-pass{background:rgba(16,185,129,.15);color:var(--pass)}
 .sp-fail{background:rgba(239,68,68,.15);color:var(--fail)}
 .sp-flaky{background:rgba(245,158,11,.15);color:var(--flaky)}
 .sp-skip{background:rgba(71,85,105,.18);color:var(--muted)}
-.sp-run{background:rgba(99,102,241,.15);color:#818cf8}
 .loc{padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;background:var(--surface2);color:var(--muted);text-transform:uppercase}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{display:inline-block;width:11px;height:11px;border:2px solid rgba(129,140,248,.3);border-top-color:#818cf8;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:3px}
-
-/* ── FLAKY BAR ── */
-.fb-bg{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;flex:1}
-.fb-fill{height:100%;border-radius:3px;background:var(--flaky)}
 
 /* ── TABS ── */
 .tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
@@ -128,39 +99,31 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .tab.on{background:var(--surface2);color:var(--text);border-color:rgba(124,58,237,.35)}
 .tab:hover{color:var(--text)}
 
-/* ── SLACK FEED ── */
-.feed-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.feed-item:last-child{border-bottom:none}
-.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.feed-body .fw{font-weight:600;font-size:13px}
-.feed-body .fm{font-size:11px;color:var(--muted);margin-top:2px}
-.feed-body .fc{font-size:12px;margin-top:4px}
-
-/* ── READINESS ── */
-.rc{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
-.rc:last-child{border-bottom:none}
-.r-banner{margin-top:14px;padding:13px 20px;border-radius:8px;text-align:center;font-weight:700;font-size:15px;letter-spacing:.04em}
-.r-ok{background:rgba(16,185,129,.12);color:var(--pass);border:1px solid rgba(16,185,129,.25)}
-.r-no{background:rgba(239,68,68,.12);color:var(--fail);border:1px solid rgba(239,68,68,.25)}
+/* ── FLAKY BAR ── */
+.fb-bg{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;flex:1}
+.fb-fill{height:100%;border-radius:3px;background:var(--flaky)}
 
 /* ── SCROLLABLE ── */
-.scr{overflow-y:auto;max-height:380px}
+.scr{overflow-y:auto;max-height:400px}
 .scr::-webkit-scrollbar{width:4px}
 .scr::-webkit-scrollbar-track{background:transparent}
 .scr::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-/* ── HEATMAP GRID ── */
-.hg{display:flex;flex-direction:column;gap:5px}
-.hr{display:flex;align-items:center;gap:4px;font-size:11px}
-.hl{width:36px;text-align:right;color:var(--muted);flex-shrink:0;font-size:10px;font-weight:600;text-transform:uppercase}
-.hc{width:20px;height:20px;border-radius:3px;flex-shrink:0;transition:transform .1s}
-.hc:hover{transform:scale(1.2)}
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:8px}
+
+/* ── RUN INFO ── */
+.run-info{display:flex;gap:12px;flex-wrap:wrap}
+.run-chip{background:var(--surface2);border-radius:8px;padding:10px 14px;min-width:100px}
+.run-chip-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.run-chip-value{font-size:13px;font-weight:600}
 </style>
 </head>
 <body>
 
-<!-- ══ FILTER BAR ══════════════════════════════════════ -->
-<nav class="filterbar" id="filterbar">
+<!-- ══ FILTER BAR ══ -->
+<nav class="filterbar">
   <div class="fg">
     <span class="fg-label">Browser</span>
     <button class="pill on" data-g="browser" data-v="all">All</button>
@@ -179,12 +142,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
   <div class="fsep"></div>
   <div class="fg">
-    <span class="fg-label">Suite</span>
-    <button class="pill on" data-g="suite" data-v="all">All</button>
-    <button class="pill" data-g="suite" data-v="feds-lnav">feds-lnav</button>
-    <button class="pill" data-g="suite" data-v="cmp-banner">cmp-banner</button>
-    <button class="pill" data-g="suite" data-v="express-lingo">express-lingo</button>
-    <button class="pill" data-g="suite" data-v="site-redesign">site-redesign</button>
+    <span class="fg-label">Status</span>
+    <button class="pill on" data-g="status" data-v="all">All</button>
+    <button class="pill" data-g="status" data-v="passed">Passed</button>
+    <button class="pill" data-g="status" data-v="failed">Failed</button>
+    <button class="pill" data-g="status" data-v="flaky">Flaky</button>
   </div>
   <div class="fsep"></div>
   <div class="fg">
@@ -196,16 +158,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <button class="pill" data-g="locale" data-v="fr">FR</button>
     <button class="pill" data-g="locale" data-v="jp">JP</button>
   </div>
-  <div class="fsep"></div>
-  <div class="fg">
-    <span class="fg-label">Range</span>
-    <button class="pill on" data-g="range" data-v="7">7d</button>
-    <button class="pill" data-g="range" data-v="14">14d</button>
-    <button class="pill" data-g="range" data-v="30">30d</button>
-  </div>
 </nav>
 
-<!-- ══ 1. HEADER ═══════════════════════════════════════ -->
+<!-- ══ 1. HEADER ══ -->
 <header class="hdr">
   <div class="hdr-l">
     <h1>FEDS QA</h1>
@@ -213,21 +168,27 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <div class="hdr-meta">
       <span class="live">Live</span>
       <span id="lastTs" style="font-size:12px;color:var(--muted)"></span>
-      <span class="badge badge-br" id="branchBadge">⎇ feds-lnav</span>
-      <span class="badge badge-env" id="envBadge">AEM Live</span>
+      <span class="badge badge-br" id="branchBadge">⎇ –</span>
+      <span class="badge badge-env" id="envBadge">–</span>
+      <span class="badge badge-url" id="urlBadge" style="display:none"></span>
     </div>
   </div>
   <div class="hdr-r">
-    <a class="btn btn-g" href="https://github.com/Snehayt/ccfeds-automation/actions" target="_blank">▶ Run Tests</a>
-    <a class="btn btn-o" href="https://adobe.slack.com/app_redirect?channel=automation-test-x" target="_blank">💬 Trigger via Slack</a>
+    <a class="btn btn-g" href="https://github.com/Snehayt/ccfeds-automation/actions/workflows/run-tests.yml" target="_blank">▶ Run Tests</a>
+    <a class="btn btn-o" href="https://adobe.slack.com/app_redirect?channel=automation-test-x" target="_blank">💬 Slack</a>
   </div>
 </header>
 
 <main class="main">
 
-<!-- ══ 2 + 3. SCORE + KPI ══════════════════════════════ -->
+<!-- ══ RUN DETAILS ══ -->
+<div class="card">
+  <div class="ct">Last Run Details</div>
+  <div class="run-info" id="runInfo"></div>
+</div>
+
+<!-- ══ 2. SCORE + KPI ══ -->
 <div class="g2">
-  <!-- Score -->
   <div class="card">
     <div class="ct">Quality Health Score</div>
     <div class="score-wrap">
@@ -239,34 +200,27 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       </div>
     </div>
   </div>
-  <!-- KPI grid -->
   <div class="g5">
-    <div class="card"><div class="ct">Total Tests</div><div class="kpi-v" id="kTotal">–</div><div class="kpi-d up" id="dTotal">+6 vs last</div><div class="spark" id="spTotal"></div></div>
-    <div class="card"><div class="ct">Pass Rate</div><div class="kpi-v" id="kPass" style="color:var(--pass)">–</div><div class="kpi-d up" id="dPass">+1.2%</div><div class="spark" id="spPass"></div></div>
-    <div class="card"><div class="ct">Avg Duration</div><div class="kpi-v" id="kDur" style="font-size:22px">–</div><div class="kpi-d dn" id="dDur">+0.3s</div></div>
-    <div class="card"><div class="ct">Flaky Tests</div><div class="kpi-v" id="kFlaky" style="color:var(--flaky)">–</div><div class="kpi-d dn" id="dFlaky">+1 vs last</div></div>
-    <div class="card"><div class="ct">Critical Failures</div><div class="kpi-v" id="kFail" style="color:var(--fail)">–</div><div class="kpi-d dn" id="dFail">-3 vs last</div></div>
+    <div class="card"><div class="ct">Total Tests</div><div class="kpi-v" id="kTotal">–</div><div class="spark" id="spTotal"></div></div>
+    <div class="card"><div class="ct">Passed</div><div class="kpi-v" id="kPassed" style="color:var(--pass)">–</div><div class="spark" id="spPass"></div></div>
+    <div class="card"><div class="ct">Failed</div><div class="kpi-v" id="kFailed" style="color:var(--fail)">–</div></div>
+    <div class="card"><div class="ct">Flaky</div><div class="kpi-v" id="kFlaky" style="color:var(--flaky)">–</div></div>
+    <div class="card"><div class="ct">Pass Rate</div><div class="kpi-v" id="kPassRate" style="font-size:24px;color:var(--pass)">–</div></div>
   </div>
 </div>
 
-<!-- ══ 4. ENVIRONMENT HEALTH ════════════════════════════ -->
+<!-- ══ 3. LIVE EXECUTION MONITOR ══ -->
 <div class="card">
-  <div class="ct">Environment Health</div>
-  <div id="envWrap" style="display:flex;gap:16px;flex-wrap:wrap"></div>
-</div>
-
-<!-- ══ 5. LIVE EXECUTION MONITOR ════════════════════════ -->
-<div class="card">
-  <div class="ct">Live Execution Monitor</div>
+  <div class="ct">Test Results</div>
   <div class="tabs" id="execTabs">
     <button class="tab on" data-ef="all">All</button>
-    <button class="tab" data-ef="running">Running</button>
     <button class="tab" data-ef="passed">Passed</button>
     <button class="tab" data-ef="failed">Failed</button>
     <button class="tab" data-ef="flaky">Flaky</button>
+    <button class="tab" data-ef="skipped">Skipped</button>
   </div>
   <div class="scr">
-    <table class="tbl" id="execTable">
+    <table class="tbl">
       <thead><tr>
         <th>Test Name</th><th>Browser</th><th>Device</th><th>Locale</th><th>Status</th><th>Duration</th>
       </tr></thead>
@@ -275,9 +229,9 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
 </div>
 
-<!-- ══ 6. PASS/FAIL TREND ═══════════════════════════════ -->
+<!-- ══ 4. TREND ══ -->
 <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
     <div class="ct" style="margin-bottom:0">Pass / Fail Trend</div>
     <div class="tabs" id="trendTabs" style="margin-bottom:0">
       <button class="tab on" data-td="7">7d</button>
@@ -285,75 +239,34 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
       <button class="tab" data-td="30">30d</button>
     </div>
   </div>
-  <div id="trendChart" style="height:260px"></div>
+  <div id="trendChart" style="height:240px"></div>
 </div>
 
-<!-- ══ 7 + 8. FAILURE INTEL + HEATMAP ══════════════════ -->
-<div class="g2">
-  <div class="card">
-    <div class="ct">Failure Intelligence</div>
-    <div class="scr" style="max-height:220px">
-      <table class="tbl" id="failTable">
-        <thead><tr><th>Test</th><th>Count</th><th>Browsers</th><th>Device</th></tr></thead>
-        <tbody id="failBody"></tbody>
-      </table>
-    </div>
-    <div id="failBar" style="height:190px;margin-top:14px"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Test Heatmap — 90 Days</div>
-    <div id="calChart" style="height:210px"></div>
-    <div class="ct" style="margin-top:16px">Locale Pass Grid — Last 7 Runs</div>
-    <div class="hg" id="locGrid"></div>
-  </div>
-</div>
-
-<!-- ══ 9. FLAKY LEADERBOARD ════════════════════════════ -->
-<div class="card">
-  <div class="ct">Flaky Test Leaderboard</div>
+<!-- ══ 5. FAILURES (hidden when no failures) ══ -->
+<div class="card" id="failSection" style="display:none">
+  <div class="ct">Top Failures</div>
   <div class="scr">
-    <table class="tbl" id="flakyTable">
-      <thead><tr>
-        <th data-s="rank">#</th>
-        <th data-s="name">Test ↕</th>
-        <th data-s="suite">Suite ↕</th>
-        <th data-s="pct">Flaky % ↕</th>
-        <th>Browsers</th>
-        <th>Device</th>
-        <th>Trend</th>
-      </tr></thead>
-      <tbody id="flakyBody"></tbody>
+    <table class="tbl">
+      <thead><tr><th>Test Name</th><th>Browser</th><th>Device</th><th>Locale</th><th>Error</th></tr></thead>
+      <tbody id="failBody"></tbody>
     </table>
   </div>
 </div>
 
-<!-- ══ 10. SLACK FEED + TRIGGER PANEL ══════════════════ -->
-<div class="g2">
-  <div class="card">
-    <div class="ct">Slack Activity Feed</div>
-    <div class="scr" id="slackFeed"></div>
-  </div>
-  <div class="card">
-    <div class="ct">Last Triggered Run</div>
-    <div id="triggerPanel"></div>
-  </div>
-</div>
-
-<!-- ══ 11. RUN TIMELINE ════════════════════════════════ -->
-<div class="card">
-  <div class="ct">Run Timeline</div>
-  <div id="ganttChart" style="height:340px"></div>
-</div>
-
-<!-- ══ 12. RELEASE READINESS ═══════════════════════════ -->
-<div class="card">
-  <div class="ct">Release Readiness</div>
-  <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
-    <div id="readGauge" style="width:130px;height:130px;flex-shrink:0"></div>
-    <div style="flex:1;min-width:260px">
-      <div id="readList"></div>
-      <div id="readBanner" class="r-banner"></div>
-    </div>
+<!-- ══ 6. FLAKY LEADERBOARD (hidden when no flaky) ══ -->
+<div class="card" id="flakySection" style="display:none">
+  <div class="ct">Flaky Tests</div>
+  <div class="scr">
+    <table class="tbl" id="flakyTable">
+      <thead><tr>
+        <th data-s="name">Test ↕</th>
+        <th data-s="pct">Flaky % ↕</th>
+        <th>Browser</th>
+        <th>Device</th>
+        <th>Locale</th>
+      </tr></thead>
+      <tbody id="flakyBody"></tbody>
+    </table>
   </div>
 </div>
 
@@ -362,104 +275,80 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <script>
 'use strict';
 
-// ══════════════════════════════════════════════════════════
-//  MOCK DATA
-// ══════════════════════════════════════════════════════════
-const STEPS = [
-  'Page load — check HTTP status',
-  'Nav structure — nav wrapper, Adobe logo, nav list visible',
-  'Nav links — every link inside nav has a valid href',
-  'CTAs — primary and secondary visible, have href',
-  'App switcher — click opens modal with app links',
-  'Sign In — button visible and clickable',
-  'Dropdown — PDF & Productivity opens, links have href',
-  'Breadcrumbs — links visible and have valid href',
-  'Nav height — nav.localnav renders with non-zero height',
-  'Accessibility — axe-core WCAG 2.1 AA scan on nav',
-  'Analytics — daa-ll on all nav elements',
-];
-
-const TOP_FAILURES = [
-  {name:'Sign In button not visible (IMS timeout)',count:12,browsers:'🟠🦊',device:'Desktop',error:'Error: locator [data-id="sign-in"] not found after 10 000ms\nIMS endpoint unreachable — network timeout in CI runner'},
-  {name:'Dropdown panel hidden after click',count:8,browsers:'🦊🧭',device:'Desktop',error:'Error: expected .feds-popup to be visible, got display:none\nFirefox: aria-expanded toggled but panel never renders'},
-  {name:'CMP banner not rendered on DE locale',count:6,browsers:'🟠',device:'Desktop',error:'Error: #onetrust-banner-sdk not in DOM after 5 000ms\nCMP script blocked by AdBlocker in CI environment'},
-  {name:'nav.localnav bounding box returned null',count:4,browsers:'🧭',device:'iPad',error:'Error: boundingBox() returned null — element not attached\nSafari+iPad: localnav deferred mount on first paint'},
-  {name:'ERR_ABORTED navigation',count:3,browsers:'🟠🦊🧭',device:'Desktop',error:'Error: net::ERR_ABORTED at https://main--upp--adobecom.aem.live\nTransient network instability in GitHub Actions runner'},
-];
-
-const FLAKY_DATA = [
-  {rank:1,name:'Sign In — button visible and clickable',suite:'feds-lnav',pct:45,browsers:'🟠🦊',device:'Desktop',trend:[40,48,42,50,45,43,45]},
-  {rank:2,name:'App switcher — click opens modal',suite:'feds-lnav',pct:32,browsers:'🧭',device:'Desktop+iPad',trend:[28,35,30,38,32,30,32]},
-  {rank:3,name:'Dropdown — PDF & Productivity opens',suite:'feds-lnav',pct:15,browsers:'🦊🧭',device:'Desktop',trend:[12,18,14,16,15,13,15]},
-  {rank:4,name:'CMP banner not rendered',suite:'cmp-banner',pct:10,browsers:'🟠',device:'Desktop',trend:[8,12,10,9,11,10,10]},
-  {rank:5,name:'Nav height — localnav non-zero height',suite:'feds-lnav',pct:7,browsers:'🧭',device:'iPad',trend:[5,9,7,6,8,7,7]},
-];
-
-const SLACK_RUNS = [
-  {who:'Sneha Y',browser:'🟠 Chrome',device:'🖥 Desktop',suite:'feds-lnav',locale:'US',ago:'9m ago',status:'completed',passed:113,failed:7},
-  {who:'Rahul K',browser:'🟠🦊 Chrome+Firefox',device:'🖥 Desktop',suite:'cmp-banner',locale:'All',ago:'1h ago',status:'completed',passed:78,failed:11},
-  {who:'Sneha Y',browser:'🧭 Safari',device:'💻 iPad',suite:'feds-lnav',locale:'US',ago:'3h ago',status:'completed',passed:29,failed:9},
-  {who:'Arun M',browser:'🟠🦊🧭 All',device:'🖥 Desktop',suite:'feds-lnav',locale:'All locales',ago:'5h ago',status:'failed',passed:87,failed:33},
-  {who:'Sneha Y',browser:'🟠 Chrome',device:'🖥 Desktop',suite:'site-redesign',locale:'US',ago:'1d ago',status:'completed',passed:44,failed:1},
-];
-
-const ENVS = [
-  {name:'AEM Live',pass:94,color:'#10b981',status:'healthy',dur:'1.2s',ago:'9m ago'},
-  {name:'Adobe.com Prod',pass:88,color:'#10b981',status:'healthy',dur:'0.9s',ago:'1h ago'},
-  {name:'Stage',pass:76,color:'#f59e0b',status:'degraded',dur:'2.1s',ago:'3h ago'},
-];
-
-const LOCALES = ['US','GB','DE','FR','JP','AU','CA'];
-
-function buildMockResults() {
-  const suites = [{s:'feds-lnav',n:120},{s:'cmp-banner',n:89},{s:'express-lingo',n:38}];
+// ══════════════════════════════════════════════════
+//  MOCK DATA — used only when nala-results.json
+//  is not found. Shows realistic test data.
+// ══════════════════════════════════════════════════
+function buildMock() {
+  const steps = [
+    'Page load — check HTTP status',
+    'Nav structure — nav wrapper, Adobe logo, nav list visible',
+    'Nav links — every link inside nav has a valid href',
+    'CTAs — primary and secondary visible, have href',
+    'App switcher — click opens modal with app links',
+    'Sign In — button visible and clickable',
+    'Dropdown — PDF & Productivity opens, links have href',
+    'Breadcrumbs — links visible and have valid href',
+    'Nav height — nav.localnav renders with non-zero height',
+    'Accessibility — axe-core WCAG 2.1 AA scan on nav',
+    'Analytics — daa-ll on all nav elements',
+  ];
   const browsers = ['chrome','chrome','chrome','firefox','safari'];
-  const devices  = ['desktop','desktop','desktop','iphone','android','ipad'];
-  const locales  = ['us','gb','de','fr','jp','au','ca'];
+  const devices  = ['desktop','desktop','desktop','iphone','android'];
+  const locales  = ['us','gb','de','fr','jp'];
+  const errors   = [
+    'Error: locator [data-id="sign-in"] not found after 10000ms\nIMS endpoint unreachable in CI',
+    'Error: expected .feds-popup to be visible, got display:none\nFirefox: aria-expanded toggled but panel hidden',
+    'Error: boundingBox() returned null — element not attached',
+  ];
   const rows = [];
-  let id = 0;
-  suites.forEach(({s,n}) => {
-    for (let i = 0; i < n; i++) {
-      const browser = browsers[i % browsers.length];
-      const device  = devices[Math.floor(i/18) % devices.length];
-      const locale  = locales[i % locales.length];
-      const r = Math.random();
-      const status = r < 0.914 ? 'passed' : r < 0.972 ? 'failed' : 'flaky';
-      const fi = status === 'failed' ? i % TOP_FAILURES.length : -1;
-      rows.push({
-        id:++id, suite:s, browser, device, locale, status,
-        duration: 4200 + Math.random() * 17000,
-        name:`${STEPS[i % STEPS.length]} | ${locale.toUpperCase()}`,
-        errorMessage: fi >= 0 ? TOP_FAILURES[fi].error : null,
-      });
-    }
-  });
-  return rows;
+  for (let i = 0; i < 120; i++) {
+    const r = Math.random();
+    const status = r < 0.915 ? 'passed' : r < 0.972 ? 'failed' : 'flaky';
+    rows.push({
+      id: i+1,
+      name: steps[i % steps.length] + ' | ' + locales[i % locales.length].toUpperCase(),
+      suite: 'feds-lnav',
+      browser: browsers[i % browsers.length],
+      device: devices[i % devices.length],
+      locale: locales[i % locales.length],
+      status,
+      duration: 4000 + Math.random() * 16000,
+      errorMessage: status === 'failed' ? errors[i % errors.length] : null,
+    });
+  }
+  return {
+    gitBranch: 'feds-lnav',
+    gitRepo: 'ccfeds-automation',
+    timestamp: new Date(Date.now() - 9*60000).toISOString(),
+    suite: 'feds-lnav',
+    browser: 'chrome',
+    device: 'desktop',
+    locale: 'us',
+    environment: 'aem-live',
+    baseURL: 'https://main--upp--adobecom.aem.live',
+    triggeredBy: 'Snehayt',
+    runUrl: 'https://github.com/Snehayt/ccfeds-automation/actions',
+    results: rows,
+  };
 }
 
-const MOCK = {
-  gitBranch:'feds-lnav', gitRepo:'ccfeds-automation',
-  timestamp: new Date(Date.now() - 9*60000).toISOString(),
-  results: buildMockResults(),
-};
-
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  STATE
-// ══════════════════════════════════════════════════════════
-let DATA = MOCK;
-const F = {browser:'all',device:'all',suite:'all',locale:'all',range:'7'};
+// ══════════════════════════════════════════════════
+let DATA = buildMock();
+const F = { browser:'all', device:'all', status:'all', locale:'all' };
 let execFilter = 'all';
-let flakySortCol = 'rank', flakySortDir = 1;
+let flakySortCol = 'pct', flakySortDir = -1;
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  FILTER BAR
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 document.querySelectorAll('.pill').forEach(btn => {
   btn.addEventListener('click', () => {
-    const g = btn.dataset.g;
-    document.querySelectorAll(`[data-g="${g}"]`).forEach(b => b.classList.remove('on'));
+    document.querySelectorAll(`[data-g="${btn.dataset.g}"]`).forEach(b => b.classList.remove('on'));
     btn.classList.add('on');
-    F[g] = btn.dataset.v;
+    F[btn.dataset.g] = btn.dataset.v;
     renderAll();
   });
 });
@@ -468,75 +357,101 @@ function filtered() {
   return (DATA.results || []).filter(r => {
     if (F.browser !== 'all' && r.browser !== F.browser) return false;
     if (F.device  !== 'all' && r.device  !== F.device)  return false;
-    if (F.suite   !== 'all' && r.suite   !== F.suite)   return false;
+    if (F.status  !== 'all' && r.status  !== F.status)  return false;
     if (F.locale  !== 'all' && r.locale  !== F.locale)  return false;
     return true;
   });
 }
 
-// ══════════════════════════════════════════════════════════
-//  DATA LOAD
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
+//  LOAD DATA
+// ══════════════════════════════════════════════════
 fetch('../nala-results.json')
   .then(r => { if (!r.ok) throw 0; return r.json(); })
   .then(json => { DATA = json; renderAll(); })
   .catch(() => renderAll());
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  RENDER ALL
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 function renderAll() {
   const rows = filtered();
   renderHeader();
+  renderRunInfo();
   renderScore(rows);
   renderKPI(rows);
-  renderEnvHealth();
   renderExec(rows, execFilter);
-  renderTrend(+F.range);
-  renderFailures();
-  renderHeatmap(rows);
-  renderFlaky();
-  renderSlackFeed();
-  renderTriggerPanel();
-  renderGantt(rows);
-  renderReadiness(rows);
+  renderTrend(7);
+  renderFailures(rows);
+  renderFlaky(rows);
 }
 
-// ── 1. HEADER ─────────────────────────────────────────────
+// ── 1. HEADER ────────────────────────────────────
 function renderHeader() {
   const ts = DATA.timestamp ? new Date(DATA.timestamp) : new Date();
-  document.getElementById('lastTs').textContent = 'Last run: ' + ago(ts);
-  document.getElementById('branchBadge').textContent = '⎇ ' + (DATA.gitBranch || 'feds-lnav');
+  document.getElementById('lastTs').textContent = 'Last run: ' + timeAgo(ts);
+  document.getElementById('branchBadge').textContent = '⎇ ' + (DATA.gitBranch || '–');
+
+  const env = DATA.environment || DATA.suite || '–';
+  document.getElementById('envBadge').textContent = env;
+
+  const urlBadge = document.getElementById('urlBadge');
+  if (DATA.baseURL) {
+    urlBadge.textContent = '🔗 ' + DATA.baseURL;
+    urlBadge.style.display = 'inline-flex';
+  } else {
+    urlBadge.style.display = 'none';
+  }
 }
 
-// ── 2. SCORE ──────────────────────────────────────────────
+// ── RUN INFO ─────────────────────────────────────
+function renderRunInfo() {
+  const fields = [
+    { label:'Suite',       value: DATA.suite       || DATA.gitBranch || '–' },
+    { label:'Browser',     value: DATA.browser     ? bi(DATA.browser)  : '–' },
+    { label:'Device',      value: DATA.device      ? di(DATA.device)   : '–' },
+    { label:'Locale',      value: (DATA.locale     || '–').toUpperCase() },
+    { label:'Environment', value: DATA.environment || '–' },
+    { label:'URL',         value: DATA.baseURL     || '–' },
+    { label:'Triggered by',value: DATA.triggeredBy || '–' },
+  ];
+  document.getElementById('runInfo').innerHTML = fields.map(f => `
+    <div class="run-chip">
+      <div class="run-chip-label">${f.label}</div>
+      <div class="run-chip-value" style="font-size:${f.label==='URL'?'11px':'13px'}">${esc(f.value)}</div>
+    </div>`).join('');
+}
+
+// ── 2. SCORE ─────────────────────────────────────
 let gaugeChart;
 function renderScore(rows) {
-  const total = rows.length || 1;
+  const total  = rows.length || 1;
   const passed = rows.filter(r => r.status === 'passed').length;
   const flaky  = rows.filter(r => r.status === 'flaky').length;
   const pr = passed / total, fr = flaky / total;
   const score = Math.round((pr*0.5 + (1-fr)*0.3 + 0.2) * 100);
   const col = score >= 85 ? '#10b981' : score >= 70 ? '#f59e0b' : '#ef4444';
-  document.getElementById('sPassRate').textContent = (pr*100).toFixed(1)+'%';
+
+  document.getElementById('sPassRate').textContent  = (pr*100).toFixed(1)+'%';
   document.getElementById('sFlakyRate').textContent = (fr*100).toFixed(1)+'%';
   const avgMs = rows.reduce((a,r) => a+(r.duration||0), 0) / total;
-  document.getElementById('sAvgDur').textContent = (avgMs/1000).toFixed(1)+'s';
+  document.getElementById('sAvgDur').textContent    = (avgMs/1000).toFixed(1)+'s';
 
   gaugeChart = gaugeChart || echarts.init(document.getElementById('gaugeChart'));
   gaugeChart.setOption({
     backgroundColor:'transparent',
-    series:[{type:'gauge',startAngle:210,endAngle:-30,min:0,max:100,radius:'90%',center:['50%','58%'],
-      axisLine:{lineStyle:{width:14,color:[[score/100,col],[1,'rgba(255,255,255,0.06)']]}},
-      pointer:{itemStyle:{color:col},length:'58%',width:4},
-      axisTick:{show:false},splitLine:{show:false},axisLabel:{show:false},
-      detail:{formatter:'{value}',fontSize:30,fontWeight:800,color:col,offsetCenter:[0,'22%']},
-      data:[{value:score}]
+    series:[{ type:'gauge', startAngle:210, endAngle:-30, min:0, max:100,
+      radius:'90%', center:['50%','58%'],
+      axisLine:{ lineStyle:{ width:14, color:[[score/100,col],[1,'rgba(255,255,255,0.06)']] }},
+      pointer:{ itemStyle:{ color:col }, length:'58%', width:4 },
+      axisTick:{show:false}, splitLine:{show:false}, axisLabel:{show:false},
+      detail:{ formatter:'{value}', fontSize:30, fontWeight:800, color:col, offsetCenter:[0,'22%'] },
+      data:[{ value:score }]
     }]
   });
 }
 
-// ── 3. KPI ────────────────────────────────────────────────
+// ── 3. KPI ───────────────────────────────────────
 const sparks = {};
 function renderKPI(rows) {
   const total  = rows.length;
@@ -544,14 +459,15 @@ function renderKPI(rows) {
   const failed = rows.filter(r => r.status === 'failed').length;
   const flaky  = rows.filter(r => r.status === 'flaky').length;
   const pr     = total ? (passed/total*100).toFixed(1) : '0';
-  const dur    = (rows.reduce((a,r)=>a+(r.duration||0),0)/(total||1)/1000).toFixed(1);
-  document.getElementById('kTotal').textContent = total;
-  document.getElementById('kPass').textContent  = pr+'%';
-  document.getElementById('kDur').textContent   = dur+'s';
-  document.getElementById('kFlaky').textContent = flaky;
-  document.getElementById('kFail').textContent  = failed;
-  mkSpark('spTotal',[220,228,235,241,total],'#7c3aed');
-  mkSpark('spPass',[89.0,89.8,90.3,90.9,parseFloat(pr)],'#10b981');
+
+  document.getElementById('kTotal').textContent    = total;
+  document.getElementById('kPassed').textContent   = passed;
+  document.getElementById('kFailed').textContent   = failed;
+  document.getElementById('kFlaky').textContent    = flaky;
+  document.getElementById('kPassRate').textContent = pr + '%';
+
+  mkSpark('spTotal', [total*0.88, total*0.91, total*0.94, total*0.97, total], '#7c3aed');
+  mkSpark('spPass',  [passed*0.88, passed*0.92, passed*0.95, passed*0.98, passed], '#10b981');
 }
 
 function mkSpark(id, data, color) {
@@ -561,68 +477,52 @@ function mkSpark(id, data, color) {
     grid:{top:2,bottom:2,left:2,right:2},
     xAxis:{type:'category',show:false},
     yAxis:{type:'value',show:false,min:'dataMin'},
-    series:[{type:'line',data,smooth:true,symbol:'none',
+    series:[{ type:'line', data, smooth:true, symbol:'none',
       lineStyle:{color,width:2},
-      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'55'},{offset:1,color:'transparent'}]}}}]
+      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'55'},{offset:1,color:'transparent'}]}}
+    }]
   });
 }
 
-// ── 4. ENV HEALTH ─────────────────────────────────────────
-const envDonuts = {};
-function renderEnvHealth() {
-  const wrap = document.getElementById('envWrap');
-  wrap.innerHTML = '';
-  ENVS.forEach((e, i) => {
-    const card = document.createElement('div');
-    card.style.cssText = 'flex:1;min-width:200px;background:var(--surface2);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px;';
-    const did = 'ed'+i;
-    card.innerHTML = `
-      <div id="${did}" style="width:64px;height:64px;flex-shrink:0"></div>
-      <div class="env-info">
-        <div class="env-name">${e.name}</div>
-        <div class="env-meta">Avg ${e.dur} · ${e.ago}</div>
-        <div class="env-status">
-          <span class="dot" style="background:${e.color}"></span>
-          <span style="color:${e.color}">${e.status}</span>
-        </div>
-      </div>`;
-    wrap.appendChild(card);
-    requestAnimationFrame(() => {
-      envDonuts[i] = envDonuts[i] || echarts.init(document.getElementById(did));
-      envDonuts[i].setOption({
-        backgroundColor:'transparent',
-        series:[{type:'pie',radius:['58%','88%'],label:{show:true,position:'center',formatter:`${e.pass}%`,fontSize:15,fontWeight:700,color:e.color},
-          data:[{value:e.pass,itemStyle:{color:e.color}},{value:100-e.pass,itemStyle:{color:'rgba(255,255,255,0.06)'}}],
-          emphasis:{scale:false}}]
-      });
-    });
-  });
-}
-
-// ── 5. EXEC TABLE ─────────────────────────────────────────
+// ── 4. EXEC TABLE ────────────────────────────────
 function renderExec(rows, filter) {
   execFilter = filter;
   const list = filter === 'all' ? rows : rows.filter(r => r.status === filter);
   const tbody = document.getElementById('execBody');
   tbody.innerHTML = '';
-  list.slice(0,80).forEach(r => {
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-icon">✅</div>No ${filter} tests</div></td></tr>`;
+    return;
+  }
+
+  list.slice(0, 100).forEach(r => {
+    const statusPill = `<span class="sp sp-${r.status==='passed'?'pass':r.status==='failed'?'fail':r.status==='flaky'?'flaky':'skip'}">${r.status}</span>`;
+    const warns = (r.stdout||[]).filter(s => /warn|error/i.test(String(s)));
+    const hasDetail = r.errorMessage || r.errorStack || warns.length || (r.stderr||[]).length;
     const tr = document.createElement('tr');
-    if (r.errorMessage) tr.classList.add('expandable');
-    const st = r.status === 'running'
-      ? `<span class="spinner"></span><span class="sp sp-run">Running</span>`
-      : `<span class="sp sp-${r.status==='passed'?'pass':r.status==='failed'?'fail':r.status==='flaky'?'flaky':'skip'}">${r.status}</span>`;
+    if (hasDetail) tr.classList.add('expandable');
     tr.innerHTML = `
-      <td>${esc(r.name||r.suite)}</td>
+      <td>
+        <div style="font-size:12px">${esc(r.name || r.suite || '–')}</div>
+        ${r.url ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${esc(r.url)}</div>` : ''}
+      </td>
       <td>${bi(r.browser)}</td>
       <td>${di(r.device)}</td>
-      <td><span class="loc">${r.locale||'–'}</span></td>
-      <td>${st}</td>
+      <td><span class="loc">${r.locale||r.tags?.[0]||'–'}</span></td>
+      <td>${statusPill}${r.retry>0?` <span style="font-size:10px;color:var(--flaky)">retry ${r.retry}</span>`:''}</td>
       <td style="color:var(--muted)">${((r.duration||0)/1000).toFixed(1)}s</td>`;
     tbody.appendChild(tr);
-    if (r.errorMessage) {
+
+    if (hasDetail) {
       const etr = document.createElement('tr');
-      etr.className = 'err-row';
-      etr.innerHTML = `<td colspan="6"><div class="err-detail">${esc(r.errorMessage)}</div></td>`;
+      let detail = '';
+      if (r.errorMessage) detail += `<div style="color:#fca5a5;font-weight:600;margin-bottom:6px">❌ ${esc(r.errorMessage)}</div>`;
+      if (r.errorStack)   detail += `<div style="color:#94a3b8;font-size:10px;margin-bottom:6px">${esc(r.errorStack)}</div>`;
+      if (warns.length)   detail += `<div style="color:#f59e0b;margin-top:6px">⚠️ Warnings:<br>${warns.map(w=>esc(String(w))).join('<br>')}</div>`;
+      if ((r.stderr||[]).length) detail += `<div style="color:#f97316;margin-top:6px">stderr:<br>${r.stderr.map(s=>esc(String(s))).join('<br>')}</div>`;
+      if (DATA.runUrl)    detail += `<div style="margin-top:10px"><a href="${esc(DATA.runUrl)}" target="_blank" style="color:#60a5fa;font-size:11px">📎 View screenshots &amp; videos in GitHub Actions artifacts →</a></div>`;
+      etr.innerHTML = `<td colspan="6" style="padding:0"><div class="err-detail">${detail}</div></td>`;
       tbody.appendChild(etr);
       tr.addEventListener('click', () => etr.querySelector('.err-detail').classList.toggle('open'));
     }
@@ -637,27 +537,36 @@ document.getElementById('execTabs').querySelectorAll('.tab').forEach(t => {
   });
 });
 
-// ── 6. TREND ──────────────────────────────────────────────
+// ── 5. TREND ─────────────────────────────────────
 let trendChart;
 function renderTrend(days) {
-  const labels=[], pd=[], fd=[], fld=[];
-  for (let i=days-1;i>=0;i--) {
+  const rows    = filtered();
+  const total   = rows.length || 247;
+  const passed  = rows.filter(r => r.status==='passed').length || 226;
+  const failed  = rows.filter(r => r.status==='failed').length || 14;
+  const flaky   = rows.filter(r => r.status==='flaky').length  || 7;
+  const labels  = [], pd = [], fd = [], fld = [];
+
+  for (let i = days-1; i >= 0; i--) {
     const d = new Date(Date.now()-i*86400000);
     labels.push(d.toLocaleDateString('en',{month:'short',day:'numeric'}));
-    const base=210+Math.round(Math.random()*30), f=Math.round(Math.random()*16)+4, fl=Math.round(Math.random()*7)+2;
-    pd.push(base-f-fl); fd.push(f); fld.push(fl);
+    const variance = 0.85 + Math.random()*0.3;
+    pd.push(i===0 ? passed : Math.round(passed*variance));
+    fd.push(i===0 ? failed : Math.round(failed*(0.5+Math.random())));
+    fld.push(i===0 ? flaky  : Math.round(flaky*(0.5+Math.random())));
   }
+
   trendChart = trendChart || echarts.init(document.getElementById('trendChart'));
   const area = (name,data,color) => ({
-    name,type:'line',data,smooth:true,symbol:'none',
+    name, type:'line', data, smooth:true, symbol:'none',
     lineStyle:{color,width:2},
-    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'45'},{offset:1,color:'transparent'}]}}
+    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'40'},{offset:1,color:'transparent'}]}}
   });
   trendChart.setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis',backgroundColor:'#1a1a26',borderColor:'rgba(255,255,255,.1)',textStyle:{color:'#f1f5f9',fontSize:12}},
     legend:{data:['Passed','Failed','Flaky'],textStyle:{color:'#64748b',fontSize:12},top:0,right:0},
-    grid:{top:36,bottom:28,left:44,right:16},
+    grid:{top:32,bottom:24,left:44,right:16},
     xAxis:{type:'category',data:labels,axisLine:{lineStyle:{color:'rgba(255,255,255,.08)'}},axisLabel:{color:'#64748b',fontSize:11}},
     yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,.06)'}},axisLabel:{color:'#64748b',fontSize:11}},
     series:[area('Passed',pd,'#10b981'),area('Failed',fd,'#ef4444'),area('Flaky',fld,'#f59e0b')]
@@ -672,261 +581,97 @@ document.getElementById('trendTabs').querySelectorAll('.tab').forEach(t => {
   });
 });
 
-// ── 7. FAILURES ───────────────────────────────────────────
-let failBarChart;
-function renderFailures() {
+// ── 6. FAILURES (only shown when failures exist) ─
+function renderFailures(rows) {
+  const failures = rows.filter(r => r.status === 'failed');
+  const section  = document.getElementById('failSection');
+
+  if (failures.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+
   const tbody = document.getElementById('failBody');
   tbody.innerHTML = '';
-  TOP_FAILURES.forEach(f => {
+  failures.slice(0, 20).forEach(r => {
     const tr = document.createElement('tr');
     tr.classList.add('expandable');
-    tr.innerHTML = `<td>${esc(f.name)}</td><td style="color:var(--fail);font-weight:700">${f.count}</td><td>${f.browsers}</td><td><span class="loc">${f.device}</span></td>`;
+    tr.innerHTML = `
+      <td style="max-width:300px">${esc(r.name||r.suite)}</td>
+      <td>${bi(r.browser)}</td>
+      <td>${di(r.device)}</td>
+      <td><span class="loc">${r.locale||'–'}</span></td>
+      <td style="color:var(--muted);font-size:11px">${r.errorMessage ? '▶ click to expand' : '–'}</td>`;
     tbody.appendChild(tr);
-    const etr = document.createElement('tr');
-    etr.className = 'err-row';
-    etr.innerHTML = `<td colspan="4"><div class="err-detail">${esc(f.error)}</div></td>`;
-    tbody.appendChild(etr);
-    tr.addEventListener('click', () => etr.querySelector('.err-detail').classList.toggle('open'));
-  });
-
-  failBarChart = failBarChart || echarts.init(document.getElementById('failBar'));
-  failBarChart.setOption({
-    backgroundColor:'transparent',
-    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1a26',borderColor:'rgba(255,255,255,.1)',textStyle:{color:'#f1f5f9',fontSize:12}},
-    grid:{top:8,bottom:8,left:196,right:48},
-    xAxis:{type:'value',axisLabel:{color:'#64748b',fontSize:11},splitLine:{lineStyle:{color:'rgba(255,255,255,.06)'}}},
-    yAxis:{type:'category',data:TOP_FAILURES.map(f=>f.name.substring(0,30)+(f.name.length>30?'…':'')),
-      axisLabel:{color:'#94a3b8',fontSize:11},axisLine:{show:false},axisTick:{show:false}},
-    series:[{type:'bar',data:TOP_FAILURES.map((f,i)=>({value:f.count,itemStyle:{color:['#ef4444','#f97316','#f59e0b','#ef4444','#64748b'][i],borderRadius:4}})),barMaxWidth:16}]
-  });
-}
-
-// ── 8. HEATMAP ────────────────────────────────────────────
-let calChart;
-function renderHeatmap() {
-  const start = new Date(Date.now()-89*86400000);
-  const calData = [];
-  for (let i=0;i<90;i++) {
-    const d = new Date(start.getTime()+i*86400000);
-    calData.push([d.toISOString().split('T')[0], +(60+Math.random()*40).toFixed(0)]);
-  }
-  calChart = calChart || echarts.init(document.getElementById('calChart'));
-  calChart.setOption({
-    backgroundColor:'transparent',
-    visualMap:{min:50,max:100,orient:'horizontal',left:'center',top:0,
-      inRange:{color:['#ef4444','#f59e0b','#10b981']},
-      textStyle:{color:'#64748b',fontSize:10},formatter:v=>v+'%'},
-    calendar:{top:32,bottom:4,left:24,right:24,
-      range:[calData[0][0],calData[calData.length-1][0]],
-      itemStyle:{borderColor:'rgba(255,255,255,.04)',borderWidth:2},
-      splitLine:{show:false},
-      dayLabel:{color:'#475569',fontSize:10},
-      monthLabel:{color:'#64748b',fontSize:10},
-      yearLabel:{show:false}},
-    series:[{type:'heatmap',coordinateSystem:'calendar',data:calData,itemStyle:{borderRadius:2}}]
-  });
-
-  const grid = document.getElementById('locGrid');
-  grid.innerHTML = '';
-  const dayLabels = ['Mo','Tu','We','Th','Fr','Sa','Su'];
-  const hdr = document.createElement('div');
-  hdr.className = 'hr';
-  hdr.innerHTML = '<div class="hl"></div>' + dayLabels.map(d=>`<div class="hc" style="background:transparent;color:var(--muted);font-size:10px;width:20px;text-align:center">${d}</div>`).join('');
-  grid.appendChild(hdr);
-  LOCALES.forEach(loc => {
-    const row = document.createElement('div');
-    row.className = 'hr';
-    let html = `<div class="hl">${loc}</div>`;
-    for (let d=0;d<7;d++) {
-      const v = Math.random();
-      const c = v>.88?'#10b981':v>.65?'#f59e0b':v>.35?'#ef4444':'#1e293b';
-      html += `<div class="hc" style="background:${c}" title="${loc} — ${(v*100).toFixed(0)}% pass"></div>`;
+    if (r.errorMessage) {
+      const etr = document.createElement('tr');
+      etr.innerHTML = `<td colspan="5" style="padding:0"><div class="err-detail">${esc(r.errorMessage)}</div></td>`;
+      tbody.appendChild(etr);
+      tr.addEventListener('click', () => etr.querySelector('.err-detail').classList.toggle('open'));
     }
-    row.innerHTML = html;
-    grid.appendChild(row);
   });
 }
 
-// ── 9. FLAKY LEADERBOARD ──────────────────────────────────
-function renderFlaky() {
+// ── 7. FLAKY (only shown when flaky tests exist) ─
+let flakySortDir2 = -1, flakySortCol2 = 'pct';
+function renderFlaky(rows) {
+  const flakyRows = rows.filter(r => r.status === 'flaky');
+  const section   = document.getElementById('flakySection');
+
+  if (flakyRows.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+
+  // Group by test name
+  const grouped = {};
+  flakyRows.forEach(r => {
+    const key = r.name || r.suite;
+    if (!grouped[key]) grouped[key] = { name:key, count:0, browsers:new Set(), devices:new Set(), locales:new Set() };
+    grouped[key].count++;
+    grouped[key].browsers.add(r.browser);
+    grouped[key].devices.add(r.device);
+    grouped[key].locales.add(r.locale);
+  });
+  const total = rows.length || 1;
+  const data = Object.values(grouped).map(g => ({
+    ...g,
+    pct: Math.round(g.count/total*100),
+    browsers: [...g.browsers].map(bi).join(' '),
+    devices:  [...g.devices].map(di).join(' '),
+    locales:  [...g.locales].join(', ').toUpperCase(),
+  })).sort((a,b) => b.pct - a.pct);
+
   const tbody = document.getElementById('flakyBody');
   tbody.innerHTML = '';
-  const data = [...FLAKY_DATA].sort((a,b) => {
-    const av=a[flakySortCol], bv=b[flakySortCol];
-    return typeof av==='number' ? flakySortDir*(av-bv) : flakySortDir*(String(av)>String(bv)?1:-1);
-  });
-  data.forEach(t => {
+  data.slice(0, 10).forEach(t => {
     const tr = document.createElement('tr');
-    const trendArrows = t.trend.map((v,i) => i===0?'' : v>t.trend[i-1]?'<span style="color:var(--fail)">↑</span>':'<span style="color:var(--pass)">↓</span>').join('');
     tr.innerHTML = `
-      <td style="color:var(--muted)">${t.rank}</td>
       <td style="font-size:12px">${esc(t.name)}</td>
-      <td><span class="loc">${t.suite}</span></td>
       <td style="min-width:130px">
         <div style="display:flex;align-items:center;gap:8px">
-          <div class="fb-bg"><div class="fb-fill" style="width:${t.pct}%"></div></div>
-          <span style="font-size:12px;color:var(--flaky);font-weight:700;min-width:34px">${t.pct}%</span>
+          <div class="fb-bg"><div class="fb-fill" style="width:${Math.min(t.pct,100)}%"></div></div>
+          <span style="font-size:12px;color:var(--flaky);font-weight:700;min-width:32px">${t.pct}%</span>
         </div>
       </td>
       <td>${t.browsers}</td>
-      <td style="font-size:12px">${esc(t.device)}</td>
-      <td style="font-size:13px">${trendArrows}</td>`;
+      <td>${t.devices}</td>
+      <td><span class="loc">${t.locales}</span></td>`;
     tbody.appendChild(tr);
   });
 }
 
 document.getElementById('flakyTable').querySelectorAll('[data-s]').forEach(th => {
   th.addEventListener('click', () => {
-    if (flakySortCol === th.dataset.s) flakySortDir *= -1;
-    else { flakySortCol = th.dataset.s; flakySortDir = 1; }
-    renderFlaky();
+    if (flakySortCol2 === th.dataset.s) flakySortDir2 *= -1;
+    else { flakySortCol2 = th.dataset.s; flakySortDir2 = -1; }
+    renderFlaky(filtered());
   });
 });
 
-// ── 10. SLACK FEED ────────────────────────────────────────
-function renderSlackFeed() {
-  const feed = document.getElementById('slackFeed');
-  feed.innerHTML = '';
-  SLACK_RUNS.forEach(item => {
-    const sc = item.status==='completed'?'var(--pass)':item.status==='failed'?'var(--fail)':'var(--flaky)';
-    const div = document.createElement('div');
-    div.className = 'feed-item';
-    div.innerHTML = `
-      <div class="avatar">${item.who.split(' ').map(w=>w[0]).join('')}</div>
-      <div class="feed-body">
-        <div class="fw">${item.who}</div>
-        <div class="fm">${item.browser} · ${item.device} · <span class="loc">${item.suite}</span> · ${item.locale} · ${item.ago}</div>
-        <div class="fc"><span style="color:${sc};font-weight:600">${item.status}</span> &nbsp;·&nbsp; ✅ ${item.passed} &nbsp;❌ ${item.failed}</div>
-      </div>`;
-    feed.appendChild(div);
-  });
-}
-
-// ── SLACK TRIGGER PANEL ───────────────────────────────────
-function renderTriggerPanel() {
-  const last = SLACK_RUNS[0];
-  const sc = last.status==='completed'?'var(--pass)':'var(--fail)';
-  document.getElementById('triggerPanel').innerHTML = `
-    <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:16px">
-      <div class="avatar" style="width:46px;height:46px;font-size:16px">${last.who.split(' ').map(w=>w[0]).join('')}</div>
-      <div>
-        <div style="font-weight:700;font-size:15px">${last.who}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">Triggered ${last.ago}</div>
-        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-          <span class="badge badge-br">${last.suite}</span>
-          <span class="badge" style="background:rgba(16,185,129,.1);color:var(--pass);border:1px solid rgba(16,185,129,.2)">${last.locale}</span>
-        </div>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px">
-      <div style="background:var(--surface2);border-radius:8px;padding:10px">
-        <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Browser</div>
-        <div style="font-weight:600">${last.browser}</div>
-      </div>
-      <div style="background:var(--surface2);border-radius:8px;padding:10px">
-        <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Device</div>
-        <div style="font-weight:600">${last.device}</div>
-      </div>
-      <div style="background:var(--surface2);border-radius:8px;padding:10px">
-        <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Status</div>
-        <div style="font-weight:700;color:${sc}">${last.status.toUpperCase()}</div>
-      </div>
-      <div style="background:var(--surface2);border-radius:8px;padding:10px">
-        <div style="color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Results</div>
-        <div style="font-weight:600">✅ ${last.passed} &nbsp; ❌ ${last.failed}</div>
-      </div>
-    </div>
-    <a href="https://github.com/Snehayt/ccfeds-automation/actions" target="_blank"
-       class="btn btn-o" style="margin-top:14px;font-size:12px;width:100%;justify-content:center">
-      View GitHub Actions Run →
-    </a>`;
-}
-
-// ── 11. GANTT ─────────────────────────────────────────────
-let ganttChart;
-function renderGantt(rows) {
-  const subset = rows.slice(0,24);
-  let cursor = Date.now() - 200000;
-  const data = subset.map((r,i) => {
-    const s = cursor + Math.random()*1500;
-    cursor = s + (r.duration||8000)*0.75;
-    const col = r.status==='passed'?'#10b981':r.status==='failed'?'#ef4444':r.status==='flaky'?'#f59e0b':'#475569';
-    return {name:r.name||r.suite, value:[i,s,s+(r.duration||8000)], itemStyle:{color:col},
-      tooltip:`${r.name||r.suite}\n${bi(r.browser)} ${di(r.device)} · ${((r.duration||0)/1000).toFixed(1)}s`};
-  });
-  ganttChart = ganttChart || echarts.init(document.getElementById('ganttChart'));
-  ganttChart.setOption({
-    backgroundColor:'transparent',
-    tooltip:{formatter:p=>p.data.tooltip||p.name,backgroundColor:'#1a1a26',borderColor:'rgba(255,255,255,.1)',textStyle:{color:'#f1f5f9',fontSize:12}},
-    grid:{top:8,bottom:30,left:220,right:20},
-    xAxis:{type:'time',axisLabel:{color:'#64748b',fontSize:10,formatter:v=>{const d=new Date(v);return d.getMinutes()+':'+String(d.getSeconds()).padStart(2,'0')}},splitLine:{lineStyle:{color:'rgba(255,255,255,.04)'}}},
-    yAxis:{type:'category',data:subset.map((_,i)=>i),axisLabel:{show:false},axisLine:{show:false},axisTick:{show:false}},
-    series:[{type:'custom',
-      renderItem:(_params,api) => {
-        const yV=api.value(0),s=api.coord([api.value(1),yV]),e=api.coord([api.value(2),yV]);
-        const h=Math.max(api.size([0,1])[1]*0.55,6);
-        return {type:'rect',shape:{x:s[0],y:s[1]-h/2,width:Math.max(e[0]-s[0],3),height:h},style:api.style()};
-      },
-      data,encode:{x:[1,2],y:0}
-    }]
-  });
-}
-
-// ── 12. RELEASE READINESS ─────────────────────────────────
-let readChart;
-function renderReadiness(rows) {
-  const total  = rows.length||1;
-  const passed = rows.filter(r=>r.status==='passed').length;
-  const failed = rows.filter(r=>r.status==='failed').length;
-  const flaky  = rows.filter(r=>r.status==='flaky').length;
-  const pr = (passed/total)*100;
-
-  const checks = [
-    {label:'Critical paths (P0) passing',ok:pr>90,warn:pr>75},
-    {label:'Pass rate ≥ 90%',ok:pr>=90,warn:pr>=80},
-    {label:'Zero critical failures',ok:failed===0,warn:failed<5},
-    {label:'Flaky rate < 5%',ok:flaky/total<0.05,warn:flaky/total<0.1},
-    {label:'Accessibility — WCAG 2.1 AA',ok:true,warn:false},
-    {label:'Analytics — daa-ll attributes present',ok:true,warn:false},
-    {label:'Stage environment healthy',ok:false,warn:true},
-    {label:'CMP locales (DE, FR, GB) passing',ok:pr>85,warn:pr>75},
-    {label:'Cross-browser (Chrome + Firefox + Safari)',ok:true,warn:false},
-    {label:'Cross-device (Desktop + Mobile)',ok:true,warn:false},
-  ];
-
-  const score = Math.round(checks.filter(c=>c.ok).length/checks.length*100);
-  const allOk = checks.every(c => c.ok || c.warn);
-  const col   = score>=80?'#10b981':score>=60?'#f59e0b':'#ef4444';
-
-  readChart = readChart || echarts.init(document.getElementById('readGauge'));
-  readChart.setOption({
-    backgroundColor:'transparent',
-    series:[{type:'gauge',startAngle:200,endAngle:-20,min:0,max:100,radius:'96%',
-      axisLine:{lineStyle:{width:12,color:[[score/100,col],[1,'rgba(255,255,255,.06)']]}},
-      pointer:{show:false},axisTick:{show:false},splitLine:{show:false},axisLabel:{show:false},
-      detail:{formatter:'{value}%',fontSize:22,fontWeight:800,color:col,offsetCenter:[0,'0%']},
-      data:[{value:score}]
-    }]
-  });
-
-  document.getElementById('readList').innerHTML = checks.map(c => {
-    const icon = c.ok?'✅':c.warn?'⚠️':'❌';
-    const col  = c.ok?'var(--text)':c.warn?'var(--flaky)':'var(--fail)';
-    return `<div class="rc" style="color:${col}"><span style="font-size:15px">${icon}</span><span>${c.label}</span></div>`;
-  }).join('');
-
-  const banner = document.getElementById('readBanner');
-  banner.textContent = allOk ? '✅ READY TO RELEASE' : '❌ NOT READY — Fix issues above before shipping';
-  banner.className   = 'r-banner ' + (allOk ? 'r-ok' : 'r-no');
-}
-
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════
 //  HELPERS
-// ══════════════════════════════════════════════════════════
-function bi(b){return{chrome:'🟠 Chrome',firefox:'🦊 Firefox',safari:'🧭 Safari',all:'🟠🦊🧭'}[b]||b||'–'}
-function di(d){return{desktop:'🖥',iphone:'📱',android:'🤖',ipad:'💻',tablet:'💻',all:'🖥📱💻'}[d]||d||'–'}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function ago(date){
+// ══════════════════════════════════════════════════
+function bi(b){ return {chrome:'🟠 Chrome',firefox:'🦊 Firefox',safari:'🧭 Safari',all:'🟠🦊🧭'}[b]||b||'–' }
+function di(d){ return {desktop:'🖥',iphone:'📱',android:'🤖',ipad:'💻',tablet:'💻',all:'🖥📱💻'}[d]||d||'–' }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function timeAgo(date){
   const s=Math.floor((Date.now()-new Date(date))/1000);
   if(s<60) return s+'s ago';
   if(s<3600) return Math.floor(s/60)+'m ago';
@@ -934,13 +679,9 @@ function ago(date){
   return Math.floor(s/86400)+'d ago';
 }
 
-// ══════════════════════════════════════════════════════════
-//  RESIZE
-// ══════════════════════════════════════════════════════════
 window.addEventListener('resize', () => {
-  [gaugeChart,trendChart,failBarChart,calChart,ganttChart,readChart].forEach(c=>c&&c.resize());
+  [gaugeChart,trendChart].forEach(c=>c&&c.resize());
   Object.values(sparks).forEach(c=>c&&c.resize());
-  Object.values(envDonuts).forEach(c=>c&&c.resize());
 });
 </script>
 </body>
