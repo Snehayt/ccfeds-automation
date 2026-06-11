@@ -49,7 +49,7 @@ on:
           - mobile
           - tablet
       environment:
-        description: 'Target environment'
+        description: 'Target environment (used when no URLs are provided)'
         required: true
         type: choice
         default: 'aem-live'
@@ -61,53 +61,48 @@ on:
         description: 'Locale (us, gb, de, fr, jp, all)'
         required: false
         default: 'us'
-      url:
-        description: 'Custom base URL to run tests against (overrides environment selection). e.g. https://main--milo--adobecom.aem.live'
+      urls:
+        description: |
+          One or more URLs to test against, comma-separated.
+          Overrides the environment dropdown — each URL runs in parallel.
+          Examples:
+            https://main--milo--adobecom.aem.live
+            https://www.adobe.com,https://www.stage.adobe.com
+            https://stage.adobe.com/dc-shared/fragments/drafts/redesign/...
         required: false
         default: ''
       grep:
         description: |
           Filter by tag or test name (leave empty to run all in suite).
           Examples:
-            @feds-lnav-us          → only US locale
-            @feds-lnav-de          → only Germany locale
-            @feds-lnav-jp          → only Japan locale
-            "Sign In"              → only Sign In step tests
-            "Dropdown"             → only dropdown tests
-            @cmp-banner-fr         → CMP banner France
-            @express-lingo-us      → Express Lingo US
-            @feds-lnav             → all feds-lnav tests
+            @feds-lnav-us     → only US locale
+            @feds-lnav-de     → only Germany locale
+            "Sign In"         → only Sign In step tests
+            @cmp-banner-fr    → CMP banner France
         required: false
         default: ''
 
-  # Triggered from Slack #automation-tests channel (anyone in the channel)
-  # Slack Workflow posts: { "event_type": "run-tests", "client_payload": { suite, browser, device, environment, locale, triggered_by } }
+  # Triggered from Slack (repository_dispatch)
   repository_dispatch:
     types: [run-tests]
 
 jobs:
-  run-tests:
+  # ── JOB 1: Resolve config, test path, projects, and URL matrix ─────────────
+  setup:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    outputs:
+      config:      ${{ steps.resolve.outputs.config }}
+      test_path:   ${{ steps.resolve.outputs.test_path }}
+      projects:    ${{ steps.resolve.outputs.projects }}
+      grep_flag:   ${{ steps.resolve.outputs.grep_flag }}
+      urls_matrix: ${{ steps.resolve.outputs.urls_matrix }}
+      suite:       ${{ steps.resolve.outputs.suite }}
+      browser:     ${{ steps.resolve.outputs.browser }}
+      device:      ${{ steps.resolve.outputs.device }}
+      locale:      ${{ steps.resolve.outputs.locale }}
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
-
-      # ── Resolve config + test path from suite input ──────────────────────────
-      - name: Resolve suite config and test path
+      - name: Resolve suite config, test path, and URL matrix
         id: resolve
         run: |
           SUITE="${{ github.event.inputs.suite || github.event.client_payload.suite }}"
@@ -115,86 +110,43 @@ jobs:
           DEVICE="${{ github.event.inputs.device || github.event.client_payload.device }}"
           ENV="${{ github.event.inputs.environment || github.event.client_payload.environment }}"
           GREP="${{ github.event.inputs.grep || github.event.client_payload.grep }}"
+          LOCALE="${{ github.event.inputs.locale || github.event.client_payload.locale }}"
 
-          # ── Grep flag (filter by tag or test name) ───────────────────────────
+          # ── Grep flag ────────────────────────────────────────────────────────
           GREP_FLAG=""
           if [ -n "$GREP" ]; then
             GREP_FLAG="--grep \"$GREP\""
           fi
-          echo "grep_flag=$GREP_FLAG" >> $GITHUB_OUTPUT
 
-          # ── Config auto-detection (no config knowledge needed from user) ────
+          # ── Config auto-detection ─────────────────────────────────────────────
           case "$SUITE" in
-            cc*|express-cc)
-              CONFIG="configs/cc.config.js"
-              ;;
-            *)
-              CONFIG="configs/feds.config.js"
-              ;;
+            cc*|express-cc) CONFIG="configs/cc.config.js" ;;
+            *)              CONFIG="configs/feds.config.js" ;;
           esac
 
-          # ── Test path resolution ─────────────────────────────────────────────
+          # ── Test path resolution ──────────────────────────────────────────────
           case "$SUITE" in
-            all)
-              TEST_PATH=""
-              CONFIG="all"
-              ;;
-            feds)
-              TEST_PATH="tests/feds"
-              ;;
-            feds-lnav)
-              TEST_PATH="tests/feds/feds-lnav"
-              ;;
-            feds-cmp-banner)
-              TEST_PATH="tests/feds/cmp-banner.test.js"
-              ;;
-            feds-header)
-              TEST_PATH="tests/feds/header.test.js"
-              ;;
-            feds-footer)
-              TEST_PATH="tests/feds/footer.test.js"
-              ;;
-            feds-search)
-              TEST_PATH="tests/feds/search.test.js"
-              ;;
-            feds-a11y)
-              TEST_PATH="tests/feds/a11y.test.js"
-              ;;
-            feds-sanity)
-              TEST_PATH="tests/feds/homePageSanity.test.js tests/feds/bacomsanity.test.js"
-              ;;
-            feds-jarvis)
-              TEST_PATH="tests/feds/jarvis.desktop.test.js tests/feds/jarvis.mobile.test.js"
-              ;;
-            cc)
-              TEST_PATH="tests/cc"
-              ;;
-            cc-firefly)
-              TEST_PATH="tests/cc/firefly.test.js"
-              ;;
-            cc-doodlebug)
-              TEST_PATH="tests/cc/doodlebug_prompt_based_imagegen_verbs.test.js tests/cc/doodlebugimageupload.test.js"
-              ;;
-            cc-merch)
-              TEST_PATH="tests/cc/merchcard.test.js tests/cc/merchtable.test.js"
-              ;;
-            cc-lingo)
-              TEST_PATH="tests/cc/lingo.test.js"
-              ;;
-            cc-sanity)
-              TEST_PATH="tests/cc/productionsanity.test.js tests/cc/INTLstagesanity.test.js"
-              ;;
-            express)
-              TEST_PATH="tests/express/lingo.test.js"
-              CONFIG="configs/feds.config.js"
-              ;;
-            cmp)
-              TEST_PATH="tests/cmp/cmp-banner.test.js"
-              CONFIG="configs/feds.config.js"
-              ;;
+            all)              TEST_PATH=""; CONFIG="all" ;;
+            feds)             TEST_PATH="tests/feds" ;;
+            feds-lnav)        TEST_PATH="tests/feds/feds-lnav" ;;
+            feds-cmp-banner)  TEST_PATH="tests/feds/cmp-banner.test.js" ;;
+            feds-header)      TEST_PATH="tests/feds/header.test.js" ;;
+            feds-footer)      TEST_PATH="tests/feds/footer.test.js" ;;
+            feds-search)      TEST_PATH="tests/feds/search.test.js" ;;
+            feds-a11y)        TEST_PATH="tests/feds/a11y.test.js" ;;
+            feds-sanity)      TEST_PATH="tests/feds/homePageSanity.test.js tests/feds/bacomsanity.test.js" ;;
+            feds-jarvis)      TEST_PATH="tests/feds/jarvis.desktop.test.js tests/feds/jarvis.mobile.test.js" ;;
+            cc)               TEST_PATH="tests/cc" ;;
+            cc-firefly)       TEST_PATH="tests/cc/firefly.test.js" ;;
+            cc-doodlebug)     TEST_PATH="tests/cc/doodlebug_prompt_based_imagegen_verbs.test.js tests/cc/doodlebugimageupload.test.js" ;;
+            cc-merch)         TEST_PATH="tests/cc/merchcard.test.js tests/cc/merchtable.test.js" ;;
+            cc-lingo)         TEST_PATH="tests/cc/lingo.test.js" ;;
+            cc-sanity)        TEST_PATH="tests/cc/productionsanity.test.js tests/cc/INTLstagesanity.test.js" ;;
+            express)          TEST_PATH="tests/express/lingo.test.js"; CONFIG="configs/feds.config.js" ;;
+            cmp)              TEST_PATH="tests/cmp/cmp-banner.test.js"; CONFIG="configs/feds.config.js" ;;
           esac
 
-          # ── Project flags — FEDs config project names ─────────────────────
+          # ── Project flags — FEDs ──────────────────────────────────────────────
           if [[ "$CONFIG" == "configs/feds.config.js" ]]; then
             case "$BROWSER-$DEVICE" in
               chrome-desktop)   PROJECTS="--project=feds-chrome" ;;
@@ -216,7 +168,7 @@ jobs:
             esac
           fi
 
-          # ── Project flags — CC config project names ───────────────────────
+          # ── Project flags — CC ────────────────────────────────────────────────
           if [[ "$CONFIG" == "configs/cc.config.js" ]]; then
             case "$BROWSER-$DEVICE" in
               chrome-desktop)   PROJECTS="--project=cc-live-chrome" ;;
@@ -231,112 +183,176 @@ jobs:
             esac
           fi
 
-          # ── Base URL from environment ─────────────────────────────────────
+          # ── Base URL from environment ─────────────────────────────────────────
           case "$ENV" in
-            aem-live)  BASE_URL="https://main--upp--adobecom.aem.live" ;;
-            prod)      BASE_URL="https://www.adobe.com" ;;
-            stage)     BASE_URL="https://www.stage.adobe.com" ;;
+            aem-live) BASE_URL="https://main--upp--adobecom.aem.live" ;;
+            prod)     BASE_URL="https://www.adobe.com" ;;
+            stage)    BASE_URL="https://www.stage.adobe.com" ;;
+            *)        BASE_URL="https://main--upp--adobecom.aem.live" ;;
           esac
 
-          # ── Custom URL overrides environment selection ────────────────────
-          CUSTOM_URL="${{ github.event.inputs.url || github.event.client_payload.url }}"
-          if [ -n "$CUSTOM_URL" ]; then
-            BASE_URL="$CUSTOM_URL"
+          # ── Build URL matrix from urls input (comma-separated) ────────────────
+          URLS_INPUT="${{ github.event.inputs.urls || github.event.client_payload.urls }}"
+          if [ -n "$URLS_INPUT" ]; then
+            # Trim spaces, split on commas, build JSON array
+            URLS_JSON=$(echo "$URLS_INPUT" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' | jq -R . | jq -sc .)
+          else
+            # Single URL from environment selection
+            URLS_JSON=$(jq -nc --arg u "$BASE_URL" '[$u]')
           fi
 
-          echo "config=$CONFIG" >> $GITHUB_OUTPUT
+          echo "config=$CONFIG"       >> $GITHUB_OUTPUT
           echo "test_path=$TEST_PATH" >> $GITHUB_OUTPUT
-          echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
-          echo "base_url=$BASE_URL" >> $GITHUB_OUTPUT
+          echo "projects=$PROJECTS"   >> $GITHUB_OUTPUT
+          echo "grep_flag=$GREP_FLAG" >> $GITHUB_OUTPUT
+          echo "urls_matrix=$URLS_JSON" >> $GITHUB_OUTPUT
+          echo "suite=$SUITE"         >> $GITHUB_OUTPUT
+          echo "browser=$BROWSER"     >> $GITHUB_OUTPUT
+          echo "device=$DEVICE"       >> $GITHUB_OUTPUT
+          echo "locale=$LOCALE"       >> $GITHUB_OUTPUT
 
-      # ── Run FEDs tests ───────────────────────────────────────────────────────
+  # ── JOB 2: Run tests — one parallel job per URL ───────────────────────────
+  run-tests:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        url: ${{ fromJson(needs.setup.outputs.urls_matrix) }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      # ── Run FEDs tests ─────────────────────────────────────────────────────
       - name: Run FEDs tests
-        if: steps.resolve.outputs.config == 'configs/feds.config.js'
+        if: needs.setup.outputs.config == 'configs/feds.config.js'
         run: |
-          npx playwright test ${{ steps.resolve.outputs.test_path }} \
+          npx playwright test ${{ needs.setup.outputs.test_path }} \
             --config=configs/feds.config.js \
-            ${{ steps.resolve.outputs.projects }} \
-            ${{ steps.resolve.outputs.grep_flag }} \
+            ${{ needs.setup.outputs.projects }} \
+            ${{ needs.setup.outputs.grep_flag }} \
             --output=test-results
         env:
-          BASE_URL: ${{ steps.resolve.outputs.base_url }}
-          CI: true
-          SLACK_WH: ${{ secrets.SLACK_WH }}
-          SUITE: ${{ github.event.inputs.suite || github.event.client_payload.suite }}
-          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
-          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          BASE_URL:     ${{ matrix.url }}
+          CI:           true
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
           TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
-      # ── Run CC tests ─────────────────────────────────────────────────────────
+      # ── Run CC tests ───────────────────────────────────────────────────────
       - name: Run CC tests
-        if: steps.resolve.outputs.config == 'configs/cc.config.js'
+        if: needs.setup.outputs.config == 'configs/cc.config.js'
         run: |
-          npx playwright test ${{ steps.resolve.outputs.test_path }} \
+          npx playwright test ${{ needs.setup.outputs.test_path }} \
             --config=configs/cc.config.js \
-            ${{ steps.resolve.outputs.projects }} \
-            ${{ steps.resolve.outputs.grep_flag }} \
+            ${{ needs.setup.outputs.projects }} \
+            ${{ needs.setup.outputs.grep_flag }} \
             --output=test-results
         env:
-          BASE_URL: ${{ steps.resolve.outputs.base_url }}
-          CI: true
-          SLACK_WH: ${{ secrets.SLACK_WH }}
-          SUITE: ${{ github.event.inputs.suite || github.event.client_payload.suite }}
-          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
-          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          BASE_URL:     ${{ matrix.url }}
+          CI:           true
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
           TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
-      # ── Run ALL suites ───────────────────────────────────────────────────────
+      # ── Run ALL suites ─────────────────────────────────────────────────────
       - name: Run all FEDs tests
-        if: steps.resolve.outputs.config == 'all'
-        run: npx playwright test tests/feds --config=configs/feds.config.js
+        if: needs.setup.outputs.config == 'all'
+        run: npx playwright test tests/feds --config=configs/feds.config.js --output=test-results
         env:
-          BASE_URL: ${{ steps.resolve.outputs.base_url }}
-          CI: true
-          SLACK_WH: ${{ secrets.SLACK_WH }}
-          SUITE: all
-          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
-          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          BASE_URL:     ${{ matrix.url }}
+          CI:           true
+          SUITE:        all
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
           TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       - name: Run all CC tests
-        if: steps.resolve.outputs.config == 'all'
-        run: npx playwright test tests/cc --config=configs/cc.config.js
+        if: needs.setup.outputs.config == 'all'
+        run: npx playwright test tests/cc --config=configs/cc.config.js --output=test-results
         env:
-          BASE_URL: ${{ steps.resolve.outputs.base_url }}
-          CI: true
-          SLACK_WH: ${{ secrets.SLACK_WH }}
-          SUITE: all
-          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
-          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          BASE_URL:     ${{ matrix.url }}
+          CI:           true
+          SUITE:        all
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
           TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
-      # ── Parse results ────────────────────────────────────────────────────────
-      - name: Parse test results
+      # ── Upload this URL's results as artifact ──────────────────────────────
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results-${{ strategy.job-index }}
+          path: nala-results.json
+          if-no-files-found: ignore
+
+  # ── JOB 3: Merge results, deploy dashboard, notify Slack ─────────────────
+  merge-deploy:
+    needs: [setup, run-tests]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Download all results artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: results-*
+          merge-multiple: false
+        continue-on-error: true
+
+      - name: Merge results into single nala-results.json
+        run: node scripts/merge-results.js
+        continue-on-error: true
+
+      - name: Parse merged results for Slack
         id: results
         if: always()
         run: |
           if [ -f "nala-results.json" ]; then
-            PASSED=$(node -e "const r=require('./nala-results.json'); console.log(r.results.filter(t=>t.status==='passed').length)")
-            FAILED=$(node -e "const r=require('./nala-results.json'); console.log(r.results.filter(t=>t.status==='failed').length)")
-            TOTAL=$(node -e "const r=require('./nala-results.json'); console.log(r.results.length)")
+            PASSED=$(node -e "const r=require('./nala-results.json'); console.log((r.results||[]).filter(t=>t.status==='passed').length)")
+            FAILED=$(node -e "const r=require('./nala-results.json'); console.log((r.results||[]).filter(t=>t.status==='failed').length)")
+            TOTAL=$(node -e "const r=require('./nala-results.json'); console.log((r.results||[]).length)")
           else
             PASSED=0; FAILED=0; TOTAL=0
           fi
           echo "passed=$PASSED" >> $GITHUB_OUTPUT
           echo "failed=$FAILED" >> $GITHUB_OUTPUT
-          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "total=$TOTAL"   >> $GITHUB_OUTPUT
 
-      # ── Build dashboard ──────────────────────────────────────────────────────
-      - name: Copy results for dashboard
+      - name: Copy merged results to dashboard
         if: always()
-        run: |
-          cp nala-results.json dashboard/nala-results.json 2>/dev/null || true
+        run: cp nala-results.json dashboard/nala-results.json 2>/dev/null || true
 
-      # ── Deploy dashboard to GitHub Pages ────────────────────────────────────
       - name: Deploy dashboard to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
@@ -345,20 +361,19 @@ jobs:
           publish_dir: ./dashboard
           keep_files: false
 
-      # ── Notify Slack private channel ─────────────────────────────────────────
       - name: Notify Slack
         if: always()
         env:
-          SLACK_WH: ${{ secrets.SLACK_WH }}
-          PASSED: ${{ steps.results.outputs.passed }}
-          FAILED: ${{ steps.results.outputs.failed }}
-          TOTAL: ${{ steps.results.outputs.total }}
-          SUITE: ${{ github.event.inputs.suite }}
-          BROWSER: ${{ github.event.inputs.browser }}
-          DEVICE: ${{ github.event.inputs.device }}
-          ENV_NAME: ${{ github.event.inputs.environment }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_WH:      ${{ secrets.SLACK_WH }}
+          PASSED:        ${{ steps.results.outputs.passed }}
+          FAILED:        ${{ steps.results.outputs.failed }}
+          TOTAL:         ${{ steps.results.outputs.total }}
+          SUITE:         ${{ needs.setup.outputs.suite }}
+          BROWSER:       ${{ needs.setup.outputs.browser }}
+          DEVICE:        ${{ needs.setup.outputs.device }}
+          ENV_NAME:      ${{ github.event.inputs.environment }}
+          RUN_URL:       ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           DASHBOARD_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-          TEST_URL: ${{ github.event.inputs.url || steps.resolve.outputs.base_url }}
-          TRIGGERED_BY: ${{ github.actor }}
+          TEST_URL:      ${{ github.event.inputs.urls || github.event.client_payload.urls || needs.setup.outputs.urls_matrix }}
+          TRIGGERED_BY:  ${{ github.actor }}
         run: node scripts/notify-slack.js
