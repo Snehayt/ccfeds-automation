@@ -262,6 +262,10 @@ jobs:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
           CI: true
           SLACK_WH: ${{ secrets.SLACK_WH }}
+          SUITE: ${{ github.event.inputs.suite || github.event.client_payload.suite }}
+          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
+          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Run CC tests ─────────────────────────────────────────────────────────
@@ -277,6 +281,10 @@ jobs:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
           CI: true
           SLACK_WH: ${{ secrets.SLACK_WH }}
+          SUITE: ${{ github.event.inputs.suite || github.event.client_payload.suite }}
+          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
+          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Run ALL suites ───────────────────────────────────────────────────────
@@ -287,6 +295,10 @@ jobs:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
           CI: true
           SLACK_WH: ${{ secrets.SLACK_WH }}
+          SUITE: all
+          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
+          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       - name: Run all CC tests
@@ -296,6 +308,10 @@ jobs:
           BASE_URL: ${{ steps.resolve.outputs.base_url }}
           CI: true
           SLACK_WH: ${{ secrets.SLACK_WH }}
+          SUITE: all
+          DEVICE: ${{ github.event.inputs.device || github.event.client_payload.device }}
+          LOCALE: ${{ github.event.inputs.locale || github.event.client_payload.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Parse results ────────────────────────────────────────────────────────
