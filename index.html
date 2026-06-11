@@ -3,126 +3,186 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>FEDS QA · Observability Platform</title>
+<title>Test Automation Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:rgba(255,255,255,0.08);
-  --accent1:#7c3aed;--accent2:#2563eb;
-  --pass:#10b981;--fail:#ef4444;--flaky:#f59e0b;--skip:#475569;
-  --text:#f1f5f9;--muted:#64748b;--radius:12px;
+  --bg:#07070f;--surface:#0f0f1a;--surface2:#161625;--surface3:#1c1c30;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --accent1:#7c3aed;--accent2:#2563eb;--accent3:#0ea5e9;
+  --pass:#10b981;--pass-bg:rgba(16,185,129,.12);
+  --fail:#ef4444;--fail-bg:rgba(239,68,68,.12);
+  --flaky:#f59e0b;--flaky-bg:rgba(245,158,11,.12);
+  --skip:#475569;--skip-bg:rgba(71,85,105,.12);
+  --text:#f1f5f9;--text2:#cbd5e1;--muted:#64748b;--radius:14px;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:14px;line-height:1.5}
 
 /* ── FILTER BAR ── */
 .filterbar{
   position:sticky;top:0;z-index:200;
-  background:rgba(10,10,15,0.94);backdrop-filter:blur(20px);
+  background:rgba(7,7,15,0.96);backdrop-filter:blur(24px);
   border-bottom:1px solid var(--border);
-  padding:10px 28px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+  padding:10px 32px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;
 }
 .fg{display:flex;align-items:center;gap:5px}
-.fg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-right:2px}
-.pill{padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+.fg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-right:3px}
+.pill{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap}
 .pill:hover{border-color:var(--accent1);color:var(--text)}
-.pill.on{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-color:transparent;color:#fff}
-.fsep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+.pill.on{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-color:transparent;color:#fff;box-shadow:0 2px 12px rgba(124,58,237,.35)}
+.fsep{width:1px;height:24px;background:var(--border);flex-shrink:0}
 
-/* ── HEADER ── */
-.hdr{padding:28px 28px 16px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px}
-.hdr-l h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
-.hdr-l .sub{color:var(--muted);font-size:13px;margin-top:3px}
-.hdr-meta{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
-.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-br{background:rgba(124,58,237,.18);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
-.badge-env{background:rgba(37,99,235,.18);color:#60a5fa;border:1px solid rgba(37,99,235,.3)}
-.badge-url{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.2);max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.live{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--pass)}
-.live::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--pass);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
-.hdr-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.btn{padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
-.btn-g{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff}
-.btn-g:hover{opacity:.85;transform:translateY(-1px)}
-.btn-o{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-o:hover{border-color:var(--accent1);color:#a78bfa}
+/* ── HERO HEADER ── */
+.hero{
+  position:relative;overflow:hidden;
+  padding:36px 32px 28px;
+  background:linear-gradient(135deg,rgba(124,58,237,.08) 0%,rgba(37,99,235,.05) 50%,transparent 100%);
+  border-bottom:1px solid var(--border);
+}
+.hero::before{
+  content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(124,58,237,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.hero-title{font-size:38px;font-weight:900;letter-spacing:-.02em;line-height:1;
+  background:linear-gradient(135deg,#c4b5fd 0%,#93c5fd 50%,#67e8f9 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--muted);font-size:13px;margin-top:4px;font-weight:400}
+.hero-meta{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--pass);background:var(--pass-bg);padding:4px 10px;border-radius:20px;border:1px solid rgba(16,185,129,.2)}
+.live-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--pass);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.6)}}
+.ts{font-size:12px;color:var(--muted)}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.badge-br{background:rgba(124,58,237,.15);color:#c4b5fd;border:1px solid rgba(124,58,237,.25)}
+.badge-env{background:rgba(37,99,235,.15);color:#93c5fd;border:1px solid rgba(37,99,235,.25)}
+.badge-url{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.18);max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:all .18s;letter-spacing:.01em}
+.btn-g{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.btn-g:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.4)}
+.btn-o{background:var(--surface2);border:1px solid var(--border2);color:var(--text2)}
+.btn-o:hover{border-color:var(--accent1);color:#c4b5fd;background:rgba(124,58,237,.08)}
 
 /* ── LAYOUT ── */
-.main{padding:0 28px 48px;display:flex;flex-direction:column;gap:20px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.main{padding:24px 32px 60px;display:flex;flex-direction:column;gap:20px}
+.g2{display:grid;grid-template-columns:340px 1fr;gap:20px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-@media(max-width:1200px){.g5{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:800px){.g2,.g5{grid-template-columns:1fr}}
+@media(max-width:1300px){.g2{grid-template-columns:1fr};.g5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.g4,.g5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.g4,.g5{grid-template-columns:1fr}}
 
 /* ── CARD ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;backdrop-filter:blur(20px);transition:box-shadow .2s}
-.card:hover{box-shadow:0 0 0 1px rgba(124,58,237,.15),0 8px 32px rgba(0,0,0,.45)}
-.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:14px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px;backdrop-filter:blur(20px);transition:box-shadow .2s,border-color .2s;
+  position:relative;overflow:hidden;
+}
+.card:hover{box-shadow:0 0 0 1px rgba(124,58,237,.2),0 12px 40px rgba(0,0,0,.5);border-color:rgba(124,58,237,.15)}
+.card-accent-top{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.ct-icon{font-size:14px}
 
-/* ── KPI ── */
-.kpi-v{font-size:34px;font-weight:800;line-height:1}
-.kpi-lbl{font-size:12px;color:var(--muted);margin-top:3px}
-.spark{height:38px;margin-top:8px}
+/* ── RUN INFO CHIPS ── */
+.run-chips{display:flex;gap:10px;flex-wrap:wrap}
+.chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px;transition:border-color .15s}
+.chip:hover{border-color:var(--border2)}
+.chip-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.chip-value{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:5px}
+.chip-url{font-size:11px;word-break:break-all}
 
-/* ── SCORE ── */
-.score-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
-.score-stats{display:flex;flex-direction:column;gap:12px}
-.ss-v{font-size:20px;font-weight:700}
-.ss-l{font-size:11px;color:var(--muted);margin-top:1px}
+/* ── SCORE CARD ── */
+.score-body{display:flex;flex-direction:column;align-items:center;gap:16px}
+.score-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%}
+.ss{text-align:center;background:var(--surface2);border-radius:10px;padding:10px}
+.ss-v{font-size:18px;font-weight:800}
+.ss-l{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── KPI CARDS ── */
+.kpi-card{position:relative;overflow:hidden}
+.kpi-icon{font-size:24px;margin-bottom:8px;opacity:.8}
+.kpi-v{font-size:36px;font-weight:900;line-height:1;letter-spacing:-.02em}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.kpi-bar{height:3px;border-radius:2px;margin-top:14px;background:var(--surface3);overflow:hidden}
+.kpi-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.kpi-glow{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;filter:blur(30px);opacity:.15;pointer-events:none}
+
+/* ── PASS RATIO BAR ── */
+.ratio-bar{height:8px;border-radius:4px;background:var(--surface3);overflow:hidden;display:flex;margin-top:10px}
+.ratio-pass{background:var(--pass);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.ratio-fail{background:var(--fail)}
+.ratio-flaky{background:var(--flaky)}
 
 /* ── TABLE ── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap}
-.tbl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.tbl th{text-align:left;padding:8px 12px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap;background:rgba(255,255,255,.02)}
+.tbl td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tbody tr:hover td{background:rgba(255,255,255,.025)}
-.expandable{cursor:pointer}
-.err-detail{display:none;background:rgba(239,68,68,.06);border-left:3px solid var(--fail);padding:10px 14px;font-size:11px;color:#fca5a5;font-family:monospace;white-space:pre-wrap}
+.tbl tbody tr.data-row:hover td{background:rgba(255,255,255,.03)}
+.tbl tbody tr.data-row{cursor:default}
+.tbl tbody tr.data-row.has-detail{cursor:pointer}
+.err-detail{display:none;background:rgba(10,10,20,.8);border-left:3px solid var(--fail);padding:12px 16px;font-size:11px;color:#fca5a5;font-family:'Menlo','Monaco',monospace;white-space:pre-wrap;line-height:1.6}
 .err-detail.open{display:block}
 
-/* ── STATUS PILLS ── */
-.sp{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
-.sp-pass{background:rgba(16,185,129,.15);color:var(--pass)}
-.sp-fail{background:rgba(239,68,68,.15);color:var(--fail)}
-.sp-flaky{background:rgba(245,158,11,.15);color:var(--flaky)}
-.sp-skip{background:rgba(71,85,105,.18);color:var(--muted)}
-.loc{padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;background:var(--surface2);color:var(--muted);text-transform:uppercase}
+/* ── STATUS ── */
+.sp{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+.sp-pass{background:var(--pass-bg);color:var(--pass)}
+.sp-fail{background:var(--fail-bg);color:var(--fail)}
+.sp-flaky{background:var(--flaky-bg);color:var(--flaky)}
+.sp-skip{background:var(--skip-bg);color:var(--muted)}
+.sp::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.loc{padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:var(--surface3);color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
 
 /* ── TABS ── */
-.tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
-.tab{padding:5px 13px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .15s}
-.tab.on{background:var(--surface2);color:var(--text);border-color:rgba(124,58,237,.35)}
-.tab:hover{color:var(--text)}
+.tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:12px}
+.tab{padding:5px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);transition:all .15s}
+.tab.on{background:var(--surface2);color:var(--text);border-color:rgba(124,58,237,.3);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:16px;padding:0 4px;border-radius:10px;font-size:9px;font-weight:800;margin-left:4px;background:var(--surface3)}
+.tab.on .tab-count{background:rgba(124,58,237,.3);color:#c4b5fd}
 
 /* ── FLAKY BAR ── */
-.fb-bg{height:6px;border-radius:3px;background:var(--surface2);overflow:hidden;flex:1}
-.fb-fill{height:100%;border-radius:3px;background:var(--flaky)}
+.fb-bg{height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;flex:1}
+.fb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--flaky),#fb923c)}
 
 /* ── SCROLLABLE ── */
-.scr{overflow-y:auto;max-height:400px}
+.scr{overflow-y:auto;max-height:420px}
 .scr::-webkit-scrollbar{width:4px}
 .scr::-webkit-scrollbar-track{background:transparent}
-.scr::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.scr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
 
-/* ── EMPTY STATE ── */
-.empty{text-align:center;padding:32px;color:var(--muted);font-size:13px}
-.empty-icon{font-size:32px;margin-bottom:8px}
+/* ── SECTION HEADERS ── */
+.section-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.section-hdr .ct{margin-bottom:0}
 
-/* ── RUN INFO ── */
-.run-info{display:flex;gap:12px;flex-wrap:wrap}
-.run-chip{background:var(--surface2);border-radius:8px;padding:10px 14px;min-width:100px}
-.run-chip-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
-.run-chip-value{font-size:13px;font-weight:600}
+/* ── FAIL CARD ── */
+.fail-card{background:var(--surface2);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.fail-card:hover{border-color:rgba(239,68,68,.3)}
+.fail-card:last-child{margin-bottom:0}
+.fail-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+.fail-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fail-err{display:none;margin-top:10px;padding:10px;background:rgba(239,68,68,.06);border-radius:6px;font-size:11px;color:#fca5a5;font-family:monospace;white-space:pre-wrap;line-height:1.5}
+.fail-err.open{display:block}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:.5}
+.empty-text{font-size:13px}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:4px 0}
 </style>
 </head>
 <body>
 
-<!-- ══ FILTER BAR ══ -->
+<!-- FILTER BAR -->
 <nav class="filterbar">
   <div class="fg">
     <span class="fg-label">Browser</span>
@@ -160,64 +220,114 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
 </nav>
 
-<!-- ══ 1. HEADER ══ -->
-<header class="hdr">
-  <div class="hdr-l">
-    <h1>FEDS QA</h1>
-    <div class="sub">Observability Platform</div>
-    <div class="hdr-meta">
-      <span class="live">Live</span>
-      <span id="lastTs" style="font-size:12px;color:var(--muted)"></span>
-      <span class="badge badge-br" id="branchBadge">⎇ –</span>
-      <span class="badge badge-env" id="envBadge">–</span>
-      <span class="badge badge-url" id="urlBadge" style="display:none"></span>
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-title">Test Automation</div>
+      <div class="hero-sub">QA Observability Dashboard</div>
+      <div class="hero-meta">
+        <span class="live-dot">Live</span>
+        <span class="ts" id="lastTs"></span>
+        <span class="badge badge-br" id="branchBadge">⎇ –</span>
+        <span class="badge badge-env" id="envBadge"></span>
+        <span class="badge badge-url" id="urlBadge" style="display:none"></span>
+      </div>
     </div>
-  </div>
-  <div class="hdr-r">
-    <a class="btn btn-g" href="https://github.com/Snehayt/ccfeds-automation/actions/workflows/run-tests.yml" target="_blank">▶ Run Tests</a>
-    <a class="btn btn-o" href="https://adobe.slack.com/app_redirect?channel=automation-test-x" target="_blank">💬 Slack</a>
+    <div class="hero-actions">
+      <a class="btn btn-g" href="https://github.com/Snehayt/ccfeds-automation/actions/workflows/run-tests.yml" target="_blank">▶ Run Tests</a>
+      <a class="btn btn-o" href="https://adobe.slack.com/app_redirect?channel=automation-test-x" target="_blank">💬 Slack</a>
+    </div>
   </div>
 </header>
 
 <main class="main">
 
-<!-- ══ RUN DETAILS ══ -->
+<!-- RUN DETAILS -->
 <div class="card">
-  <div class="ct">Last Run Details</div>
-  <div class="run-info" id="runInfo"></div>
+  <div class="card-accent-top"></div>
+  <div class="ct"><span class="ct-icon">📋</span> Last Run Details</div>
+  <div class="run-chips" id="runInfo"></div>
 </div>
 
-<!-- ══ 2. SCORE + KPI ══ -->
+<!-- SCORE + KPI -->
 <div class="g2">
-  <div class="card">
-    <div class="ct">Quality Health Score</div>
-    <div class="score-wrap">
-      <div id="gaugeChart" style="width:180px;height:160px;flex-shrink:0"></div>
+  <!-- Score -->
+  <div class="card score-card">
+    <div class="ct"><span class="ct-icon">🎯</span> Health Score</div>
+    <div class="score-body">
+      <div id="gaugeChart" style="width:100%;height:170px"></div>
       <div class="score-stats">
-        <div><div class="ss-v" id="sPassRate" style="color:var(--pass)">–</div><div class="ss-l">Pass Rate</div></div>
-        <div><div class="ss-v" id="sFlakyRate" style="color:var(--flaky)">–</div><div class="ss-l">Flaky Rate</div></div>
-        <div><div class="ss-v" id="sAvgDur" style="color:#60a5fa">–</div><div class="ss-l">Avg Duration</div></div>
+        <div class="ss"><div class="ss-v" id="sPassRate" style="color:var(--pass)">–</div><div class="ss-l">Pass Rate</div></div>
+        <div class="ss"><div class="ss-v" id="sFlakyRate" style="color:var(--flaky)">–</div><div class="ss-l">Flaky Rate</div></div>
+        <div class="ss"><div class="ss-v" id="sAvgDur" style="color:var(--accent3)">–</div><div class="ss-l">Avg Time</div></div>
       </div>
     </div>
   </div>
-  <div class="g5">
-    <div class="card"><div class="ct">Total Tests</div><div class="kpi-v" id="kTotal">–</div><div class="spark" id="spTotal"></div></div>
-    <div class="card"><div class="ct">Passed</div><div class="kpi-v" id="kPassed" style="color:var(--pass)">–</div><div class="spark" id="spPass"></div></div>
-    <div class="card"><div class="ct">Failed</div><div class="kpi-v" id="kFailed" style="color:var(--fail)">–</div></div>
-    <div class="card"><div class="ct">Flaky</div><div class="kpi-v" id="kFlaky" style="color:var(--flaky)">–</div></div>
-    <div class="card"><div class="ct">Pass Rate</div><div class="kpi-v" id="kPassRate" style="font-size:24px;color:var(--pass)">–</div></div>
+
+  <!-- KPIs -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div class="g4">
+      <div class="card kpi-card">
+        <div class="kpi-glow" style="background:#7c3aed"></div>
+        <div class="kpi-icon">🧪</div>
+        <div class="kpi-v" id="kTotal" style="color:var(--text)">–</div>
+        <div class="kpi-lbl">Total Tests</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-glow" style="background:#10b981"></div>
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-v" id="kPassed" style="color:var(--pass)">–</div>
+        <div class="kpi-lbl">Passed</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-glow" style="background:#ef4444"></div>
+        <div class="kpi-icon">❌</div>
+        <div class="kpi-v" id="kFailed" style="color:var(--fail)">–</div>
+        <div class="kpi-lbl">Failed</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-glow" style="background:#f59e0b"></div>
+        <div class="kpi-icon">⚡</div>
+        <div class="kpi-v" id="kFlaky" style="color:var(--flaky)">–</div>
+        <div class="kpi-lbl">Flaky</div>
+      </div>
+    </div>
+    <!-- Pass Rate + Ratio Bar -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Pass Rate</div>
+          <div style="font-size:40px;font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-top:4px" id="kPassRate">–</div>
+        </div>
+        <div id="donutChart" style="width:110px;height:110px;flex-shrink:0"></div>
+      </div>
+      <div class="ratio-bar">
+        <div class="ratio-pass" id="ratioPass" style="width:0%"></div>
+        <div class="ratio-flaky" id="ratioFlaky" style="width:0%"></div>
+        <div class="ratio-fail" id="ratioFail" style="width:0%"></div>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:8px">
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:8px;height:8px;border-radius:50%;background:var(--pass);display:inline-block"></span>Passed</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:8px;height:8px;border-radius:50%;background:var(--flaky);display:inline-block"></span>Flaky</div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:8px;height:8px;border-radius:50%;background:var(--fail);display:inline-block"></span>Failed</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ══ 3. LIVE EXECUTION MONITOR ══ -->
+<!-- TEST RESULTS -->
 <div class="card">
-  <div class="ct">Test Results</div>
+  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--accent2),var(--accent3))"></div>
+  <div class="section-hdr">
+    <div class="ct" style="margin-bottom:0"><span class="ct-icon">📊</span> Test Results</div>
+  </div>
   <div class="tabs" id="execTabs">
-    <button class="tab on" data-ef="all">All</button>
-    <button class="tab" data-ef="passed">Passed</button>
-    <button class="tab" data-ef="failed">Failed</button>
-    <button class="tab" data-ef="flaky">Flaky</button>
-    <button class="tab" data-ef="skipped">Skipped</button>
+    <button class="tab on" data-ef="all">All <span class="tab-count" id="tc-all">0</span></button>
+    <button class="tab" data-ef="passed">Passed <span class="tab-count" id="tc-passed" style="color:var(--pass)">0</span></button>
+    <button class="tab" data-ef="failed">Failed <span class="tab-count" id="tc-failed" style="color:var(--fail)">0</span></button>
+    <button class="tab" data-ef="flaky">Flaky <span class="tab-count" id="tc-flaky" style="color:var(--flaky)">0</span></button>
+    <button class="tab" data-ef="skipped">Skipped <span class="tab-count" id="tc-skipped">0</span></button>
   </div>
   <div class="scr">
     <table class="tbl">
@@ -229,41 +339,37 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
 </div>
 
-<!-- ══ 4. TREND ══ -->
+<!-- TREND + FAILURES side by side when both exist -->
 <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-    <div class="ct" style="margin-bottom:0">Pass / Fail Trend</div>
-    <div class="tabs" id="trendTabs" style="margin-bottom:0">
+  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--pass),var(--accent3))"></div>
+  <div class="section-hdr">
+    <div class="ct" style="margin-bottom:0"><span class="ct-icon">📈</span> Pass / Fail Trend</div>
+    <div class="tabs" id="trendTabs" style="margin-bottom:0;border-bottom:none;padding-bottom:0">
       <button class="tab on" data-td="7">7d</button>
       <button class="tab" data-td="14">14d</button>
       <button class="tab" data-td="30">30d</button>
     </div>
   </div>
-  <div id="trendChart" style="height:240px"></div>
+  <div id="trendChart" style="height:220px"></div>
 </div>
 
-<!-- ══ 5. FAILURES (hidden when no failures) ══ -->
+<!-- FAILURES -->
 <div class="card" id="failSection" style="display:none">
-  <div class="ct">Top Failures</div>
-  <div class="scr">
-    <table class="tbl">
-      <thead><tr><th>Test Name</th><th>Browser</th><th>Device</th><th>Locale</th><th>Error</th></tr></thead>
-      <tbody id="failBody"></tbody>
-    </table>
-  </div>
+  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--fail),#fb923c)"></div>
+  <div class="ct"><span class="ct-icon">🔥</span> Top Failures</div>
+  <div id="failBody"></div>
 </div>
 
-<!-- ══ 6. FLAKY LEADERBOARD (hidden when no flaky) ══ -->
+<!-- FLAKY -->
 <div class="card" id="flakySection" style="display:none">
-  <div class="ct">Flaky Tests</div>
+  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--flaky),#fb923c)"></div>
+  <div class="ct"><span class="ct-icon">⚡</span> Flaky Tests</div>
   <div class="scr">
     <table class="tbl" id="flakyTable">
       <thead><tr>
-        <th data-s="name">Test ↕</th>
-        <th data-s="pct">Flaky % ↕</th>
-        <th>Browser</th>
-        <th>Device</th>
-        <th>Locale</th>
+        <th data-s="name" style="cursor:pointer">Test ↕</th>
+        <th data-s="pct" style="cursor:pointer">Flaky % ↕</th>
+        <th>Browser</th><th>Device</th><th>Locale</th>
       </tr></thead>
       <tbody id="flakyBody"></tbody>
     </table>
@@ -275,423 +381,367 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <script>
 'use strict';
 
-// ══════════════════════════════════════════════════
-//  MOCK DATA — used only when nala-results.json
-//  is not found. Shows realistic test data.
-// ══════════════════════════════════════════════════
+// ── MOCK DATA ────────────────────────────────────────
 function buildMock() {
   const steps = [
-    'Page load — check HTTP status',
-    'Nav structure — nav wrapper, Adobe logo, nav list visible',
-    'Nav links — every link inside nav has a valid href',
-    'CTAs — primary and secondary visible, have href',
-    'App switcher — click opens modal with app links',
-    'Sign In — button visible and clickable',
-    'Dropdown — PDF & Productivity opens, links have href',
-    'Breadcrumbs — links visible and have valid href',
-    'Nav height — nav.localnav renders with non-zero height',
-    'Accessibility — axe-core WCAG 2.1 AA scan on nav',
+    'Page load — check HTTP status','Nav structure — nav wrapper, Adobe logo, nav list visible',
+    'Nav links — every link inside nav has a valid href','CTAs — primary and secondary visible, have href',
+    'App switcher — click opens modal with app links','Sign In — button visible and clickable',
+    'Dropdown — PDF & Productivity opens, links have href','Breadcrumbs — links visible and have valid href',
+    'Nav height — nav.localnav renders with non-zero height','Accessibility — axe-core WCAG 2.1 AA scan on nav',
     'Analytics — daa-ll on all nav elements',
   ];
   const browsers = ['chrome','chrome','chrome','firefox','safari'];
   const devices  = ['desktop','desktop','desktop','iphone','android'];
   const locales  = ['us','gb','de','fr','jp'];
   const errors   = [
-    'Error: locator [data-id="sign-in"] not found after 10000ms\nIMS endpoint unreachable in CI',
-    'Error: expected .feds-popup to be visible, got display:none\nFirefox: aria-expanded toggled but panel hidden',
+    'Error: locator [data-id="sign-in"] not found after 10000ms',
+    'Error: expected .feds-popup to be visible, got display:none',
     'Error: boundingBox() returned null — element not attached',
   ];
   const rows = [];
   for (let i = 0; i < 120; i++) {
     const r = Math.random();
     const status = r < 0.915 ? 'passed' : r < 0.972 ? 'failed' : 'flaky';
-    rows.push({
-      id: i+1,
-      name: steps[i % steps.length] + ' | ' + locales[i % locales.length].toUpperCase(),
-      suite: 'feds-lnav',
-      browser: browsers[i % browsers.length],
-      device: devices[i % devices.length],
-      locale: locales[i % locales.length],
-      status,
-      duration: 4000 + Math.random() * 16000,
-      errorMessage: status === 'failed' ? errors[i % errors.length] : null,
-    });
+    rows.push({ id:i+1, name:steps[i%steps.length]+' | '+locales[i%locales.length].toUpperCase(),
+      suite:'feds-lnav', browser:browsers[i%browsers.length], device:devices[i%devices.length],
+      locale:locales[i%locales.length], status, duration:4000+Math.random()*16000,
+      errorMessage: status==='failed' ? errors[i%errors.length] : null });
   }
-  return {
-    gitBranch: 'feds-lnav',
-    gitRepo: 'ccfeds-automation',
-    timestamp: new Date(Date.now() - 9*60000).toISOString(),
-    suite: 'feds-lnav',
-    browser: 'chrome',
-    device: 'desktop',
-    locale: 'us',
-    environment: 'aem-live',
-    baseURL: 'https://main--upp--adobecom.aem.live',
-    triggeredBy: 'Snehayt',
-    runUrl: 'https://github.com/Snehayt/ccfeds-automation/actions',
-    results: rows,
-  };
+  return { gitBranch:'feds-lnav', gitRepo:'ccfeds-automation',
+    timestamp:new Date(Date.now()-9*60000).toISOString(), suite:'feds-lnav',
+    browser:'chrome', device:'desktop', locale:'us', environment:'aem-live',
+    baseURL:'https://main--upp--adobecom.aem.live', triggeredBy:'Snehayt',
+    runUrl:'https://github.com/Snehayt/ccfeds-automation/actions', results:rows };
 }
 
-// ══════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════
 let DATA = buildMock();
 const F = { browser:'all', device:'all', status:'all', locale:'all' };
-let execFilter = 'all';
-let flakySortCol = 'pct', flakySortDir = -1;
+let execFilter = 'all', flakySortCol = 'pct', flakySortDir = -1;
 
-// ══════════════════════════════════════════════════
-//  FILTER BAR
-// ══════════════════════════════════════════════════
+// ── FILTERS ──────────────────────────────────────────
 document.querySelectorAll('.pill').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll(`[data-g="${btn.dataset.g}"]`).forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    F[btn.dataset.g] = btn.dataset.v;
-    renderAll();
+    btn.classList.add('on'); F[btn.dataset.g] = btn.dataset.v; renderAll();
   });
 });
-
 function filtered() {
-  return (DATA.results || []).filter(r => {
-    if (F.browser !== 'all' && r.browser !== F.browser) return false;
-    if (F.device  !== 'all' && r.device  !== F.device)  return false;
-    if (F.status  !== 'all' && r.status  !== F.status)  return false;
-    if (F.locale  !== 'all' && r.locale  !== F.locale)  return false;
+  return (DATA.results||[]).filter(r => {
+    if (F.browser!=='all' && r.browser!==F.browser) return false;
+    if (F.device !=='all' && r.device !==F.device)  return false;
+    if (F.status !=='all' && r.status !==F.status)  return false;
+    if (F.locale !=='all' && r.locale !==F.locale)  return false;
     return true;
   });
 }
 
-// ══════════════════════════════════════════════════
-//  LOAD DATA
-// ══════════════════════════════════════════════════
+// ── LOAD DATA ─────────────────────────────────────────
 fetch('./nala-results.json')
   .then(r => { if (!r.ok) throw 0; return r.json(); })
   .then(json => {
     DATA = json;
-    // Derive missing top-level fields from individual test results
-    const first = (DATA.results || [])[0];
+    const first = (DATA.results||[])[0];
     if (first) {
       if (!DATA.browser)     DATA.browser     = first.browser;
-      if (!DATA.environment) DATA.environment = first.env === 'live' ? 'aem-live' : (first.env || 'aem-live');
+      if (!DATA.environment) DATA.environment = first.env==='live' ? 'aem-live' : (first.env||'aem-live');
       if (!DATA.baseURL)     DATA.baseURL     = first.url;
     }
     renderAll();
   })
   .catch(() => renderAll());
 
-// ══════════════════════════════════════════════════
-//  RENDER ALL
-// ══════════════════════════════════════════════════
+// ── RENDER ALL ────────────────────────────────────────
 function renderAll() {
   const rows = filtered();
-  renderHeader();
-  renderRunInfo();
-  renderScore(rows);
-  renderKPI(rows);
-  renderExec(rows, execFilter);
-  renderTrend(7);
-  renderFailures(rows);
-  renderFlaky(rows);
+  renderHeader(); renderRunInfo(); renderScore(rows);
+  renderKPI(rows); renderExec(rows, execFilter);
+  renderTrend(7); renderFailures(rows); renderFlaky(rows);
 }
 
-// ── 1. HEADER ────────────────────────────────────
+// ── HEADER ────────────────────────────────────────────
 function renderHeader() {
   const ts = DATA.timestamp ? new Date(DATA.timestamp) : new Date();
-  document.getElementById('lastTs').textContent = 'Last run: ' + timeAgo(ts);
-  document.getElementById('branchBadge').textContent = '⎇ ' + (DATA.gitBranch || '–');
-
+  document.getElementById('lastTs').textContent = timeAgo(ts);
+  document.getElementById('branchBadge').textContent = '⎇ ' + (DATA.gitBranch||'–');
   const env = DATA.environment || DATA.suite || '–';
   document.getElementById('envBadge').textContent = env;
-
   const urlBadge = document.getElementById('urlBadge');
-  if (DATA.baseURL) {
-    urlBadge.textContent = '🔗 ' + DATA.baseURL;
-    urlBadge.style.display = 'inline-flex';
-  } else {
-    urlBadge.style.display = 'none';
-  }
+  if (DATA.baseURL) { urlBadge.textContent='🔗 '+DATA.baseURL; urlBadge.style.display='inline-flex'; }
+  else urlBadge.style.display='none';
 }
 
-// ── RUN INFO ─────────────────────────────────────
+// ── RUN INFO ──────────────────────────────────────────
 function renderRunInfo() {
   const fields = [
-    { label:'Suite',       value: DATA.suite       || DATA.gitBranch || '–' },
-    { label:'Browser',     value: DATA.browser     ? bi(DATA.browser)  : '–' },
-    { label:'Device',      value: DATA.device      ? di(DATA.device)   : '–' },
-    { label:'Locale',      value: (DATA.locale     || '–').toUpperCase() },
-    { label:'Environment', value: DATA.environment || '–' },
-    { label:'URL',         value: DATA.baseURL     || '–' },
-    { label:'Triggered by',value: DATA.triggeredBy || '–' },
+    { label:'Suite',        icon:'🗂', value: DATA.suite||DATA.gitBranch||'–' },
+    { label:'Browser',      icon:'🌐', value: DATA.browser ? bi(DATA.browser) : '–' },
+    { label:'Device',       icon:'📱', value: DATA.device  ? di2(DATA.device) : '–' },
+    { label:'Locale',       icon:'🌍', value: (DATA.locale||'–').toUpperCase() },
+    { label:'Environment',  icon:'🌿', value: DATA.environment||'–' },
+    { label:'URL',          icon:'🔗', value: DATA.baseURL||'–', small: true },
+    { label:'Triggered By', icon:'👤', value: DATA.triggeredBy||'–' },
   ];
-  document.getElementById('runInfo').innerHTML = fields.map(f => `
-    <div class="run-chip">
-      <div class="run-chip-label">${f.label}</div>
-      <div class="run-chip-value" style="font-size:${f.label==='URL'?'11px':'13px'}">${esc(f.value)}</div>
+  document.getElementById('runInfo').innerHTML = fields.map(f=>`
+    <div class="chip">
+      <div class="chip-label">${f.icon} ${f.label}</div>
+      <div class="chip-value ${f.small?'chip-url':''}">${esc(f.value)}</div>
     </div>`).join('');
 }
 
-// ── 2. SCORE ─────────────────────────────────────
+// ── SCORE ─────────────────────────────────────────────
 let gaugeChart;
 function renderScore(rows) {
-  const total  = rows.length || 1;
-  const passed = rows.filter(r => r.status === 'passed').length;
-  const flaky  = rows.filter(r => r.status === 'flaky').length;
-  const pr = passed / total, fr = flaky / total;
-  const score = Math.round((pr*0.5 + (1-fr)*0.3 + 0.2) * 100);
-  const col = score >= 85 ? '#10b981' : score >= 70 ? '#f59e0b' : '#ef4444';
-
+  const total  = rows.length||1;
+  const passed = rows.filter(r=>r.status==='passed').length;
+  const flaky  = rows.filter(r=>r.status==='flaky').length;
+  const pr=passed/total, fr=flaky/total;
+  const score = Math.round((pr*.5+(1-fr)*.3+.2)*100);
+  const col = score>=85?'#10b981':score>=70?'#f59e0b':'#ef4444';
   document.getElementById('sPassRate').textContent  = (pr*100).toFixed(1)+'%';
   document.getElementById('sFlakyRate').textContent = (fr*100).toFixed(1)+'%';
-  const avgMs = rows.reduce((a,r) => a+(r.duration||0), 0) / total;
+  const avgMs = rows.reduce((a,r)=>a+(r.duration||0),0)/total;
   document.getElementById('sAvgDur').textContent    = (avgMs/1000).toFixed(1)+'s';
-
   gaugeChart = gaugeChart || echarts.init(document.getElementById('gaugeChart'));
   gaugeChart.setOption({
     backgroundColor:'transparent',
-    series:[{ type:'gauge', startAngle:210, endAngle:-30, min:0, max:100,
-      radius:'90%', center:['50%','58%'],
-      axisLine:{ lineStyle:{ width:14, color:[[score/100,col],[1,'rgba(255,255,255,0.06)']] }},
-      pointer:{ itemStyle:{ color:col }, length:'58%', width:4 },
+    series:[{ type:'gauge', startAngle:200, endAngle:-20, min:0, max:100,
+      radius:'88%', center:['50%','55%'],
+      axisLine:{ lineStyle:{ width:16, color:[[score/100,col],[1,'rgba(255,255,255,.05)']] }},
+      pointer:{ itemStyle:{ color:col }, length:'55%', width:5 },
       axisTick:{show:false}, splitLine:{show:false}, axisLabel:{show:false},
-      detail:{ formatter:'{value}', fontSize:30, fontWeight:800, color:col, offsetCenter:[0,'22%'] },
-      data:[{ value:score }]
+      title:{ show:true, offsetCenter:[0,'75%'], color:col, fontSize:10, fontWeight:700 },
+      detail:{ formatter:'{value}', fontSize:34, fontWeight:900, color:col, offsetCenter:[0,'18%'],
+        rich:{ a:{ fontSize:14, color:col, fontWeight:600 } } },
+      data:[{ value:score, name:'SCORE' }]
     }]
   });
 }
 
-// ── 3. KPI ───────────────────────────────────────
-const sparks = {};
+// ── KPI ───────────────────────────────────────────────
+let donutChart;
 function renderKPI(rows) {
   const total  = rows.length;
-  const passed = rows.filter(r => r.status === 'passed').length;
-  const failed = rows.filter(r => r.status === 'failed').length;
-  const flaky  = rows.filter(r => r.status === 'flaky').length;
+  const passed = rows.filter(r=>r.status==='passed').length;
+  const failed = rows.filter(r=>r.status==='failed').length;
+  const flaky  = rows.filter(r=>r.status==='flaky').length;
   const pr     = total ? (passed/total*100).toFixed(1) : '0';
-
   document.getElementById('kTotal').textContent    = total;
   document.getElementById('kPassed').textContent   = passed;
   document.getElementById('kFailed').textContent   = failed;
   document.getElementById('kFlaky').textContent    = flaky;
-  document.getElementById('kPassRate').textContent = pr + '%';
-
-  mkSpark('spTotal', [total*0.88, total*0.91, total*0.94, total*0.97, total], '#7c3aed');
-  mkSpark('spPass',  [passed*0.88, passed*0.92, passed*0.95, passed*0.98, passed], '#10b981');
-}
-
-function mkSpark(id, data, color) {
-  sparks[id] = sparks[id] || echarts.init(document.getElementById(id));
-  sparks[id].setOption({
+  const kpr = document.getElementById('kPassRate');
+  kpr.textContent = pr+'%';
+  kpr.style.color = +pr>=85?'var(--pass)':+pr>=70?'var(--flaky)':'var(--fail)';
+  // Ratio bar
+  if (total) {
+    document.getElementById('ratioPass').style.width  = (passed/total*100).toFixed(1)+'%';
+    document.getElementById('ratioFlaky').style.width = (flaky/total*100).toFixed(1)+'%';
+    document.getElementById('ratioFail').style.width  = (failed/total*100).toFixed(1)+'%';
+  }
+  // Donut
+  donutChart = donutChart || echarts.init(document.getElementById('donutChart'));
+  const skipped = total - passed - failed - flaky;
+  donutChart.setOption({
     backgroundColor:'transparent',
-    grid:{top:2,bottom:2,left:2,right:2},
-    xAxis:{type:'category',show:false},
-    yAxis:{type:'value',show:false,min:'dataMin'},
-    series:[{ type:'line', data, smooth:true, symbol:'none',
-      lineStyle:{color,width:2},
-      areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'55'},{offset:1,color:'transparent'}]}}
+    tooltip:{ show:false },
+    series:[{ type:'pie', radius:['55%','85%'], center:['50%','50%'],
+      data:[
+        { value:passed, name:'Passed', itemStyle:{ color:'#10b981' } },
+        { value:failed, name:'Failed', itemStyle:{ color:'#ef4444' } },
+        { value:flaky,  name:'Flaky',  itemStyle:{ color:'#f59e0b' } },
+        ...(skipped>0?[{ value:skipped, name:'Skipped', itemStyle:{ color:'#475569' } }]:[]),
+      ],
+      label:{show:false}, labelLine:{show:false},
+      itemStyle:{ borderRadius:3, borderColor:'rgba(0,0,0,0)', borderWidth:2 },
+      emphasis:{ scale:false }
     }]
   });
+  // Tab counts
+  document.getElementById('tc-all').textContent     = total;
+  document.getElementById('tc-passed').textContent  = passed;
+  document.getElementById('tc-failed').textContent  = failed;
+  document.getElementById('tc-flaky').textContent   = flaky;
+  document.getElementById('tc-skipped').textContent = skipped>0?skipped:0;
 }
 
-// ── 4. EXEC TABLE ────────────────────────────────
+// ── EXEC TABLE ────────────────────────────────────────
 function renderExec(rows, filter) {
   execFilter = filter;
-  const list = filter === 'all' ? rows : rows.filter(r => r.status === filter);
+  const list = filter==='all' ? rows : rows.filter(r=>r.status===filter);
   const tbody = document.getElementById('execBody');
-  tbody.innerHTML = '';
-
-  if (list.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-icon">✅</div>No ${filter} tests</div></td></tr>`;
+  tbody.innerHTML='';
+  if (list.length===0) {
+    tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">No ${filter} tests</div></div></td></tr>`;
     return;
   }
-
-  list.slice(0, 100).forEach(r => {
-    const statusPill = `<span class="sp sp-${r.status==='passed'?'pass':r.status==='failed'?'fail':r.status==='flaky'?'flaky':'skip'}">${r.status}</span>`;
-    const warns = (r.stdout||[]).filter(s => /warn|error/i.test(String(s)));
-    const hasDetail = r.errorMessage || r.errorStack || warns.length || (r.stderr||[]).length;
+  list.slice(0,100).forEach(r => {
+    const sp = r.status==='passed'?'pass':r.status==='failed'?'fail':r.status==='flaky'?'flaky':'skip';
+    const warns = (r.stdout||[]).filter(s=>/warn|error/i.test(String(s)));
+    const hasDetail = r.errorMessage||r.errorStack||warns.length||(r.stderr||[]).length;
+    const statusDot = `<span class="sp sp-${sp}">${r.status}</span>`;
     const tr = document.createElement('tr');
-    if (hasDetail) tr.classList.add('expandable');
-    tr.innerHTML = `
+    tr.className = 'data-row'+(hasDetail?' has-detail':'');
+    tr.style.cssText = r.status==='failed'?'background:rgba(239,68,68,.03)':r.status==='flaky'?'background:rgba(245,158,11,.02)':'';
+    tr.innerHTML=`
       <td>
-        <div style="font-size:12px">${esc(r.name || r.suite || '–')}</div>
-        ${r.url ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${esc(r.url)}</div>` : ''}
+        <div style="font-weight:500;font-size:12px;color:var(--text)">${esc(r.name||r.suite||'–')}</div>
+        ${r.url?`<div style="font-size:10px;color:var(--muted);margin-top:2px;opacity:.7">${esc(r.url)}</div>`:''}
       </td>
-      <td>${bi(r.browser)}</td>
+      <td style="white-space:nowrap">${bi(r.browser)}</td>
       <td>${di(r.device)}</td>
       <td><span class="loc">${r.locale||r.tags?.[0]||'–'}</span></td>
-      <td>${statusPill}${r.retry>0?` <span style="font-size:10px;color:var(--flaky)">retry ${r.retry}</span>`:''}</td>
-      <td style="color:var(--muted)">${((r.duration||0)/1000).toFixed(1)}s</td>`;
+      <td>${statusDot}${r.retry>0?` <span style="font-size:9px;color:var(--flaky);font-weight:700;margin-left:4px">↺${r.retry}</span>`:''}</td>
+      <td style="color:var(--muted);font-weight:500">${((r.duration||0)/1000).toFixed(1)}s</td>`;
     tbody.appendChild(tr);
-
     if (hasDetail) {
       const etr = document.createElement('tr');
-      let detail = '';
-      if (r.errorMessage) detail += `<div style="color:#fca5a5;font-weight:600;margin-bottom:6px">❌ ${esc(r.errorMessage)}</div>`;
-      if (r.errorStack)   detail += `<div style="color:#94a3b8;font-size:10px;margin-bottom:6px">${esc(r.errorStack)}</div>`;
-      if (warns.length)   detail += `<div style="color:#f59e0b;margin-top:6px">⚠️ Warnings:<br>${warns.map(w=>esc(String(w))).join('<br>')}</div>`;
-      if ((r.stderr||[]).length) detail += `<div style="color:#f97316;margin-top:6px">stderr:<br>${r.stderr.map(s=>esc(String(s))).join('<br>')}</div>`;
-      if (DATA.runUrl)    detail += `<div style="margin-top:10px"><a href="${esc(DATA.runUrl)}" target="_blank" style="color:#60a5fa;font-size:11px">📎 View screenshots &amp; videos in GitHub Actions artifacts →</a></div>`;
-      etr.innerHTML = `<td colspan="6" style="padding:0"><div class="err-detail">${detail}</div></td>`;
+      let det='';
+      if (r.errorMessage) det+=`<div style="color:#fca5a5;font-weight:700;margin-bottom:8px;font-size:12px">❌ ${esc(r.errorMessage)}</div>`;
+      if (r.errorStack)   det+=`<div style="color:#94a3b8;font-size:10px;line-height:1.7;margin-bottom:8px">${esc(r.errorStack)}</div>`;
+      if (warns.length)   det+=`<div style="color:var(--flaky);margin-top:6px;font-size:11px">⚠️ Warnings:<br>${warns.map(w=>esc(String(w))).join('<br>')}</div>`;
+      if ((r.stderr||[]).length) det+=`<div style="color:#fb923c;margin-top:6px;font-size:11px">stderr:<br>${r.stderr.map(s=>esc(String(s))).join('<br>')}</div>`;
+      if (DATA.runUrl) det+=`<div style="margin-top:12px"><a href="${esc(DATA.runUrl)}" target="_blank" style="color:var(--accent3);font-size:11px;font-weight:600">📎 View screenshots & videos in GitHub Actions →</a></div>`;
+      etr.innerHTML=`<td colspan="6" style="padding:0"><div class="err-detail">${det}</div></td>`;
       tbody.appendChild(etr);
-      tr.addEventListener('click', () => etr.querySelector('.err-detail').classList.toggle('open'));
+      tr.addEventListener('click',()=>etr.querySelector('.err-detail').classList.toggle('open'));
     }
   });
 }
 
-document.getElementById('execTabs').querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('#execTabs .tab').forEach(x => x.classList.remove('on'));
-    t.classList.add('on');
-    renderExec(filtered(), t.dataset.ef);
+document.getElementById('execTabs').querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('#execTabs .tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on'); renderExec(filtered(), t.dataset.ef);
   });
 });
 
-// ── 5. TREND ─────────────────────────────────────
+// ── TREND ─────────────────────────────────────────────
 let trendChart;
 function renderTrend(days) {
-  const rows    = filtered();
-  const total   = rows.length || 247;
-  const passed  = rows.filter(r => r.status==='passed').length || 226;
-  const failed  = rows.filter(r => r.status==='failed').length || 14;
-  const flaky   = rows.filter(r => r.status==='flaky').length  || 7;
-  const labels  = [], pd = [], fd = [], fld = [];
-
-  for (let i = days-1; i >= 0; i--) {
-    const d = new Date(Date.now()-i*86400000);
+  const rows   = filtered();
+  const passed = rows.filter(r=>r.status==='passed').length||0;
+  const failed = rows.filter(r=>r.status==='failed').length||0;
+  const flaky  = rows.filter(r=>r.status==='flaky').length||0;
+  const labels=[],pd=[],fd=[],fld=[];
+  for (let i=days-1;i>=0;i--) {
+    const d=new Date(Date.now()-i*86400000);
     labels.push(d.toLocaleDateString('en',{month:'short',day:'numeric'}));
-    const variance = 0.85 + Math.random()*0.3;
-    pd.push(i===0 ? passed : Math.round(passed*variance));
-    fd.push(i===0 ? failed : Math.round(failed*(0.5+Math.random())));
-    fld.push(i===0 ? flaky  : Math.round(flaky*(0.5+Math.random())));
+    const v=0.85+Math.random()*.3;
+    pd.push(i===0?passed:Math.round(passed*v));
+    fd.push(i===0?failed:Math.round(failed*(.5+Math.random())));
+    fld.push(i===0?flaky:Math.round(flaky*(.5+Math.random())));
   }
-
-  trendChart = trendChart || echarts.init(document.getElementById('trendChart'));
-  const area = (name,data,color) => ({
-    name, type:'line', data, smooth:true, symbol:'none',
-    lineStyle:{color,width:2},
-    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'40'},{offset:1,color:'transparent'}]}}
+  trendChart = trendChart||echarts.init(document.getElementById('trendChart'));
+  const line=(name,data,color)=>({name,type:'line',data,smooth:true,symbol:'emptyCircle',symbolSize:4,
+    lineStyle:{color,width:2.5},
+    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'35'},{offset:1,color:'transparent'}]}}
   });
   trendChart.setOption({
     backgroundColor:'transparent',
-    tooltip:{trigger:'axis',backgroundColor:'#1a1a26',borderColor:'rgba(255,255,255,.1)',textStyle:{color:'#f1f5f9',fontSize:12}},
-    legend:{data:['Passed','Failed','Flaky'],textStyle:{color:'#64748b',fontSize:12},top:0,right:0},
-    grid:{top:32,bottom:24,left:44,right:16},
-    xAxis:{type:'category',data:labels,axisLine:{lineStyle:{color:'rgba(255,255,255,.08)'}},axisLabel:{color:'#64748b',fontSize:11}},
-    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,.06)'}},axisLabel:{color:'#64748b',fontSize:11}},
-    series:[area('Passed',pd,'#10b981'),area('Failed',fd,'#ef4444'),area('Flaky',fld,'#f59e0b')]
+    tooltip:{trigger:'axis',backgroundColor:'#0f0f1a',borderColor:'rgba(255,255,255,.1)',textStyle:{color:'#f1f5f9',fontSize:12},
+      axisPointer:{lineStyle:{color:'rgba(255,255,255,.1)'}}},
+    legend:{data:['Passed','Failed','Flaky'],textStyle:{color:'#64748b',fontSize:12},top:0,right:0,
+      icon:'circle',itemWidth:8,itemHeight:8},
+    grid:{top:36,bottom:28,left:48,right:16},
+    xAxis:{type:'category',data:labels,axisLine:{lineStyle:{color:'rgba(255,255,255,.06)'}},
+      axisLabel:{color:'#64748b',fontSize:11},axisTick:{show:false}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,.05)'}},
+      axisLabel:{color:'#64748b',fontSize:11}},
+    series:[line('Passed',pd,'#10b981'),line('Failed',fd,'#ef4444'),line('Flaky',fld,'#f59e0b')]
   });
 }
 
-document.getElementById('trendTabs').querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('#trendTabs .tab').forEach(x => x.classList.remove('on'));
-    t.classList.add('on');
-    renderTrend(+t.dataset.td);
+document.getElementById('trendTabs').querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('#trendTabs .tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on'); renderTrend(+t.dataset.td);
   });
 });
 
-// ── 6. FAILURES (only shown when failures exist) ─
+// ── FAILURES ──────────────────────────────────────────
 function renderFailures(rows) {
-  const failures = rows.filter(r => r.status === 'failed');
-  const section  = document.getElementById('failSection');
-
-  if (failures.length === 0) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-
-  const tbody = document.getElementById('failBody');
-  tbody.innerHTML = '';
-  failures.slice(0, 20).forEach(r => {
-    const tr = document.createElement('tr');
-    tr.classList.add('expandable');
-    tr.innerHTML = `
-      <td style="max-width:300px">${esc(r.name||r.suite)}</td>
-      <td>${bi(r.browser)}</td>
-      <td>${di(r.device)}</td>
-      <td><span class="loc">${r.locale||'–'}</span></td>
-      <td style="color:var(--muted);font-size:11px">${r.errorMessage ? '▶ click to expand' : '–'}</td>`;
-    tbody.appendChild(tr);
+  const failures=rows.filter(r=>r.status==='failed');
+  const section=document.getElementById('failSection');
+  if (!failures.length){section.style.display='none';return;}
+  section.style.display='block';
+  const body=document.getElementById('failBody');
+  body.innerHTML='';
+  failures.slice(0,20).forEach(r=>{
+    const card=document.createElement('div');
+    card.className='fail-card';
+    card.innerHTML=`
+      <div class="fail-name">❌ ${esc(r.name||r.suite||'–')}</div>
+      <div class="fail-meta">
+        <span class="sp sp-fail">failed</span>
+        ${bi(r.browser)} ${di(r.device)}
+        <span class="loc">${r.locale||'–'}</span>
+        <span style="color:var(--muted);font-size:11px">${((r.duration||0)/1000).toFixed(1)}s</span>
+        ${r.errorMessage?`<span style="color:var(--muted);font-size:11px">▶ click to expand</span>`:''}
+      </div>
+      ${r.errorMessage?`<div class="fail-err">${esc(r.errorMessage)}${r.errorStack?'\n\n'+esc(r.errorStack):''}</div>`:''}`;
     if (r.errorMessage) {
-      const etr = document.createElement('tr');
-      etr.innerHTML = `<td colspan="5" style="padding:0"><div class="err-detail">${esc(r.errorMessage)}</div></td>`;
-      tbody.appendChild(etr);
-      tr.addEventListener('click', () => etr.querySelector('.err-detail').classList.toggle('open'));
+      card.addEventListener('click',()=>card.querySelector('.fail-err').classList.toggle('open'));
     }
+    body.appendChild(card);
   });
 }
 
-// ── 7. FLAKY (only shown when flaky tests exist) ─
-let flakySortDir2 = -1, flakySortCol2 = 'pct';
+// ── FLAKY ─────────────────────────────────────────────
 function renderFlaky(rows) {
-  const flakyRows = rows.filter(r => r.status === 'flaky');
-  const section   = document.getElementById('flakySection');
-
-  if (flakyRows.length === 0) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-
-  // Group by test name
-  const grouped = {};
-  flakyRows.forEach(r => {
-    const key = r.name || r.suite;
-    if (!grouped[key]) grouped[key] = { name:key, count:0, browsers:new Set(), devices:new Set(), locales:new Set() };
-    grouped[key].count++;
-    grouped[key].browsers.add(r.browser);
-    grouped[key].devices.add(r.device);
-    grouped[key].locales.add(r.locale);
+  const flakyRows=rows.filter(r=>r.status==='flaky');
+  const section=document.getElementById('flakySection');
+  if (!flakyRows.length){section.style.display='none';return;}
+  section.style.display='block';
+  const grouped={};
+  flakyRows.forEach(r=>{
+    const k=r.name||r.suite;
+    if (!grouped[k]) grouped[k]={name:k,count:0,browsers:new Set(),devices:new Set(),locales:new Set()};
+    grouped[k].count++;grouped[k].browsers.add(r.browser);
+    grouped[k].devices.add(r.device);grouped[k].locales.add(r.locale);
   });
-  const total = rows.length || 1;
-  const data = Object.values(grouped).map(g => ({
-    ...g,
-    pct: Math.round(g.count/total*100),
-    browsers: [...g.browsers].map(bi).join(' '),
-    devices:  [...g.devices].map(di).join(' '),
-    locales:  [...g.locales].join(', ').toUpperCase(),
-  })).sort((a,b) => b.pct - a.pct);
-
-  const tbody = document.getElementById('flakyBody');
-  tbody.innerHTML = '';
-  data.slice(0, 10).forEach(t => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="font-size:12px">${esc(t.name)}</td>
-      <td style="min-width:130px">
+  const total=rows.length||1;
+  const data=Object.values(grouped).map(g=>({...g,
+    pct:Math.round(g.count/total*100),
+    browsers:[...g.browsers].map(bi).join(' '),
+    devices:[...g.devices].map(di).join(' '),
+    locales:[...g.locales].join(', ').toUpperCase(),
+  })).sort((a,b)=>b[flakySortCol]-a[flakySortCol]*flakySortDir);
+  const tbody=document.getElementById('flakyBody');
+  tbody.innerHTML='';
+  data.slice(0,10).forEach(t=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="font-size:12px;font-weight:500">${esc(t.name)}</td>
+      <td style="min-width:140px">
         <div style="display:flex;align-items:center;gap:8px">
           <div class="fb-bg"><div class="fb-fill" style="width:${Math.min(t.pct,100)}%"></div></div>
-          <span style="font-size:12px;color:var(--flaky);font-weight:700;min-width:32px">${t.pct}%</span>
+          <span style="font-size:12px;color:var(--flaky);font-weight:800;min-width:34px">${t.pct}%</span>
         </div>
       </td>
-      <td>${t.browsers}</td>
-      <td>${t.devices}</td>
+      <td>${t.browsers}</td><td>${t.devices}</td>
       <td><span class="loc">${t.locales}</span></td>`;
     tbody.appendChild(tr);
   });
 }
-
-document.getElementById('flakyTable').querySelectorAll('[data-s]').forEach(th => {
-  th.addEventListener('click', () => {
-    if (flakySortCol2 === th.dataset.s) flakySortDir2 *= -1;
-    else { flakySortCol2 = th.dataset.s; flakySortDir2 = -1; }
-    renderFlaky(filtered());
+document.getElementById('flakyTable').querySelectorAll('[data-s]').forEach(th=>{
+  th.addEventListener('click',()=>{
+    flakySortCol=th.dataset.s; flakySortDir*=-1; renderFlaky(filtered());
   });
 });
 
-// ══════════════════════════════════════════════════
-//  HELPERS
-// ══════════════════════════════════════════════════
-function bi(b){ return {chrome:'🟠 Chrome',firefox:'🦊 Firefox',safari:'🧭 Safari',all:'🟠🦊🧭'}[b]||b||'–' }
+// ── HELPERS ───────────────────────────────────────────
+function bi(b){ return {chrome:'🟠 Chrome',firefox:'🦊 Firefox',safari:'🧭 Safari',webkit:'🧭 Safari',chromium:'🟠 Chrome',all:'🟠🦊🧭'}[b]||b||'–' }
 function di(d){ return {desktop:'🖥',iphone:'📱',android:'🤖',ipad:'💻',tablet:'💻',all:'🖥📱💻'}[d]||d||'–' }
+function di2(d){ return {desktop:'🖥 Desktop',iphone:'📱 iPhone',android:'🤖 Android',ipad:'💻 iPad',tablet:'💻 Tablet',all:'All Devices'}[d]||d||'–' }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
 function timeAgo(date){
   const s=Math.floor((Date.now()-new Date(date))/1000);
-  if(s<60) return s+'s ago';
-  if(s<3600) return Math.floor(s/60)+'m ago';
-  if(s<86400) return Math.floor(s/3600)+'h ago';
-  return Math.floor(s/86400)+'d ago';
+  if(s<60) return s+'s ago';if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';
 }
-
-window.addEventListener('resize', () => {
-  [gaugeChart,trendChart].forEach(c=>c&&c.resize());
-  Object.values(sparks).forEach(c=>c&&c.resize());
+window.addEventListener('resize',()=>{
+  [gaugeChart,trendChart,donutChart].forEach(c=>c&&c.resize());
 });
 </script>
 </body>
