@@ -35,9 +35,7 @@ const config = {
         ['github'],
         ['../utils/reporters/json-reporter.js'],
       ]
-    : process.env.HTML_REPORT
-      ? [['html', { outputFolder: 'test-html-results', open: 'on-failure' }], ['list'], ['../utils/reporters/base-reporter.js']]
-      : [['list'], ['../utils/reporters/base-reporter.js']],
+    : [['html', { outputFolder: 'test-html-results', open: 'on-failure' }], ['list'], ['../utils/reporters/base-reporter.js']],
 
   use: {
     actionTimeout: (process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 90) * 1000,

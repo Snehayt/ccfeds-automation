@@ -1658,7 +1658,7 @@ export class LingoGeoBannerPage {
         for (const [j, { rowPrefix: optPrefix, nativeName: optNative }] of buttons.entries()) {
           if (!optNative) continue;
           const optionText = `${country} - ${optNative}`;
-          const href = `/${optPrefix || ''}express/?akamaiLocale=${geoIp}&country=${geoIp}`;
+          const href = `/${optPrefix ? `${optPrefix}/` : ''}express/?akamaiLocale=${geoIp}&country=${geoIp}`;
           const option = this.page
             .locator('a')
             .filter({ hasText: country })
