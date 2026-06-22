@@ -28,6 +28,8 @@ on:
           - cc-sanity
           - express
           - cmp
+          - unav
+          - site-redesign
       browser:
         description: 'Browser'
         required: true
@@ -142,8 +144,10 @@ jobs:
             cc-merch)         TEST_PATH="tests/cc/merchcard.test.js tests/cc/merchtable.test.js" ;;
             cc-lingo)         TEST_PATH="tests/cc/lingo.test.js" ;;
             cc-sanity)        TEST_PATH="tests/cc/productionsanity.test.js tests/cc/INTLstagesanity.test.js" ;;
-            express)          TEST_PATH="tests/express/lingo.test.js"; CONFIG="configs/feds.config.js" ;;
+            express)          TEST_PATH="tests/express/lingo.test.js"; CONFIG="configs/express-lingo.config.js" ;;
             cmp)              TEST_PATH="tests/cmp/cmp-banner.test.js"; CONFIG="configs/feds.config.js" ;;
+            unav)             TEST_PATH="tests/feds/feds-lnav"; CONFIG="configs/feds.config.js" ;;
+            site-redesign)    TEST_PATH="tests/feds/site-redesign.test.js"; CONFIG="configs/feds.config.js" ;;
           esac
 
           # ── Project flags — FEDs ──────────────────────────────────────────────
