@@ -30,8 +30,8 @@ const failed = parseInt(FAILED, 10);
 const total = parseInt(TOTAL, 10);
 const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : '0';
 
-const statusEmoji = failed === 0 ? '✅' : '❌';
-const statusText = failed === 0 ? 'All tests passed' : `${failed} test(s) failed`;
+const statusEmoji = total === 0 ? '⚠️' : failed === 0 ? '✅' : '❌';
+const statusText = total === 0 ? 'No tests ran — check suite config' : failed === 0 ? 'All tests passed' : `${failed} test(s) failed`;
 
 const browserLabel = {
   chrome: '🟠 Chrome',
