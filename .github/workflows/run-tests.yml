@@ -277,6 +277,24 @@ jobs:
           TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
+      # ── Run Express Lingo tests ────────────────────────────────────────────
+      - name: Run Express Lingo tests
+        if: needs.setup.outputs.config == 'configs/express-lingo.config.js'
+        run: |
+          npx playwright test ${{ needs.setup.outputs.test_path }} \
+            --config=configs/express-lingo.config.js \
+            ${{ needs.setup.outputs.projects }} \
+            ${{ needs.setup.outputs.grep_flag }} \
+            --output=test-results
+        env:
+          BASE_URL:     ${{ matrix.url }}
+          CI:           true
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+        continue-on-error: true
+
       # ── Run ALL suites ─────────────────────────────────────────────────────
       - name: Run all FEDs tests
         if: needs.setup.outputs.config == 'all'
