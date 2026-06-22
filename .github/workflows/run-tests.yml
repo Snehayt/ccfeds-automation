@@ -308,10 +308,13 @@ jobs:
           if-no-files-found: ignore
 
   # ── JOB 3: Merge results, deploy dashboard, notify Slack ─────────────────
-  merge-deploy:
+  completed:
+    name: Publish Results & Dashboard
     needs: [setup, run-tests]
     runs-on: ubuntu-latest
     if: always()
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
