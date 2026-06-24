@@ -425,6 +425,28 @@ jobs:
         run: node scripts/merge-results.js
         continue-on-error: true
 
+      - name: Fetch existing run history from gh-pages
+        run: |
+          git fetch origin gh-pages:gh-pages 2>/dev/null || true
+          mkdir -p dashboard/runs
+          git show gh-pages:run-history.json > dashboard/run-history.json 2>/dev/null || echo '[]' > dashboard/run-history.json
+          echo "Run history fetched ($(node -e "try{console.log(JSON.parse(require('fs').readFileSync('dashboard/run-history.json')).length)}catch{console.log(0)}") existing runs)"
+        continue-on-error: true
+
+      - name: Append run to history
+        run: node scripts/append-run-history.js
+        env:
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          BROWSER:      ${{ needs.setup.outputs.browser }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          BASE_URL:     ${{ github.event.inputs.urls || '' }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
+          ENVIRONMENT:  ${{ github.event.inputs.environment || '' }}
+          TRIGGERED_BY: ${{ github.actor }}
+          RUN_URL:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        continue-on-error: true
+
       - name: Parse merged results for Slack
         id: results
         if: always()
@@ -450,7 +472,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dashboard
-          keep_files: false
+          keep_files: true
 
       - name: Notify Slack
         if: always()
