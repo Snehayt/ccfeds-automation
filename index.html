@@ -3,181 +3,173 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Test Automation Dashboard</title>
+<title>FEDS QA Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#07070f;--surface:#0f0f1a;--surface2:#161625;--surface3:#1c1c30;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --accent1:#7c3aed;--accent2:#2563eb;--accent3:#0ea5e9;
-  --pass:#10b981;--pass-bg:rgba(16,185,129,.12);
-  --fail:#ef4444;--fail-bg:rgba(239,68,68,.12);
-  --flaky:#f59e0b;--flaky-bg:rgba(245,158,11,.12);
-  --skip:#475569;--skip-bg:rgba(71,85,105,.12);
-  --text:#f1f5f9;--text2:#cbd5e1;--muted:#64748b;--radius:14px;
+  --bg:#0a0b10;--surface:#11131c;--surface2:#181a27;--surface3:#1e2030;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#6366f1;--accent2:#3b82f6;--accent3:#06b6d4;
+  --pass:#22c55e;--pass-dim:rgba(34,197,94,.12);
+  --fail:#f43f5e;--fail-dim:rgba(244,63,94,.10);
+  --warn:#f59e0b;--warn-dim:rgba(245,158,11,.10);
+  --skip:#475569;--skip-dim:rgba(71,85,105,.12);
+  --text:#e2e8f0;--text2:#94a3b8;--muted:#4b5563;--radius:12px;
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:14px;line-height:1.5}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:13px;line-height:1.5}
 
 /* ── FILTER BAR ── */
 .filterbar{
   position:sticky;top:0;z-index:200;
-  background:rgba(7,7,15,0.96);backdrop-filter:blur(24px);
+  background:rgba(10,11,16,0.97);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
-  padding:10px 32px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  padding:8px 28px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;
 }
-.fg{display:flex;align-items:center;gap:5px}
-.fg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-right:3px}
-.pill{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap}
-.pill:hover{border-color:var(--accent1);color:var(--text)}
-.pill.on{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-color:transparent;color:#fff;box-shadow:0 2px 12px rgba(124,58,237,.35)}
-.fsep{width:1px;height:24px;background:var(--border);flex-shrink:0}
+.fg{display:flex;align-items:center;gap:4px}
+.fg-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-right:4px;white-space:nowrap}
+.pill{padding:3px 10px;border-radius:16px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'Inter',sans-serif}
+.pill:hover{border-color:rgba(99,102,241,.4);color:var(--text)}
+.pill.on{background:rgba(99,102,241,.18);border-color:rgba(99,102,241,.5);color:#a5b4fc;font-weight:600}
+.fsep{width:1px;height:20px;background:var(--border);flex-shrink:0}
 
-/* ── HERO HEADER ── */
+/* ── MOCK BANNER ── */
+.mock-banner{
+  background:rgba(245,158,11,.1);border-bottom:1px solid rgba(245,158,11,.25);
+  padding:8px 28px;display:flex;align-items:center;gap:10px;
+  font-size:12px;color:#fbbf24;font-weight:500;
+}
+.mock-banner.hidden{display:none}
+
+/* ── HERO ── */
 .hero{
-  position:relative;overflow:hidden;
-  padding:36px 32px 28px;
-  background:linear-gradient(135deg,rgba(124,58,237,.08) 0%,rgba(37,99,235,.05) 50%,transparent 100%);
+  padding:28px 28px 20px;
   border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(99,102,241,.06) 0%,rgba(59,130,246,.04) 60%,transparent 100%);
 }
-.hero::before{
-  content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;
-  background:radial-gradient(circle,rgba(124,58,237,.12) 0%,transparent 70%);
-  pointer-events:none;
-}
-.hero-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
-.hero-title{font-size:38px;font-weight:900;letter-spacing:-.02em;line-height:1;
-  background:linear-gradient(135deg,#c4b5fd 0%,#93c5fd 50%,#67e8f9 100%);
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.hero-title{font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1;
+  background:linear-gradient(135deg,#a5b4fc,#7dd3fc,#67e8f9);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{color:var(--muted);font-size:13px;margin-top:4px;font-weight:400}
-.hero-meta{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
-.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--pass);background:var(--pass-bg);padding:4px 10px;border-radius:20px;border:1px solid rgba(16,185,129,.2)}
-.live-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--pass);animation:pulse 2s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.6)}}
-.ts{font-size:12px;color:var(--muted)}
-.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
-.badge-br{background:rgba(124,58,237,.15);color:#c4b5fd;border:1px solid rgba(124,58,237,.25)}
-.badge-env{background:rgba(37,99,235,.15);color:#93c5fd;border:1px solid rgba(37,99,235,.25)}
-.badge-url{background:rgba(16,185,129,.1);color:#6ee7b7;border:1px solid rgba(16,185,129,.18);max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hero-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.btn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:all .18s;letter-spacing:.01em}
-.btn-g{background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.3)}
-.btn-g:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,.4)}
+.hero-sub{color:var(--muted);font-size:12px;margin-top:4px}
+.hero-meta{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.live-dot{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--pass);background:var(--pass-dim);padding:3px 9px;border-radius:14px;border:1px solid rgba(34,197,94,.2)}
+.live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--pass);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.7)}}
+.badge{padding:2px 9px;border-radius:14px;font-size:10px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.badge-br{background:rgba(99,102,241,.12);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+.badge-env{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.hero-actions{display:flex;gap:8px;align-items:center}
+.btn{padding:7px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;letter-spacing:.01em;font-family:'Inter',sans-serif}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 12px rgba(99,102,241,.25)}
+.btn-p:hover{opacity:.9;transform:translateY(-1px)}
 .btn-o{background:var(--surface2);border:1px solid var(--border2);color:var(--text2)}
-.btn-o:hover{border-color:var(--accent1);color:#c4b5fd;background:rgba(124,58,237,.08)}
+.btn-o:hover{border-color:rgba(99,102,241,.4);color:#a5b4fc}
 
 /* ── LAYOUT ── */
-.main{padding:24px 32px 60px;display:flex;flex-direction:column;gap:20px}
-.g2{display:grid;grid-template-columns:340px 1fr;gap:20px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-@media(max-width:1300px){.g2{grid-template-columns:1fr};.g5{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:900px){.g4,.g5{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.g4,.g5{grid-template-columns:1fr}}
+.main{padding:20px 28px 60px;display:flex;flex-direction:column;gap:16px}
+.g2{display:grid;grid-template-columns:300px 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:1200px){.g2{grid-template-columns:1fr};.g5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.g4,.g5{grid-template-columns:repeat(2,1fr)}}
 
 /* ── CARD ── */
-.card{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:20px;backdrop-filter:blur(20px);transition:box-shadow .2s,border-color .2s;
-  position:relative;overflow:hidden;
-}
-.card:hover{box-shadow:0 0 0 1px rgba(124,58,237,.2),0 12px 40px rgba(0,0,0,.5);border-color:rgba(124,58,237,.15)}
-.card-accent-top{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent1),var(--accent2))}
-.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:6px}
-.ct-icon{font-size:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
+.card:hover{border-color:rgba(99,102,241,.18)}
+.card-line{position:absolute;top:0;left:0;right:0;height:2px}
+.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:6px}
 
 /* ── RUN INFO CHIPS ── */
-.run-chips{display:flex;gap:10px;flex-wrap:wrap}
-.chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;flex-direction:column;gap:3px;flex:1;min-width:110px;transition:border-color .15s}
-.chip:hover{border-color:var(--border2)}
-.chip-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
-.chip-value{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:5px}
-.chip-url{font-size:11px;word-break:break-all}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;flex:1;min-width:100px}
+.chip-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:3px}
+.chip-value{font-size:12px;font-weight:700;color:var(--text)}
+.chip-url{font-size:10px;word-break:break-all;color:var(--text2)}
 
-/* ── SCORE CARD ── */
-.score-body{display:flex;flex-direction:column;align-items:center;gap:16px}
-.score-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%}
-.ss{text-align:center;background:var(--surface2);border-radius:10px;padding:10px}
-.ss-v{font-size:18px;font-weight:800}
-.ss-l{font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+/* ── SCORE ── */
+.score-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.ss{text-align:center;background:var(--surface2);border-radius:8px;padding:8px}
+.ss-v{font-size:16px;font-weight:800}
+.ss-l{font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
 
-/* ── KPI CARDS ── */
-.kpi-card{position:relative;overflow:hidden}
-.kpi-icon{font-size:24px;margin-bottom:8px;opacity:.8}
-.kpi-v{font-size:36px;font-weight:900;line-height:1;letter-spacing:-.02em}
-.kpi-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
-.kpi-bar{height:3px;border-radius:2px;margin-top:14px;background:var(--surface3);overflow:hidden}
-.kpi-bar-fill{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.kpi-glow{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;filter:blur(30px);opacity:.15;pointer-events:none}
+/* ── KPI ── */
+.kpi-v{font-size:32px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.kpi-lbl{font-size:10px;color:var(--muted);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.kpi-bar{height:2px;border-radius:2px;margin-top:12px;background:var(--surface3);overflow:hidden}
+.kpi-fill{height:100%;border-radius:2px;transition:width .6s ease}
 
 /* ── PASS RATIO BAR ── */
-.ratio-bar{height:8px;border-radius:4px;background:var(--surface3);overflow:hidden;display:flex;margin-top:10px}
-.ratio-pass{background:var(--pass);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.ratio-bar{height:6px;border-radius:4px;background:var(--surface3);overflow:hidden;display:flex;margin-top:8px}
+.ratio-pass{background:var(--pass);transition:width .6s ease}
 .ratio-fail{background:var(--fail)}
-.ratio-flaky{background:var(--flaky)}
+.ratio-warn{background:var(--warn)}
 
 /* ── TABLE ── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
-.tbl th{text-align:left;padding:8px 12px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap;background:rgba(255,255,255,.02)}
-.tbl td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.tbl th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);white-space:nowrap;background:rgba(255,255,255,.015)}
+.tbl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tbody tr.data-row:hover td{background:rgba(255,255,255,.03)}
-.tbl tbody tr.data-row{cursor:default}
-.tbl tbody tr.data-row.has-detail{cursor:pointer}
-.err-detail{display:none;background:rgba(10,10,20,.8);border-left:3px solid var(--fail);padding:12px 16px;font-size:11px;color:#fca5a5;font-family:'Menlo','Monaco',monospace;white-space:pre-wrap;line-height:1.6}
-.err-detail.open{display:block}
+.tbl tbody tr.clickable:hover td{background:rgba(255,255,255,.025);cursor:pointer}
+.err-row{display:none}
+.err-row.open{display:table-row}
+.err-cell{background:rgba(10,11,16,.9);border-left:2px solid var(--fail);padding:10px 14px;font-size:11px;color:#fda4af;font-family:'Menlo','Monaco',monospace;white-space:pre-wrap;line-height:1.6}
 
-/* ── STATUS ── */
-.sp{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
-.sp-pass{background:var(--pass-bg);color:var(--pass)}
-.sp-fail{background:var(--fail-bg);color:var(--fail)}
-.sp-flaky{background:var(--flaky-bg);color:var(--flaky)}
-.sp-skip{background:var(--skip-bg);color:var(--muted)}
-.sp::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
-.loc{padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:var(--surface3);color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+/* ── STATUS PILL ── */
+.sp{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.sp::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sp-pass{background:var(--pass-dim);color:var(--pass)}
+.sp-fail{background:var(--fail-dim);color:var(--fail)}
+.sp-warn{background:var(--warn-dim);color:var(--warn)}
+.sp-skip{background:var(--skip-dim);color:var(--skip)}
+
+/* ── LOCALE BADGE ── */
+.loc{padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;background:var(--surface3);color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
 
 /* ── TABS ── */
-.tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:12px}
-.tab{padding:5px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);transition:all .15s}
-.tab.on{background:var(--surface2);color:var(--text);border-color:rgba(124,58,237,.3);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tabs{display:flex;gap:3px;margin-bottom:14px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:10px}
+.tab{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;background:transparent;color:var(--muted);transition:all .12s;font-family:'Inter',sans-serif}
+.tab.on{background:var(--surface2);color:var(--text);border-color:rgba(99,102,241,.25)}
 .tab:hover{color:var(--text);background:var(--surface2)}
-.tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:16px;padding:0 4px;border-radius:10px;font-size:9px;font-weight:800;margin-left:4px;background:var(--surface3)}
-.tab.on .tab-count{background:rgba(124,58,237,.3);color:#c4b5fd}
+.tab-ct{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:15px;padding:0 4px;border-radius:8px;font-size:9px;font-weight:800;margin-left:3px;background:var(--surface3)}
+.tab.on .tab-ct{background:rgba(99,102,241,.25);color:#a5b4fc}
 
-/* ── FLAKY BAR ── */
-.fb-bg{height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;flex:1}
-.fb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--flaky),#fb923c)}
+/* ── HISTORY SECTION ── */
+.history-row{cursor:pointer}
+.history-row:hover td{background:rgba(255,255,255,.025)}
+.history-row.active td{background:rgba(99,102,241,.08)}
+.history-pass-bar{height:4px;border-radius:2px;background:var(--surface3);overflow:hidden;margin-top:4px;width:80px}
+.history-pass-fill{height:100%;background:var(--pass);border-radius:2px}
 
-/* ── SCROLLABLE ── */
-.scr{overflow-y:auto;max-height:420px}
-.scr::-webkit-scrollbar{width:4px}
-.scr::-webkit-scrollbar-track{background:transparent}
-.scr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+/* ── SECTION HEADER ── */
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.sh .ct{margin-bottom:0}
 
-/* ── SECTION HEADERS ── */
-.section-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.section-hdr .ct{margin-bottom:0}
-
-/* ── FAIL CARD ── */
-.fail-card{background:var(--surface2);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
-.fail-card:hover{border-color:rgba(239,68,68,.3)}
+/* ── FAILURE CARD ── */
+.fail-card{background:var(--surface2);border:1px solid rgba(244,63,94,.12);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .12s}
+.fail-card:hover{border-color:rgba(244,63,94,.28)}
 .fail-card:last-child{margin-bottom:0}
 .fail-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
-.fail-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.fail-err{display:none;margin-top:10px;padding:10px;background:rgba(239,68,68,.06);border-radius:6px;font-size:11px;color:#fca5a5;font-family:monospace;white-space:pre-wrap;line-height:1.5}
+.fail-meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.fail-err{display:none;margin-top:8px;padding:8px;background:rgba(244,63,94,.05);border-radius:6px;font-size:10px;color:#fda4af;font-family:monospace;white-space:pre-wrap;line-height:1.5;word-break:break-word}
 .fail-err.open{display:block}
 
-/* ── EMPTY ── */
-.empty{text-align:center;padding:40px;color:var(--muted)}
-.empty-icon{font-size:36px;margin-bottom:10px;opacity:.5}
-.empty-text{font-size:13px}
+/* ── FLAKY ── */
+.fb-bg{height:5px;border-radius:3px;background:var(--surface3);overflow:hidden;flex:1}
+.fb-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--warn),#fb923c)}
 
-/* ── DIVIDER ── */
-.divider{height:1px;background:var(--border);margin:4px 0}
+/* ── SCROLL ── */
+.scr{overflow-y:auto;max-height:420px}
+.scr::-webkit-scrollbar{width:3px}
+.scr::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:36px;color:var(--muted)}
+.empty-text{font-size:12px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -187,18 +179,18 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   <div class="fg">
     <span class="fg-label">Browser</span>
     <button class="pill on" data-g="browser" data-v="all">All</button>
-    <button class="pill" data-g="browser" data-v="chrome">🟠 Chrome</button>
-    <button class="pill" data-g="browser" data-v="firefox">🦊 Firefox</button>
-    <button class="pill" data-g="browser" data-v="safari">🧭 Safari</button>
+    <button class="pill" data-g="browser" data-v="chrome">Chrome</button>
+    <button class="pill" data-g="browser" data-v="firefox">Firefox</button>
+    <button class="pill" data-g="browser" data-v="safari">Safari</button>
   </div>
   <div class="fsep"></div>
   <div class="fg">
     <span class="fg-label">Device</span>
     <button class="pill on" data-g="device" data-v="all">All</button>
-    <button class="pill" data-g="device" data-v="desktop">🖥 Desktop</button>
-    <button class="pill" data-g="device" data-v="iphone">📱 iPhone</button>
-    <button class="pill" data-g="device" data-v="android">🤖 Android</button>
-    <button class="pill" data-g="device" data-v="ipad">💻 iPad</button>
+    <button class="pill" data-g="device" data-v="desktop">Desktop</button>
+    <button class="pill" data-g="device" data-v="iphone">iPhone</button>
+    <button class="pill" data-g="device" data-v="android">Android</button>
+    <button class="pill" data-g="device" data-v="ipad">iPad</button>
   </div>
   <div class="fsep"></div>
   <div class="fg">
@@ -213,121 +205,115 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
     <span class="fg-label">Locale</span>
     <button class="pill on" data-g="locale" data-v="all">All</button>
     <button class="pill" data-g="locale" data-v="us">US</button>
-    <button class="pill" data-g="locale" data-v="gb">GB</button>
     <button class="pill" data-g="locale" data-v="de">DE</button>
     <button class="pill" data-g="locale" data-v="fr">FR</button>
     <button class="pill" data-g="locale" data-v="jp">JP</button>
+    <button class="pill" data-g="locale" data-v="gb">GB</button>
   </div>
 </nav>
 
+<!-- MOCK DATA BANNER -->
+<div class="mock-banner hidden" id="mockBanner">
+  Showing sample data — no real test results found. Run tests and deploy to see live results.
+</div>
+
 <!-- HERO -->
 <header class="hero">
-  <div class="hero-inner">
+  <div class="hero-top">
     <div>
-      <div class="hero-title">Test Automation</div>
-      <div class="hero-sub">QA Observability Dashboard</div>
+      <div class="hero-title">FEDS QA</div>
+      <div class="hero-sub">Observability Dashboard</div>
       <div class="hero-meta">
-        <span class="live-dot">Live</span>
-        <span class="ts" id="lastTs"></span>
-        <span class="badge badge-br" id="branchBadge">⎇ –</span>
-        <span class="badge badge-env" id="envBadge"></span>
-        <span class="badge badge-url" id="urlBadge" style="display:none"></span>
+        <span class="live-dot" id="liveLabel">Live</span>
+        <span style="font-size:11px;color:var(--muted)" id="lastTs">–</span>
+        <span class="badge badge-br" id="branchBadge">–</span>
+        <span class="badge badge-env" id="envBadge">–</span>
       </div>
     </div>
     <div class="hero-actions">
-      <a class="btn btn-g" href="https://github.com/Snehayt/ccfeds-automation/actions/workflows/run-tests.yml" target="_blank">▶ Run Tests</a>
-      <a class="btn btn-o" href="https://adobe.slack.com/app_redirect?channel=automation-test-x" target="_blank">💬 Slack</a>
+      <a class="btn btn-p" href="https://github.com/Snehayt/ccfeds-automation/actions/workflows/run-tests.yml" target="_blank">Run Tests</a>
+      <a class="btn btn-o" href="https://github.com/Snehayt/ccfeds-automation/actions" target="_blank">View Runs</a>
     </div>
   </div>
 </header>
 
 <main class="main">
 
-<!-- RUN DETAILS -->
-<div class="card">
-  <div class="card-accent-top"></div>
-  <div class="ct"><span class="ct-icon">📋</span> Last Run Details</div>
-  <div class="run-chips" id="runInfo"></div>
-</div>
-
-<!-- SCORE + KPI -->
+<!-- ROW 1: Score + Run Info -->
 <div class="g2">
-  <!-- Score -->
-  <div class="card score-card">
-    <div class="ct"><span class="ct-icon">🎯</span> Health Score</div>
-    <div class="score-body">
-      <div id="gaugeChart" style="width:100%;height:170px"></div>
-      <div class="score-stats">
-        <div class="ss"><div class="ss-v" id="sPassRate" style="color:var(--pass)">–</div><div class="ss-l">Pass Rate</div></div>
-        <div class="ss"><div class="ss-v" id="sFlakyRate" style="color:var(--flaky)">–</div><div class="ss-l">Flaky Rate</div></div>
-        <div class="ss"><div class="ss-v" id="sAvgDur" style="color:var(--accent3)">–</div><div class="ss-l">Avg Time</div></div>
-      </div>
+  <!-- Quality Score -->
+  <div class="card">
+    <div class="card-line" style="background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+    <div class="ct">Quality Score</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div id="gaugeChart" style="width:180px;height:140px"></div>
+    </div>
+    <div class="score-stats">
+      <div class="ss"><div class="ss-v" id="sPassRate">–</div><div class="ss-l">Pass Rate</div></div>
+      <div class="ss"><div class="ss-v" id="sFlakyRate">–</div><div class="ss-l">Flaky Rate</div></div>
+      <div class="ss"><div class="ss-v" id="sAvgDur">–</div><div class="ss-l">Avg Duration</div></div>
     </div>
   </div>
 
-  <!-- KPIs -->
-  <div style="display:flex;flex-direction:column;gap:14px">
-    <div class="g4">
-      <div class="card kpi-card">
-        <div class="kpi-glow" style="background:#7c3aed"></div>
-        <div class="kpi-icon">🧪</div>
-        <div class="kpi-v" id="kTotal" style="color:var(--text)">–</div>
-        <div class="kpi-lbl">Total Tests</div>
-      </div>
-      <div class="card kpi-card">
-        <div class="kpi-glow" style="background:#10b981"></div>
-        <div class="kpi-icon">✅</div>
-        <div class="kpi-v" id="kPassed" style="color:var(--pass)">–</div>
-        <div class="kpi-lbl">Passed</div>
-      </div>
-      <div class="card kpi-card">
-        <div class="kpi-glow" style="background:#ef4444"></div>
-        <div class="kpi-icon">❌</div>
-        <div class="kpi-v" id="kFailed" style="color:var(--fail)">–</div>
-        <div class="kpi-lbl">Failed</div>
-      </div>
-      <div class="card kpi-card">
-        <div class="kpi-glow" style="background:#f59e0b"></div>
-        <div class="kpi-icon">⚡</div>
-        <div class="kpi-v" id="kFlaky" style="color:var(--flaky)">–</div>
-        <div class="kpi-lbl">Flaky</div>
-      </div>
-    </div>
-    <!-- Pass Rate + Ratio Bar -->
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div>
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Pass Rate</div>
-          <div style="font-size:40px;font-weight:900;letter-spacing:-.02em;line-height:1.1;margin-top:4px" id="kPassRate">–</div>
-        </div>
-        <div id="donutChart" style="width:110px;height:110px;flex-shrink:0"></div>
-      </div>
-      <div class="ratio-bar">
-        <div class="ratio-pass" id="ratioPass" style="width:0%"></div>
-        <div class="ratio-flaky" id="ratioFlaky" style="width:0%"></div>
-        <div class="ratio-fail" id="ratioFail" style="width:0%"></div>
-      </div>
-      <div style="display:flex;gap:16px;margin-top:8px">
-        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:8px;height:8px;border-radius:50%;background:var(--pass);display:inline-block"></span>Passed</div>
-        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:8px;height:8px;border-radius:50%;background:var(--flaky);display:inline-block"></span>Flaky</div>
-        <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:8px;height:8px;border-radius:50%;background:var(--fail);display:inline-block"></span>Failed</div>
-      </div>
-    </div>
+  <!-- Run Info -->
+  <div class="card">
+    <div class="card-line" style="background:linear-gradient(90deg,var(--accent2),var(--accent3))"></div>
+    <div class="ct">Current Run</div>
+    <div class="chips" id="runInfo"></div>
   </div>
 </div>
 
-<!-- TEST RESULTS -->
+<!-- ROW 2: KPI Cards -->
+<div class="g5" id="kpiRow">
+  <div class="card" id="kpi-total">
+    <div class="ct">Total Tests</div>
+    <div class="kpi-v" id="kTotal">–</div>
+    <div class="kpi-lbl">tests in run</div>
+    <div class="kpi-bar"><div class="kpi-fill" style="background:var(--accent2);width:100%"></div></div>
+  </div>
+  <div class="card" id="kpi-passed">
+    <div class="ct">Passed</div>
+    <div class="kpi-v" style="color:var(--pass)" id="kPassed">–</div>
+    <div class="kpi-lbl">tests passed</div>
+    <div class="kpi-bar"><div class="kpi-fill" id="kPassedBar" style="background:var(--pass)"></div></div>
+  </div>
+  <div class="card" id="kpi-failed">
+    <div class="ct">Failed</div>
+    <div class="kpi-v" style="color:var(--fail)" id="kFailed">–</div>
+    <div class="kpi-lbl">tests failed</div>
+    <div class="kpi-bar"><div class="kpi-fill" id="kFailedBar" style="background:var(--fail)"></div></div>
+  </div>
+  <div class="card">
+    <div class="ct">Pass Rate</div>
+    <div class="kpi-v" id="kPassRate">–</div>
+    <div class="kpi-lbl">of all tests</div>
+    <div class="ratio-bar" style="margin-top:12px">
+      <div class="ratio-pass" id="ratioPass" style="width:0%"></div>
+      <div class="ratio-warn" id="ratioWarn" style="width:0%"></div>
+      <div class="ratio-fail" id="ratioFail" style="width:0%"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Avg Duration</div>
+    <div class="kpi-v" id="kAvgDur">–</div>
+    <div class="kpi-lbl">per test</div>
+    <div class="kpi-bar"><div class="kpi-fill" style="background:var(--accent3);width:60%"></div></div>
+  </div>
+</div>
+
+<!-- ROW 3: Test Results -->
 <div class="card">
-  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--accent2),var(--accent3))"></div>
-  <div class="section-hdr">
-    <div class="ct" style="margin-bottom:0"><span class="ct-icon">📊</span> Test Results</div>
+  <div class="card-line" style="background:linear-gradient(90deg,var(--accent2),var(--accent3))"></div>
+  <div class="sh">
+    <div class="ct" style="margin-bottom:0">Test Results</div>
+    <span id="viewingLabel" style="font-size:11px;color:var(--muted)"></span>
   </div>
   <div class="tabs" id="execTabs">
-    <button class="tab on" data-ef="all">All <span class="tab-count" id="tc-all">0</span></button>
-    <button class="tab" data-ef="passed">Passed <span class="tab-count" id="tc-passed" style="color:var(--pass)">0</span></button>
-    <button class="tab" data-ef="failed">Failed <span class="tab-count" id="tc-failed" style="color:var(--fail)">0</span></button>
-    <button class="tab" data-ef="flaky">Flaky <span class="tab-count" id="tc-flaky" style="color:var(--flaky)">0</span></button>
-    <button class="tab" data-ef="skipped">Skipped <span class="tab-count" id="tc-skipped">0</span></button>
+    <button class="tab on" data-ef="all">All <span class="tab-ct" id="tc-all">0</span></button>
+    <button class="tab" data-ef="passed">Passed <span class="tab-ct" id="tc-passed" style="color:var(--pass)">0</span></button>
+    <button class="tab" data-ef="failed">Failed <span class="tab-ct" id="tc-failed" style="color:var(--fail)">0</span></button>
+    <button class="tab" data-ef="flaky">Flaky <span class="tab-ct" id="tc-flaky" style="color:var(--warn)">0</span></button>
+    <button class="tab" data-ef="skipped">Skipped <span class="tab-ct" id="tc-skipped">0</span></button>
   </div>
   <div class="scr">
     <table class="tbl">
@@ -339,36 +325,55 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
   </div>
 </div>
 
-<!-- TREND + FAILURES side by side when both exist -->
-<div class="card">
-  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--pass),var(--accent3))"></div>
-  <div class="section-hdr">
-    <div class="ct" style="margin-bottom:0"><span class="ct-icon">📈</span> Pass / Fail Trend</div>
-    <div class="tabs" id="trendTabs" style="margin-bottom:0;border-bottom:none;padding-bottom:0">
-      <button class="tab on" data-td="7">7d</button>
-      <button class="tab" data-td="14">14d</button>
-      <button class="tab" data-td="30">30d</button>
+<!-- ROW 4: Trend + Failures -->
+<div class="g2" style="align-items:start">
+  <div class="card">
+    <div class="card-line" style="background:linear-gradient(90deg,var(--pass),var(--accent3))"></div>
+    <div class="sh">
+      <div class="ct" style="margin-bottom:0">Pass / Fail Trend</div>
+      <div class="tabs" id="trendTabs" style="margin-bottom:0;border-bottom:none;padding-bottom:0">
+        <button class="tab on" data-td="7">7d</button>
+        <button class="tab" data-td="14">14d</button>
+        <button class="tab" data-td="30">30d</button>
+      </div>
     </div>
+    <div id="trendChart" style="height:200px"></div>
   </div>
-  <div id="trendChart" style="height:220px"></div>
+
+  <div class="card" id="failSection">
+    <div class="card-line" style="background:linear-gradient(90deg,var(--fail),#fb923c)"></div>
+    <div class="ct">Top Failures</div>
+    <div id="failBody"><div class="empty"><div class="empty-text">No failures</div></div></div>
+  </div>
 </div>
 
-<!-- FAILURES -->
-<div class="card" id="failSection" style="display:none">
-  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--fail),#fb923c)"></div>
-  <div class="ct"><span class="ct-icon">🔥</span> Top Failures</div>
-  <div id="failBody"></div>
+<!-- ROW 5: Run History -->
+<div class="card">
+  <div class="card-line" style="background:linear-gradient(90deg,var(--accent),#8b5cf6)"></div>
+  <div class="sh">
+    <div class="ct" style="margin-bottom:0">Run History</div>
+    <span style="font-size:11px;color:var(--muted)" id="historyCount">–</span>
+  </div>
+  <div class="scr">
+    <table class="tbl">
+      <thead><tr>
+        <th>Time</th><th>Suite</th><th>Browser</th><th>Device</th><th>Locale</th><th>URL</th>
+        <th>Passed</th><th>Failed</th><th>Pass Rate</th><th>Triggered By</th>
+      </tr></thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+  </div>
 </div>
 
-<!-- FLAKY -->
+<!-- ROW 6: Flaky Tests -->
 <div class="card" id="flakySection" style="display:none">
-  <div class="card-accent-top" style="background:linear-gradient(90deg,var(--flaky),#fb923c)"></div>
-  <div class="ct"><span class="ct-icon">⚡</span> Flaky Tests</div>
+  <div class="card-line" style="background:linear-gradient(90deg,var(--warn),#fb923c)"></div>
+  <div class="ct">Flaky Tests</div>
   <div class="scr">
     <table class="tbl" id="flakyTable">
       <thead><tr>
-        <th data-s="name" style="cursor:pointer">Test ↕</th>
-        <th data-s="pct" style="cursor:pointer">Flaky % ↕</th>
+        <th style="cursor:pointer" data-s="name">Test</th>
+        <th style="cursor:pointer" data-s="pct">Flaky %</th>
         <th>Browser</th><th>Device</th><th>Locale</th>
       </tr></thead>
       <tbody id="flakyBody"></tbody>
@@ -381,367 +386,501 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <script>
 'use strict';
 
-// ── MOCK DATA ────────────────────────────────────────
+// ── MOCK DATA ─────────────────────────────────────────────────────────────────
 function buildMock() {
+  const locales = ['us','gb','de','fr','jp'];
+  const browsers = ['chrome','chrome','firefox','safari','chrome'];
+  const devices  = ['desktop','desktop','desktop','desktop','iphone'];
   const steps = [
-    'Page load — check HTTP status','Nav structure — nav wrapper, Adobe logo, nav list visible',
-    'Nav links — every link inside nav has a valid href','CTAs — primary and secondary visible, have href',
-    'App switcher — click opens modal with app links','Sign In — button visible and clickable',
-    'Dropdown — PDF & Productivity opens, links have href','Breadcrumbs — links visible and have valid href',
-    'Nav height — nav.localnav renders with non-zero height','Accessibility — axe-core WCAG 2.1 AA scan on nav',
+    'Page load — check HTTP status',
+    'Nav structure — nav wrapper, Adobe logo, nav list visible',
+    'Nav links — every link inside nav has a valid href',
+    'Sign In — button visible and clickable',
+    'App switcher — click opens modal with app links',
+    'Dropdown — PDF & Productivity opens, links have href',
     'Analytics — daa-ll on all nav elements',
   ];
-  const browsers = ['chrome','chrome','chrome','firefox','safari'];
-  const devices  = ['desktop','desktop','desktop','iphone','android'];
-  const locales  = ['us','gb','de','fr','jp'];
-  const errors   = [
-    'Error: locator [data-id="sign-in"] not found after 10000ms',
-    'Error: expected .feds-popup to be visible, got display:none',
-    'Error: boundingBox() returned null — element not attached',
-  ];
-  const rows = [];
-  for (let i = 0; i < 120; i++) {
-    const r = Math.random();
-    const status = r < 0.915 ? 'passed' : r < 0.972 ? 'failed' : 'flaky';
-    rows.push({ id:i+1, name:steps[i%steps.length]+' | '+locales[i%locales.length].toUpperCase(),
-      suite:'feds-lnav', browser:browsers[i%browsers.length], device:devices[i%devices.length],
-      locale:locales[i%locales.length], status, duration:4000+Math.random()*16000,
-      errorMessage: status==='failed' ? errors[i%errors.length] : null });
+  const results = [];
+  for (let l = 0; l < locales.length; l++) {
+    for (let s = 0; s < steps.length; s++) {
+      const fail = (l === 2 && s === 3) || (l === 4 && s === 4);
+      const flaky = (l === 0 && s === 3);
+      results.push({
+        name:         steps[s],
+        browser:      browsers[l],
+        device:       devices[l],
+        locale:       locales[l],
+        status:       fail ? 'failed' : flaky ? 'flaky' : 'passed',
+        duration:     3000 + Math.round(Math.random() * 8000),
+        errorMessage: fail ? `Expected element to be visible but it was not found after 10s` : null,
+        errorStack:   fail ? `TimeoutError: locator('.feds-signIn') timed out\n  at nav.validateSignIn` : null,
+        tags:         [`@feds-lnav-${locales[l]}`],
+      });
+    }
   }
-  return { gitBranch:'feds-lnav', gitRepo:'ccfeds-automation',
-    timestamp:new Date(Date.now()-9*60000).toISOString(), suite:'feds-lnav',
-    browser:'chrome', device:'desktop', locale:'us', environment:'aem-live',
-    baseURL:'https://main--upp--adobecom.aem.live', triggeredBy:'Snehayt',
-    runUrl:'https://github.com/Snehayt/ccfeds-automation/actions', results:rows };
+  return {
+    gitBranch:   'dashboard',
+    gitRepo:     'ccfeds-automation',
+    suite:       'feds-lnav',
+    browser:     'chrome',
+    device:      'desktop',
+    locale:      'us',
+    baseURL:     'https://www.stage.adobe.com',
+    environment: 'stage',
+    triggeredBy: 'mock',
+    results,
+    timestamp:   new Date().toISOString(),
+    isMock:      true,
+  };
 }
 
-let DATA = buildMock();
-const F = { browser:'all', device:'all', status:'all', locale:'all' };
-let execFilter = 'all', flakySortCol = 'pct', flakySortDir = -1;
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let DATA    = buildMock();
+let HISTORY = [];
+let FILTERS = { browser: 'all', device: 'all', status: 'all', locale: 'all' };
+let execFilter   = 'all';
+let flakySortCol = 'pct';
+let flakySortDir = -1;
 
-// ── FILTERS ──────────────────────────────────────────
-document.querySelectorAll('.pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll(`[data-g="${btn.dataset.g}"]`).forEach(b => b.classList.remove('on'));
-    btn.classList.add('on'); F[btn.dataset.g] = btn.dataset.v; renderAll();
+// ── LOAD DATA ─────────────────────────────────────────────────────────────────
+Promise.allSettled([
+  fetch('./nala-results.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+  fetch('./run-history.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+]).then(([resultsRes, historyRes]) => {
+  if (resultsRes.status === 'fulfilled') {
+    DATA = resultsRes.value;
+  } else {
+    document.getElementById('mockBanner').classList.remove('hidden');
+  }
+  if (historyRes.status === 'fulfilled') {
+    HISTORY = historyRes.value;
+  }
+  renderAll();
+}).catch(() => {
+  document.getElementById('mockBanner').classList.remove('hidden');
+  renderAll();
+});
+
+// ── FILTER BAR ────────────────────────────────────────────────────────────────
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', () => {
+    const g = p.dataset.g, v = p.dataset.v;
+    document.querySelectorAll(`.pill[data-g="${g}"]`).forEach(x => x.classList.remove('on'));
+    p.classList.add('on');
+    FILTERS[g] = v;
+    renderAll();
   });
 });
+
 function filtered() {
-  return (DATA.results||[]).filter(r => {
-    if (F.browser!=='all' && r.browser!==F.browser) return false;
-    if (F.device !=='all' && r.device !==F.device)  return false;
-    if (F.status !=='all' && r.status !==F.status)  return false;
-    if (F.locale !=='all' && r.locale !==F.locale)  return false;
+  return (DATA.results || []).filter(r => {
+    if (FILTERS.browser !== 'all') {
+      const b = (r.browser || '').toLowerCase();
+      if (!b.includes(FILTERS.browser) && !(FILTERS.browser === 'safari' && b === 'webkit')) return false;
+    }
+    if (FILTERS.device !== 'all') {
+      const d = (r.device || '').toLowerCase();
+      if (d !== FILTERS.device) return false;
+    }
+    if (FILTERS.status !== 'all' && r.status !== FILTERS.status) return false;
+    if (FILTERS.locale !== 'all') {
+      const locale = extractLocale(r);
+      if (locale !== FILTERS.locale) return false;
+    }
     return true;
   });
 }
 
-// ── LOAD DATA ─────────────────────────────────────────
-fetch('./nala-results.json')
-  .then(r => { if (!r.ok) throw 0; return r.json(); })
-  .then(json => {
-    DATA = json;
-    const first = (DATA.results||[])[0];
-    if (first) {
-      if (!DATA.browser)     DATA.browser     = first.browser;
-      if (!DATA.environment) DATA.environment = first.env==='live' ? 'aem-live' : (first.env||'aem-live');
-      if (!DATA.baseURL)     DATA.baseURL     = first.url;
-    }
-    renderAll();
-  })
-  .catch(() => renderAll());
-
-// ── RENDER ALL ────────────────────────────────────────
-function renderAll() {
-  const rows = filtered();
-  renderHeader(); renderRunInfo(); renderScore(rows);
-  renderKPI(rows); renderExec(rows, execFilter);
-  renderTrend(7); renderFailures(rows); renderFlaky(rows);
+function extractLocale(r) {
+  if (r.locale) return r.locale.toLowerCase();
+  if (r.tags && r.tags.length) {
+    const m = String(r.tags[0]).match(/-([a-z]{2})$/);
+    if (m) return m[1];
+  }
+  return '';
 }
 
-// ── HEADER ────────────────────────────────────────────
+// ── RENDER ALL ────────────────────────────────────────────────────────────────
+function renderAll() {
+  const rows = filtered();
+  renderHeader();
+  renderRunInfo();
+  renderScore(rows);
+  renderKPI(rows);
+  renderExec(rows, execFilter);
+  renderTrend(7);
+  renderFailures(rows);
+  renderFlaky(rows);
+  renderHistory();
+}
+
+// ── HEADER ────────────────────────────────────────────────────────────────────
 function renderHeader() {
   const ts = DATA.timestamp ? new Date(DATA.timestamp) : new Date();
   document.getElementById('lastTs').textContent = timeAgo(ts);
-  document.getElementById('branchBadge').textContent = '⎇ ' + (DATA.gitBranch||'–');
-  const env = DATA.environment || DATA.suite || '–';
-  document.getElementById('envBadge').textContent = env;
-  const urlBadge = document.getElementById('urlBadge');
-  if (DATA.baseURL) { urlBadge.textContent='🔗 '+DATA.baseURL; urlBadge.style.display='inline-flex'; }
-  else urlBadge.style.display='none';
+  document.getElementById('branchBadge').textContent = DATA.gitBranch || '–';
+  document.getElementById('envBadge').textContent = DATA.environment || DATA.suite || '–';
+  document.getElementById('liveLabel').textContent = DATA.isMock ? 'Mock' : 'Live';
 }
 
-// ── RUN INFO ──────────────────────────────────────────
+// ── RUN INFO CHIPS ────────────────────────────────────────────────────────────
 function renderRunInfo() {
   const fields = [
-    { label:'Suite',        icon:'🗂', value: DATA.suite||DATA.gitBranch||'–' },
-    { label:'Browser',      icon:'🌐', value: DATA.browser ? bi(DATA.browser) : '–' },
-    { label:'Device',       icon:'📱', value: DATA.device  ? di2(DATA.device) : '–' },
-    { label:'Locale',       icon:'🌍', value: (DATA.locale||'–').toUpperCase() },
-    { label:'Environment',  icon:'🌿', value: DATA.environment||'–' },
-    { label:'URL',          icon:'🔗', value: DATA.baseURL||'–', small: true },
-    { label:'Triggered By', icon:'👤', value: DATA.triggeredBy||'–' },
+    { label: 'Suite',        value: DATA.suite        || DATA.gitBranch || '–' },
+    { label: 'Browser',      value: cap(DATA.browser) || '–' },
+    { label: 'Device',       value: cap(DATA.device)  || '–' },
+    { label: 'Locale',       value: (DATA.locale || '–').toUpperCase() },
+    { label: 'Environment',  value: DATA.environment  || '–' },
+    { label: 'Triggered By', value: DATA.triggeredBy  || '–' },
+    { label: 'URL',          value: DATA.baseURL      || '–', small: true },
   ];
-  document.getElementById('runInfo').innerHTML = fields.map(f=>`
+  document.getElementById('runInfo').innerHTML = fields.map(f => `
     <div class="chip">
-      <div class="chip-label">${f.icon} ${f.label}</div>
-      <div class="chip-value ${f.small?'chip-url':''}">${esc(f.value)}</div>
+      <div class="chip-label">${esc(f.label)}</div>
+      <div class="chip-value ${f.small ? 'chip-url' : ''}">${esc(f.value)}</div>
     </div>`).join('');
 }
 
-// ── SCORE ─────────────────────────────────────────────
+// ── SCORE ─────────────────────────────────────────────────────────────────────
 let gaugeChart;
 function renderScore(rows) {
-  const total  = rows.length||1;
-  const passed = rows.filter(r=>r.status==='passed').length;
-  const flaky  = rows.filter(r=>r.status==='flaky').length;
-  const pr=passed/total, fr=flaky/total;
-  const score = Math.round((pr*.5+(1-fr)*.3+.2)*100);
-  const col = score>=85?'#10b981':score>=70?'#f59e0b':'#ef4444';
-  document.getElementById('sPassRate').textContent  = (pr*100).toFixed(1)+'%';
-  document.getElementById('sFlakyRate').textContent = (fr*100).toFixed(1)+'%';
-  const avgMs = rows.reduce((a,r)=>a+(r.duration||0),0)/total;
-  document.getElementById('sAvgDur').textContent    = (avgMs/1000).toFixed(1)+'s';
+  const total  = rows.length || 1;
+  const passed = rows.filter(r => r.status === 'passed').length;
+  const flaky  = rows.filter(r => r.status === 'flaky').length;
+  const pr = passed / total;
+  const fr = flaky  / total;
+  const score = Math.round((pr * 0.5 + (1 - fr) * 0.3 + 0.2) * 100);
+  const col = score >= 85 ? '#22c55e' : score >= 70 ? '#f59e0b' : '#f43f5e';
+
+  document.getElementById('sPassRate').textContent  = (pr * 100).toFixed(1) + '%';
+  document.getElementById('sFlakyRate').textContent = (fr * 100).toFixed(1) + '%';
+  const avgMs = rows.reduce((a, r) => a + (r.duration || 0), 0) / total;
+  document.getElementById('sAvgDur').textContent    = (avgMs / 1000).toFixed(1) + 's';
+  document.getElementById('sPassRate').style.color  = col;
+
   gaugeChart = gaugeChart || echarts.init(document.getElementById('gaugeChart'));
   gaugeChart.setOption({
-    backgroundColor:'transparent',
-    series:[{ type:'gauge', startAngle:200, endAngle:-20, min:0, max:100,
-      radius:'88%', center:['50%','55%'],
-      axisLine:{ lineStyle:{ width:16, color:[[score/100,col],[1,'rgba(255,255,255,.05)']] }},
-      pointer:{ itemStyle:{ color:col }, length:'55%', width:5 },
-      axisTick:{show:false}, splitLine:{show:false}, axisLabel:{show:false},
-      title:{ show:true, offsetCenter:[0,'75%'], color:col, fontSize:10, fontWeight:700 },
-      detail:{ formatter:'{value}', fontSize:34, fontWeight:900, color:col, offsetCenter:[0,'18%'],
-        rich:{ a:{ fontSize:14, color:col, fontWeight:600 } } },
-      data:[{ value:score, name:'SCORE' }]
-    }]
+    backgroundColor: 'transparent',
+    series: [{ type: 'gauge', startAngle: 200, endAngle: -20, min: 0, max: 100,
+      radius: '88%', center: ['50%', '55%'],
+      axisLine: { lineStyle: { width: 14, color: [[score / 100, col], [1, 'rgba(255,255,255,.05)']] } },
+      pointer: { itemStyle: { color: col }, length: '55%', width: 4 },
+      axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false },
+      title: { show: true, offsetCenter: [0, '78%'], color: '#4b5563', fontSize: 9, fontWeight: 700 },
+      detail: { formatter: '{value}', fontSize: 30, fontWeight: 800, color: col, offsetCenter: [0, '18%'] },
+      data: [{ value: score, name: 'SCORE' }],
+    }],
   });
 }
 
-// ── KPI ───────────────────────────────────────────────
+// ── KPI ───────────────────────────────────────────────────────────────────────
 let donutChart;
 function renderKPI(rows) {
   const total  = rows.length;
-  const passed = rows.filter(r=>r.status==='passed').length;
-  const failed = rows.filter(r=>r.status==='failed').length;
-  const flaky  = rows.filter(r=>r.status==='flaky').length;
-  const pr     = total ? (passed/total*100).toFixed(1) : '0';
-  document.getElementById('kTotal').textContent    = total;
-  document.getElementById('kPassed').textContent   = passed;
-  document.getElementById('kFailed').textContent   = failed;
-  document.getElementById('kFlaky').textContent    = flaky;
-  const kpr = document.getElementById('kPassRate');
-  kpr.textContent = pr+'%';
-  kpr.style.color = +pr>=85?'var(--pass)':+pr>=70?'var(--flaky)':'var(--fail)';
-  // Ratio bar
+  const passed = rows.filter(r => r.status === 'passed').length;
+  const failed = rows.filter(r => r.status === 'failed').length;
+  const flaky  = rows.filter(r => r.status === 'flaky').length;
+  const pr     = total ? (passed / total * 100) : 0;
+  const avgMs  = total ? rows.reduce((a, r) => a + (r.duration || 0), 0) / total : 0;
+
+  document.getElementById('kTotal').textContent   = total;
+  document.getElementById('kPassed').textContent  = passed;
+  document.getElementById('kFailed').textContent  = failed;
+  document.getElementById('kPassRate').textContent = pr.toFixed(1) + '%';
+  document.getElementById('kPassRate').style.color = pr >= 85 ? 'var(--pass)' : pr >= 70 ? 'var(--warn)' : 'var(--fail)';
+  document.getElementById('kAvgDur').textContent  = (avgMs / 1000).toFixed(1) + 's';
+
   if (total) {
-    document.getElementById('ratioPass').style.width  = (passed/total*100).toFixed(1)+'%';
-    document.getElementById('ratioFlaky').style.width = (flaky/total*100).toFixed(1)+'%';
-    document.getElementById('ratioFail').style.width  = (failed/total*100).toFixed(1)+'%';
+    document.getElementById('kPassedBar').style.width = (passed / total * 100).toFixed(1) + '%';
+    document.getElementById('kFailedBar').style.width = (failed / total * 100).toFixed(1) + '%';
+    document.getElementById('ratioPass').style.width  = (passed / total * 100).toFixed(1) + '%';
+    document.getElementById('ratioWarn').style.width  = (flaky  / total * 100).toFixed(1) + '%';
+    document.getElementById('ratioFail').style.width  = (failed / total * 100).toFixed(1) + '%';
   }
-  // Donut
-  donutChart = donutChart || echarts.init(document.getElementById('donutChart'));
-  const skipped = total - passed - failed - flaky;
-  donutChart.setOption({
-    backgroundColor:'transparent',
-    tooltip:{ show:false },
-    series:[{ type:'pie', radius:['55%','85%'], center:['50%','50%'],
-      data:[
-        { value:passed, name:'Passed', itemStyle:{ color:'#10b981' } },
-        { value:failed, name:'Failed', itemStyle:{ color:'#ef4444' } },
-        { value:flaky,  name:'Flaky',  itemStyle:{ color:'#f59e0b' } },
-        ...(skipped>0?[{ value:skipped, name:'Skipped', itemStyle:{ color:'#475569' } }]:[]),
-      ],
-      label:{show:false}, labelLine:{show:false},
-      itemStyle:{ borderRadius:3, borderColor:'rgba(0,0,0,0)', borderWidth:2 },
-      emphasis:{ scale:false }
-    }]
-  });
-  // Tab counts
   document.getElementById('tc-all').textContent     = total;
   document.getElementById('tc-passed').textContent  = passed;
   document.getElementById('tc-failed').textContent  = failed;
   document.getElementById('tc-flaky').textContent   = flaky;
-  document.getElementById('tc-skipped').textContent = skipped>0?skipped:0;
+  document.getElementById('tc-skipped').textContent = total - passed - failed - flaky;
 }
 
-// ── EXEC TABLE ────────────────────────────────────────
+// ── EXEC TABLE ────────────────────────────────────────────────────────────────
 function renderExec(rows, filter) {
   execFilter = filter;
-  const list = filter==='all' ? rows : rows.filter(r=>r.status===filter);
+  const list = filter === 'all' ? rows : rows.filter(r => r.status === filter);
   const tbody = document.getElementById('execBody');
-  tbody.innerHTML='';
-  if (list.length===0) {
-    tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-icon">✅</div><div class="empty-text">No ${filter} tests</div></div></td></tr>`;
+  tbody.innerHTML = '';
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div class="empty-text">No ${filter} tests</div></div></td></tr>`;
     return;
   }
-  list.slice(0,100).forEach(r => {
-    const sp = r.status==='passed'?'pass':r.status==='failed'?'fail':r.status==='flaky'?'flaky':'skip';
-    const warns = (r.stdout||[]).filter(s=>/warn|error/i.test(String(s)));
-    const hasDetail = r.errorMessage||r.errorStack||warns.length||(r.stderr||[]).length;
-    const statusDot = `<span class="sp sp-${sp}">${r.status}</span>`;
-    const tr = document.createElement('tr');
-    tr.className = 'data-row'+(hasDetail?' has-detail':'');
-    tr.style.cssText = r.status==='failed'?'background:rgba(239,68,68,.03)':r.status==='flaky'?'background:rgba(245,158,11,.02)':'';
-    tr.innerHTML=`
+
+  list.slice(0, 200).forEach(r => {
+    const sp   = r.status === 'passed' ? 'pass' : r.status === 'failed' ? 'fail' : r.status === 'flaky' ? 'warn' : 'skip';
+    const locale = extractLocale(r);
+    const hasDetail = r.errorMessage || r.errorStack;
+    const br   = browserLabel(r.browser);
+    const dev  = deviceLabel(r.device);
+    const tr   = document.createElement('tr');
+    tr.className = hasDetail ? 'clickable' : '';
+    if (r.status === 'failed') tr.style.cssText = 'background:rgba(244,63,94,.03)';
+
+    tr.innerHTML = `
       <td>
-        <div style="font-weight:500;font-size:12px;color:var(--text)">${esc(r.name||r.suite||'–')}</div>
-        ${r.url?`<div style="font-size:10px;color:var(--muted);margin-top:2px;opacity:.7">${esc(r.url)}</div>`:''}
+        <div style="font-weight:500;font-size:12px">${esc(r.name || '–')}</div>
+        ${r.url ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${esc(r.url)}</div>` : ''}
       </td>
-      <td style="white-space:nowrap">${bi(r.browser)}</td>
-      <td>${di(r.device)}</td>
-      <td><span class="loc">${r.locale||r.tags?.[0]||'–'}</span></td>
-      <td>${statusDot}${r.retry>0?` <span style="font-size:9px;color:var(--flaky);font-weight:700;margin-left:4px">↺${r.retry}</span>`:''}</td>
-      <td style="color:var(--muted);font-weight:500">${((r.duration||0)/1000).toFixed(1)}s</td>`;
+      <td style="white-space:nowrap;color:var(--text2)">${br}</td>
+      <td style="color:var(--text2)">${dev}</td>
+      <td><span class="loc">${locale || '–'}</span></td>
+      <td>
+        <span class="sp sp-${sp}">${r.status}</span>
+        ${r.retry > 0 ? `<span style="font-size:9px;color:var(--warn);font-weight:700;margin-left:4px">↺${r.retry}</span>` : ''}
+      </td>
+      <td style="color:var(--muted)">${((r.duration || 0) / 1000).toFixed(1)}s</td>`;
+
     tbody.appendChild(tr);
+
     if (hasDetail) {
-      const etr = document.createElement('tr');
-      let det='';
-      if (r.errorMessage) det+=`<div style="color:#fca5a5;font-weight:700;margin-bottom:8px;font-size:12px">❌ ${esc(r.errorMessage)}</div>`;
-      if (r.errorStack)   det+=`<div style="color:#94a3b8;font-size:10px;line-height:1.7;margin-bottom:8px">${esc(r.errorStack)}</div>`;
-      if (warns.length)   det+=`<div style="color:var(--flaky);margin-top:6px;font-size:11px">⚠️ Warnings:<br>${warns.map(w=>esc(String(w))).join('<br>')}</div>`;
-      if ((r.stderr||[]).length) det+=`<div style="color:#fb923c;margin-top:6px;font-size:11px">stderr:<br>${r.stderr.map(s=>esc(String(s))).join('<br>')}</div>`;
-      if (DATA.runUrl) det+=`<div style="margin-top:12px"><a href="${esc(DATA.runUrl)}" target="_blank" style="color:var(--accent3);font-size:11px;font-weight:600">📎 View screenshots & videos in GitHub Actions →</a></div>`;
-      etr.innerHTML=`<td colspan="6" style="padding:0"><div class="err-detail">${det}</div></td>`;
-      tbody.appendChild(etr);
-      tr.addEventListener('click',()=>etr.querySelector('.err-detail').classList.toggle('open'));
+      const errTr = document.createElement('tr');
+      errTr.className = 'err-row';
+      let det = '';
+      if (r.errorMessage) det += `<div style="color:#fda4af;font-weight:600;margin-bottom:6px">${esc(r.errorMessage)}</div>`;
+      if (r.errorStack)   det += `<div style="color:var(--text2);font-size:10px;line-height:1.7">${esc(r.errorStack)}</div>`;
+      if (DATA.runUrl)    det += `\n<a href="${esc(DATA.runUrl)}" target="_blank" style="color:var(--accent3);font-size:10px;font-weight:600;margin-top:8px;display:inline-block">View in GitHub Actions</a>`;
+      errTr.innerHTML = `<td colspan="6" style="padding:0"><div class="err-cell">${det}</div></td>`;
+      tbody.appendChild(errTr);
+      tr.addEventListener('click', () => errTr.classList.toggle('open'));
     }
   });
 }
 
-document.getElementById('execTabs').querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('#execTabs .tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on'); renderExec(filtered(), t.dataset.ef);
+document.getElementById('execTabs').querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('#execTabs .tab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    renderExec(filtered(), t.dataset.ef);
   });
 });
 
-// ── TREND ─────────────────────────────────────────────
+// ── TREND ─────────────────────────────────────────────────────────────────────
 let trendChart;
 function renderTrend(days) {
-  const rows   = filtered();
-  const passed = rows.filter(r=>r.status==='passed').length||0;
-  const failed = rows.filter(r=>r.status==='failed').length||0;
-  const flaky  = rows.filter(r=>r.status==='flaky').length||0;
-  const labels=[],pd=[],fd=[],fld=[];
-  for (let i=days-1;i>=0;i--) {
-    const d=new Date(Date.now()-i*86400000);
-    labels.push(d.toLocaleDateString('en',{month:'short',day:'numeric'}));
-    const v=0.85+Math.random()*.3;
-    pd.push(i===0?passed:Math.round(passed*v));
-    fd.push(i===0?failed:Math.round(failed*(.5+Math.random())));
-    fld.push(i===0?flaky:Math.round(flaky*(.5+Math.random())));
+  const labels = [], pd = [], fd = [];
+  const cutoff = Date.now() - days * 86400000;
+  const recent = HISTORY.filter(h => new Date(h.timestamp).getTime() >= cutoff).reverse();
+
+  if (recent.length >= 2) {
+    recent.forEach(h => {
+      labels.push(new Date(h.timestamp).toLocaleDateString('en', { month: 'short', day: 'numeric' }));
+      pd.push(+h.passed || 0);
+      fd.push(+h.failed || 0);
+    });
+  } else {
+    // Generate indicative sparklines from current data only
+    const rows   = filtered();
+    const passed = rows.filter(r => r.status === 'passed').length;
+    const failed = rows.filter(r => r.status === 'failed').length;
+    for (let i = Math.min(days, 7) - 1; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      labels.push(d.toLocaleDateString('en', { month: 'short', day: 'numeric' }));
+      pd.push(i === 0 ? passed : 0);
+      fd.push(i === 0 ? failed : 0);
+    }
   }
-  trendChart = trendChart||echarts.init(document.getElementById('trendChart'));
-  const line=(name,data,color)=>({name,type:'line',data,smooth:true,symbol:'emptyCircle',symbolSize:4,
-    lineStyle:{color,width:2.5},
-    areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:color+'35'},{offset:1,color:'transparent'}]}}
+
+  trendChart = trendChart || echarts.init(document.getElementById('trendChart'));
+  const line = (name, data, color) => ({
+    name, type: 'line', data, smooth: true, symbol: 'emptyCircle', symbolSize: 4,
+    lineStyle: { color, width: 2 },
+    areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: color + '28' }, { offset: 1, color: 'transparent' }] } },
   });
   trendChart.setOption({
-    backgroundColor:'transparent',
-    tooltip:{trigger:'axis',backgroundColor:'#0f0f1a',borderColor:'rgba(255,255,255,.1)',textStyle:{color:'#f1f5f9',fontSize:12},
-      axisPointer:{lineStyle:{color:'rgba(255,255,255,.1)'}}},
-    legend:{data:['Passed','Failed','Flaky'],textStyle:{color:'#64748b',fontSize:12},top:0,right:0,
-      icon:'circle',itemWidth:8,itemHeight:8},
-    grid:{top:36,bottom:28,left:48,right:16},
-    xAxis:{type:'category',data:labels,axisLine:{lineStyle:{color:'rgba(255,255,255,.06)'}},
-      axisLabel:{color:'#64748b',fontSize:11},axisTick:{show:false}},
-    yAxis:{type:'value',splitLine:{lineStyle:{color:'rgba(255,255,255,.05)'}},
-      axisLabel:{color:'#64748b',fontSize:11}},
-    series:[line('Passed',pd,'#10b981'),line('Failed',fd,'#ef4444'),line('Flaky',fld,'#f59e0b')]
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', backgroundColor: '#11131c', borderColor: 'rgba(255,255,255,.08)', textStyle: { color: '#e2e8f0', fontSize: 11 } },
+    legend: { data: ['Passed', 'Failed'], textStyle: { color: '#4b5563', fontSize: 11 }, top: 0, right: 0, icon: 'circle', itemWidth: 7, itemHeight: 7 },
+    grid: { top: 32, bottom: 24, left: 44, right: 12 },
+    xAxis: { type: 'category', data: labels, axisLine: { lineStyle: { color: 'rgba(255,255,255,.05)' } }, axisLabel: { color: '#4b5563', fontSize: 10 }, axisTick: { show: false } },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,.04)' } }, axisLabel: { color: '#4b5563', fontSize: 10 } },
+    series: [line('Passed', pd, '#22c55e'), line('Failed', fd, '#f43f5e')],
   });
 }
 
-document.getElementById('trendTabs').querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('#trendTabs .tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on'); renderTrend(+t.dataset.td);
+document.getElementById('trendTabs').querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('#trendTabs .tab').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    renderTrend(+t.dataset.td);
   });
 });
 
-// ── FAILURES ──────────────────────────────────────────
+// ── FAILURES ─────────────────────────────────────────────────────────────────
 function renderFailures(rows) {
-  const failures=rows.filter(r=>r.status==='failed');
-  const section=document.getElementById('failSection');
-  if (!failures.length){section.style.display='none';return;}
-  section.style.display='block';
-  const body=document.getElementById('failBody');
-  body.innerHTML='';
-  failures.slice(0,20).forEach(r=>{
-    const card=document.createElement('div');
-    card.className='fail-card';
-    card.innerHTML=`
-      <div class="fail-name">❌ ${esc(r.name||r.suite||'–')}</div>
+  const failures = rows.filter(r => r.status === 'failed');
+  const body = document.getElementById('failBody');
+  if (!failures.length) {
+    body.innerHTML = '<div class="empty"><div class="empty-text">No failures in current selection</div></div>';
+    return;
+  }
+  body.innerHTML = '';
+  failures.slice(0, 20).forEach(r => {
+    const locale = extractLocale(r);
+    const card = document.createElement('div');
+    card.className = 'fail-card';
+    card.innerHTML = `
+      <div class="fail-name">${esc(r.name || '–')}</div>
       <div class="fail-meta">
         <span class="sp sp-fail">failed</span>
-        ${bi(r.browser)} ${di(r.device)}
-        <span class="loc">${r.locale||'–'}</span>
-        <span style="color:var(--muted);font-size:11px">${((r.duration||0)/1000).toFixed(1)}s</span>
-        ${r.errorMessage?`<span style="color:var(--muted);font-size:11px">▶ click to expand</span>`:''}
+        <span style="color:var(--text2);font-size:11px">${browserLabel(r.browser)}</span>
+        <span style="color:var(--text2);font-size:11px">${deviceLabel(r.device)}</span>
+        ${locale ? `<span class="loc">${locale}</span>` : ''}
+        <span style="color:var(--muted);font-size:11px">${((r.duration || 0) / 1000).toFixed(1)}s</span>
+        ${r.errorMessage ? '<span style="color:var(--muted);font-size:10px">click to expand</span>' : ''}
       </div>
-      ${r.errorMessage?`<div class="fail-err">${esc(r.errorMessage)}${r.errorStack?'\n\n'+esc(r.errorStack):''}</div>`:''}`;
+      ${r.errorMessage ? `<div class="fail-err">${esc(r.errorMessage)}${r.errorStack ? '\n\n' + esc(r.errorStack) : ''}</div>` : ''}`;
     if (r.errorMessage) {
-      card.addEventListener('click',()=>card.querySelector('.fail-err').classList.toggle('open'));
+      card.addEventListener('click', () => card.querySelector('.fail-err').classList.toggle('open'));
     }
     body.appendChild(card);
   });
 }
 
-// ── FLAKY ─────────────────────────────────────────────
+// ── FLAKY ─────────────────────────────────────────────────────────────────────
 function renderFlaky(rows) {
-  const flakyRows=rows.filter(r=>r.status==='flaky');
-  const section=document.getElementById('flakySection');
-  if (!flakyRows.length){section.style.display='none';return;}
-  section.style.display='block';
-  const grouped={};
-  flakyRows.forEach(r=>{
-    const k=r.name||r.suite;
-    if (!grouped[k]) grouped[k]={name:k,count:0,browsers:new Set(),devices:new Set(),locales:new Set()};
-    grouped[k].count++;grouped[k].browsers.add(r.browser);
-    grouped[k].devices.add(r.device);grouped[k].locales.add(r.locale);
+  const flakyRows = rows.filter(r => r.status === 'flaky');
+  const section = document.getElementById('flakySection');
+  if (!flakyRows.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  const grouped = {};
+  flakyRows.forEach(r => {
+    const k = r.name || r.suite || '–';
+    if (!grouped[k]) grouped[k] = { name: k, count: 0, browsers: new Set(), devices: new Set(), locales: new Set() };
+    grouped[k].count++;
+    grouped[k].browsers.add(r.browser);
+    grouped[k].devices.add(r.device);
+    grouped[k].locales.add(extractLocale(r));
   });
-  const total=rows.length||1;
-  const data=Object.values(grouped).map(g=>({...g,
-    pct:Math.round(g.count/total*100),
-    browsers:[...g.browsers].map(bi).join(' '),
-    devices:[...g.devices].map(di).join(' '),
-    locales:[...g.locales].join(', ').toUpperCase(),
-  })).sort((a,b)=>b[flakySortCol]-a[flakySortCol]*flakySortDir);
-  const tbody=document.getElementById('flakyBody');
-  tbody.innerHTML='';
-  data.slice(0,10).forEach(t=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+  const total = rows.length || 1;
+  const data = Object.values(grouped).map(g => ({
+    ...g,
+    pct: Math.round(g.count / total * 100),
+    browsers: [...g.browsers].map(browserLabel).join(', '),
+    devices:  [...g.devices].map(deviceLabel).join(', '),
+    locales:  [...g.locales].join(', ').toUpperCase(),
+  })).sort((a, b) => b[flakySortCol] - a[flakySortCol] * flakySortDir);
+
+  const tbody = document.getElementById('flakyBody');
+  tbody.innerHTML = '';
+  data.slice(0, 10).forEach(t => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td style="font-size:12px;font-weight:500">${esc(t.name)}</td>
-      <td style="min-width:140px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="fb-bg"><div class="fb-fill" style="width:${Math.min(t.pct,100)}%"></div></div>
-          <span style="font-size:12px;color:var(--flaky);font-weight:800;min-width:34px">${t.pct}%</span>
+      <td style="min-width:130px">
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="fb-bg"><div class="fb-fill" style="width:${Math.min(t.pct, 100)}%"></div></div>
+          <span style="font-size:11px;color:var(--warn);font-weight:700;min-width:32px">${t.pct}%</span>
         </div>
       </td>
-      <td>${t.browsers}</td><td>${t.devices}</td>
+      <td style="color:var(--text2);font-size:11px">${t.browsers}</td>
+      <td style="color:var(--text2);font-size:11px">${t.devices}</td>
       <td><span class="loc">${t.locales}</span></td>`;
     tbody.appendChild(tr);
   });
 }
-document.getElementById('flakyTable').querySelectorAll('[data-s]').forEach(th=>{
-  th.addEventListener('click',()=>{
-    flakySortCol=th.dataset.s; flakySortDir*=-1; renderFlaky(filtered());
+
+document.getElementById('flakyTable').querySelectorAll('[data-s]').forEach(th => {
+  th.addEventListener('click', () => {
+    flakySortCol = th.dataset.s;
+    flakySortDir *= -1;
+    renderFlaky(filtered());
   });
 });
 
-// ── HELPERS ───────────────────────────────────────────
-function bi(b){ return {chrome:'🟠 Chrome',firefox:'🦊 Firefox',safari:'🧭 Safari',webkit:'🧭 Safari',chromium:'🟠 Chrome',all:'🟠🦊🧭'}[b]||b||'–' }
-function di(d){ return {desktop:'🖥',iphone:'📱',android:'🤖',ipad:'💻',tablet:'💻',all:'🖥📱💻'}[d]||d||'–' }
-function di2(d){ return {desktop:'🖥 Desktop',iphone:'📱 iPhone',android:'🤖 Android',ipad:'💻 iPad',tablet:'💻 Tablet',all:'All Devices'}[d]||d||'–' }
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
-function timeAgo(date){
-  const s=Math.floor((Date.now()-new Date(date))/1000);
-  if(s<60) return s+'s ago';if(s<3600) return Math.floor(s/60)+'m ago';
-  if(s<86400) return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';
+// ── RUN HISTORY ───────────────────────────────────────────────────────────────
+let activeHistoryId = null;
+
+function renderHistory() {
+  const tbody = document.getElementById('historyBody');
+  tbody.innerHTML = '';
+  document.getElementById('historyCount').textContent = HISTORY.length
+    ? `${HISTORY.length} run${HISTORY.length !== 1 ? 's' : ''}`
+    : 'No history yet';
+
+  if (!HISTORY.length) {
+    tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-text">No run history yet. Runs will appear here after the first deployment.</div></div></td></tr>`;
+    return;
+  }
+
+  HISTORY.forEach(h => {
+    const pr = parseFloat(h.passRate) || 0;
+    const rateColor = pr >= 85 ? 'var(--pass)' : pr >= 70 ? 'var(--warn)' : 'var(--fail)';
+    const tr = document.createElement('tr');
+    tr.className = 'history-row clickable' + (h.id === activeHistoryId ? ' active' : '');
+    tr.dataset.id = h.id;
+    tr.innerHTML = `
+      <td style="white-space:nowrap;color:var(--text2);font-size:11px">${timeAgo(new Date(h.timestamp))}</td>
+      <td style="font-weight:600;font-size:11px">${esc(h.suite || '–')}</td>
+      <td style="color:var(--text2);font-size:11px">${cap(h.browser) || '–'}</td>
+      <td style="color:var(--text2);font-size:11px">${cap(h.device) || '–'}</td>
+      <td><span class="loc">${(h.locale || '–').toUpperCase()}</span></td>
+      <td style="font-size:10px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(h.url || '–')}</td>
+      <td style="color:var(--pass);font-weight:700">${h.passed}</td>
+      <td style="color:var(--fail);font-weight:700">${h.failed}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-weight:700;font-size:11px;color:${rateColor}">${h.passRate}%</span>
+          <div class="history-pass-bar"><div class="history-pass-fill" style="width:${Math.min(pr,100)}%;background:${rateColor}"></div></div>
+        </div>
+      </td>
+      <td style="color:var(--muted);font-size:11px">${esc(h.triggeredBy || '–')}</td>`;
+
+    tr.addEventListener('click', () => loadHistoricalRun(h));
+    tbody.appendChild(tr);
+  });
 }
-window.addEventListener('resize',()=>{
-  [gaugeChart,trendChart,donutChart].forEach(c=>c&&c.resize());
+
+function loadHistoricalRun(entry) {
+  if (entry.id === activeHistoryId) {
+    activeHistoryId = null;
+    document.getElementById('viewingLabel').textContent = '';
+    DATA = window._latestData || DATA;
+    renderAll();
+    return;
+  }
+  activeHistoryId = entry.id;
+  document.getElementById('viewingLabel').textContent = `Viewing run from ${new Date(entry.timestamp).toLocaleString()}`;
+
+  fetch(`./runs/${entry.id}.json`)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      if (!window._latestData) window._latestData = DATA;
+      DATA = data;
+      renderAll();
+    })
+    .catch(() => {
+      document.getElementById('viewingLabel').textContent = `Run data not available for ${entry.id}`;
+    });
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function browserLabel(b) {
+  return { chrome: 'Chrome', chromium: 'Chrome', firefox: 'Firefox', safari: 'Safari', webkit: 'Safari', all: 'All' }[b] || b || '–';
+}
+function deviceLabel(d) {
+  return { desktop: 'Desktop', iphone: 'iPhone', android: 'Android', ipad: 'iPad', tablet: 'Tablet', mobile: 'Mobile', all: 'All' }[d] || d || '–';
+}
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function timeAgo(date) {
+  const s = Math.floor((Date.now() - new Date(date)) / 1000);
+  if (s < 60)    return s + 's ago';
+  if (s < 3600)  return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+window.addEventListener('resize', () => {
+  [gaugeChart, trendChart].forEach(c => c && c.resize());
 });
 </script>
 </body>

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "run-2026-06-25T05-44-10-52",
+    "timestamp": "2026-06-25T05:44:10.527Z",
+    "suite": "cc-firefly",
+    "browser": "chrome",
+    "device": "desktop",
+    "locale": "us",
+    "url": "https://www.stage.adobe.com",
+    "page": "",
+    "passed": 0,
+    "failed": 3,
+    "total": 3,
+    "passRate": "0.0",
+    "triggeredBy": "Snehayt",
+    "runUrl": "https://github.com/Snehayt/ccfeds-automation/actions/runs/28149492782"
+  }
+]
