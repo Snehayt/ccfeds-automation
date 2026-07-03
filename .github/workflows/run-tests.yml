@@ -241,6 +241,23 @@ jobs:
             URLS_JSON=$(jq -nc --arg u "$BASE_URL" '[$u]')
           fi
 
+          # ── For unav suite: strip any path/query from URLs so BASE_URL is ────
+          # ── domain-only. unav.test.js detects .html in BASE_URL and switches ─
+          # ── to @unav-single mode, bypassing all locale/grep filters. ──────────
+          if [ "$SUITE" = "unav" ]; then
+            URLS_JSON=$(echo "$URLS_JSON" | node -e "
+              let d='';
+              process.stdin.on('data', c => d += c);
+              process.stdin.on('end', () => {
+                const urls = JSON.parse(d);
+                const normalized = urls.map(u => {
+                  try { return new URL(u).origin; } catch { return u; }
+                });
+                console.log(JSON.stringify(normalized));
+              });
+            ")
+          fi
+
           echo "config=$CONFIG"           >> $GITHUB_OUTPUT
           echo "test_path=$TEST_PATH"     >> $GITHUB_OUTPUT
           echo "projects=$PROJECTS"       >> $GITHUB_OUTPUT
@@ -277,8 +294,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: |
+          BROWSER="${{ needs.setup.outputs.browser }}"
+          if [ "$BROWSER" = "firefox" ]; then
+            npx playwright install --with-deps firefox
+          elif [ "$BROWSER" = "safari" ]; then
+            npx playwright install --with-deps webkit
+          elif [ "$BROWSER" = "all" ]; then
+            npx playwright install --with-deps chromium firefox webkit
+          else
+            npx playwright install --with-deps chromium
+          fi
 
       # ── Run FEDs tests ─────────────────────────────────────────────────────
       - name: Run FEDs tests
