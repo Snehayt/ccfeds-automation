@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>FEDS QA Dashboard</title>
+<title>Automation Tests Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -11,14 +11,14 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0b10;--surface:#11131c;--surface2:#181a27;--surface3:#1e2030;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --bg:#f4f6f9;--surface:#ffffff;--surface2:#f0f2f6;--surface3:#e8eaf0;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
   --accent:#6366f1;--accent2:#3b82f6;--accent3:#06b6d4;
-  --pass:#22c55e;--pass-dim:rgba(34,197,94,.12);
-  --fail:#f43f5e;--fail-dim:rgba(244,63,94,.10);
-  --warn:#f59e0b;--warn-dim:rgba(245,158,11,.10);
-  --skip:#475569;--skip-dim:rgba(71,85,105,.12);
-  --text:#e2e8f0;--text2:#94a3b8;--muted:#4b5563;--radius:12px;
+  --pass:#16a34a;--pass-dim:rgba(22,163,74,.10);
+  --fail:#dc2626;--fail-dim:rgba(220,38,38,.08);
+  --warn:#d97706;--warn-dim:rgba(217,119,6,.10);
+  --skip:#64748b;--skip-dim:rgba(100,116,139,.10);
+  --text:#111827;--text2:#4b5563;--muted:#9ca3af;--radius:12px;
 }
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;font-size:13px;line-height:1.5}
@@ -26,7 +26,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 /* ── FILTER BAR ── */
 .filterbar{
   position:sticky;top:0;z-index:200;
-  background:rgba(10,11,16,0.97);backdrop-filter:blur(20px);
+  background:rgba(244,246,249,0.97);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
   padding:8px 28px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;
 }
@@ -117,7 +117,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .tbl tbody tr.clickable:hover td{background:rgba(255,255,255,.025);cursor:pointer}
 .err-row{display:none}
 .err-row.open{display:table-row}
-.err-cell{background:rgba(10,11,16,.9);border-left:2px solid var(--fail);padding:10px 14px;font-size:11px;color:#fda4af;font-family:'Menlo','Monaco',monospace;white-space:pre-wrap;line-height:1.6}
+.err-cell{background:rgba(220,38,38,.05);border-left:2px solid var(--fail);padding:10px 14px;font-size:11px;color:#b91c1c;font-family:'Menlo','Monaco',monospace;white-space:pre-wrap;line-height:1.6}
 
 /* ── STATUS PILL ── */
 .sp{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
@@ -221,7 +221,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 <header class="hero">
   <div class="hero-top">
     <div>
-      <div class="hero-title">FEDS QA</div>
+      <div class="hero-title">Automation Tests</div>
       <div class="hero-sub">Observability Dashboard</div>
       <div class="hero-meta">
         <span class="live-dot" id="liveLabel">Live</span>
@@ -698,7 +698,7 @@ function renderTrend(days) {
   });
   trendChart.setOption({
     backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis', backgroundColor: '#11131c', borderColor: 'rgba(255,255,255,.08)', textStyle: { color: '#e2e8f0', fontSize: 11 } },
+    tooltip: { trigger: 'axis', backgroundColor: '#ffffff', borderColor: 'rgba(0,0,0,.12)', textStyle: { color: '#111827', fontSize: 11 } },
     legend: { data: ['Passed', 'Failed'], textStyle: { color: '#4b5563', fontSize: 11 }, top: 0, right: 0, icon: 'circle', itemWidth: 7, itemHeight: 7 },
     grid: { top: 32, bottom: 24, left: 44, right: 12 },
     xAxis: { type: 'category', data: labels, axisLine: { lineStyle: { color: 'rgba(255,255,255,.05)' } }, axisLabel: { color: '#4b5563', fontSize: 10 }, axisTick: { show: false } },

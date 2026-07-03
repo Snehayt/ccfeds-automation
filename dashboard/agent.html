@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FEDS Test Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f6f9;--surface:#fff;--surface2:#f0f2f6;--surface3:#e8eaf0;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --accent:#6366f1;--accent2:#3b82f6;
+  --pass:#16a34a;--fail:#dc2626;--warn:#d97706;
+  --text:#111827;--text2:#4b5563;--muted:#9ca3af;--radius:12px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.5;display:flex;flex-direction:column}
+
+/* ── TOP BAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.logo-text{font-size:15px;font-weight:800;letter-spacing:-.02em;color:var(--accent)}
+.logo-sub{font-size:10px;color:var(--muted)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.status-wrap{display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--pass);flex-shrink:0}
+.dot.thinking{background:var(--warn);animation:blink .7s infinite}
+.dot.running{background:var(--accent);animation:blink .5s infinite}
+.dot.offline{background:var(--muted)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.status-lbl{font-size:11px;color:var(--muted)}
+.btn{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;font-family:'Inter',sans-serif}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-stop{border-color:rgba(220,38,38,.3);color:var(--fail);display:none}
+.btn-stop:hover{background:rgba(220,38,38,.06)}
+
+/* ── SETUP OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.hidden{display:none}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:28px;width:440px;max-width:calc(100vw - 32px);box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.modal h2{font-size:16px;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:22px;line-height:1.7}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+.field input:focus{border-color:var(--accent)}
+.field-hint{font-size:10px;color:var(--muted);margin-top:4px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-p:hover{opacity:.9}
+
+/* ── CHAT ── */
+.chat-wrap{flex:1;display:flex;flex-direction:column;max-width:800px;width:100%;margin:0 auto;padding:0 20px;overflow:hidden}
+.history{flex:1;overflow-y:auto;padding:20px 0 10px;display:flex;flex-direction:column;gap:14px}
+.history::-webkit-scrollbar{width:3px}
+.history::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── MESSAGES ── */
+.msg{display:flex;gap:10px;align-items:flex-start;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.av-agent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.av-user{background:var(--surface3);border:1px solid var(--border2);color:var(--text2)}
+.bubble{max-width:80%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 14px;font-size:13px;line-height:1.65;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.msg.user .bubble{background:rgba(99,102,241,.07);border-color:rgba(99,102,241,.2)}
+.bubble-time{font-size:10px;color:var(--muted);margin-top:5px}
+
+/* ── CONFIRM CARD ── */
+.confirm-card{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:10px}
+.confirm-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.param{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px}
+.param-k{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.param-v{font-size:12px;font-weight:600;color:var(--text)}
+.param.full{grid-column:1/-1}
+.confirm-actions{display:flex;gap:8px;flex-wrap:wrap}
+.c-btn{padding:6px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .15s}
+.c-btn:disabled{opacity:.4;cursor:not-allowed}
+.c-btn-yes{background:linear-gradient(135deg,var(--pass),#15803d);color:#fff}
+.c-btn-yes:hover:not(:disabled){opacity:.88}
+.c-btn-no{background:var(--surface3);border:1px solid var(--border2);color:var(--text2)}
+.c-btn-no:hover:not(:disabled){border-color:rgba(220,38,38,.4);color:var(--fail)}
+.confirm-note{font-size:10px;color:var(--muted);margin-top:8px}
+
+/* ── OUTPUT BLOCK ── */
+.output-block{background:#1a1a2e;border-radius:8px;padding:12px;margin-top:10px;font-family:'Menlo','Monaco',monospace;font-size:11px;color:#e2e8f0;max-height:500px;overflow-y:auto;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+.output-block::-webkit-scrollbar{width:3px}
+.output-block::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1)}
+
+/* ── RESULT CARD ── */
+.result-card{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-top:10px}
+.result-stats{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.stat{flex:1;min-width:80px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;text-align:center}
+.stat-n{font-size:22px;font-weight:800;line-height:1}
+.stat-l{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.stat.pass .stat-n{color:var(--pass)}
+.stat.fail .stat-n{color:var(--fail)}
+.stat.total .stat-n{color:var(--accent)}
+.result-bar{height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;margin-bottom:8px}
+.result-bar-fill{height:100%;border-radius:3px;background:var(--pass);transition:width .6s ease}
+.result-rate{font-size:12px;font-weight:600;color:var(--text2)}
+.result-actions{display:flex;gap:8px;margin-top:10px}
+
+/* ── THINKING ── */
+.thinking-dots{display:flex;gap:4px;align-items:center;height:20px}
+.thinking-dots span{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:td .8s infinite}
+.thinking-dots span:nth-child(2){animation-delay:.15s}
+.thinking-dots span:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-4px);opacity:1}}
+
+/* ── SUGGESTIONS ── */
+.sugs{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 8px}
+.sug{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:5px 13px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'Inter',sans-serif}
+.sug:hover{border-color:var(--accent);color:var(--accent);background:rgba(99,102,241,.05)}
+
+/* ── EMPTY STATE ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:40px 20px;text-align:center;flex:1}
+.empty-title{font-size:17px;font-weight:700}
+.empty-desc{font-size:13px;color:var(--muted);max-width:400px;line-height:1.7}
+.server-warn{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--fail);margin-top:8px;display:none}
+.server-warn.show{display:block}
+
+/* ── INPUT ── */
+.input-area{padding:10px 0 18px;border-top:1px solid var(--border);flex-shrink:0}
+.input-row{display:flex;gap:8px;align-items:flex-end}
+.ibox{flex:1;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:11px 14px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:none;min-height:44px;max-height:120px;transition:border-color .15s;line-height:1.5}
+.ibox:focus{border-color:var(--accent)}
+.ibox::placeholder{color:var(--muted)}
+.send{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}
+.send:hover{opacity:.85}
+.send:disabled{opacity:.3;cursor:not-allowed}
+.send svg{width:17px;height:17px;fill:#fff}
+.input-hint{font-size:10px;color:var(--muted);margin-top:5px;text-align:center}
+
+/* ── SERVER STATUS BAR ── */
+.server-bar{background:rgba(220,38,38,.07);border-bottom:1px solid rgba(220,38,38,.15);padding:7px 24px;font-size:11px;color:var(--fail);display:none;align-items:center;gap:8px}
+.server-bar.show{display:flex}
+</style>
+</head>
+<body>
+
+<!-- SERVER OFFLINE BAR -->
+<div class="server-bar" id="serverBar">
+  Agent server is not running — start it with: <strong>node scripts/agent-server.js</strong>
+</div>
+
+<!-- SETUP MODAL -->
+<div class="overlay hidden" id="setupOverlay">
+  <div class="modal">
+    <h2>Agent Settings</h2>
+    <div class="modal-sub">The agent server runs locally on your machine and executes Playwright tests directly.</div>
+    <div class="field">
+      <label>Agent Server URL</label>
+      <input type="text" id="inServer" placeholder="http://localhost:3001" autocomplete="off"/>
+      <div class="field-hint">Default: http://localhost:3001 — start with <strong>node scripts/agent-server.js</strong></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="btnCancelSetup">Cancel</button>
+      <button class="btn-p" id="btnSaveSetup">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <div class="logo-text">FEDS Test Agent</div>
+    <div class="logo-sub">Runs tests directly on your machine</div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-wrap">
+      <div class="dot offline" id="statusDot"></div>
+      <span class="status-lbl" id="statusLbl">Connecting...</span>
+    </div>
+    <button class="btn btn-stop" id="btnStop" onclick="stopRun()">Stop run</button>
+    <a class="btn" href="./index.html">Dashboard</a>
+    <button class="btn" id="btnSettings" onclick="showSetup()">Settings</button>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="chat-wrap">
+  <div class="history" id="history">
+    <div class="empty" id="emptyState">
+      <div class="empty-title">What do you want to test?</div>
+      <div class="empty-desc">Type in plain English. I'll show you what I'll run before starting anything.</div>
+      <div class="server-warn" id="serverWarn">
+        Agent server is offline. Run <strong>node scripts/agent-server.js</strong> in your terminal first.
+      </div>
+      <div class="sugs" id="sugs">
+        <button class="sug" onclick="useSug(this)">run feds-lnav on prod</button>
+        <button class="sug" onclick="useSug(this)">run photoshop sanity on chrome</button>
+        <button class="sug" onclick="useSug(this)">run unav tests</button>
+        <button class="sug" onclick="useSug(this)">run footer tests on mobile</button>
+        <button class="sug" onclick="useSug(this)">run feds-lnav on stage with no retries</button>
+        <button class="sug" onclick="useSug(this)">run header tests on firefox</button>
+        <button class="sug" onclick="useSug(this)">what suites can I run?</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-area">
+    <div class="input-row">
+      <textarea class="ibox" id="ibox" placeholder="e.g. run photoshop sanity on chrome prod..." rows="1"></textarea>
+      <button class="send" id="sendBtn" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+    <div class="input-hint">Enter to send · Shift+Enter for new line · I always confirm before running</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+let SERVER_URL = localStorage.getItem('feds_server') || 'http://localhost:3001';
+
+// ── KEYWORD PARSER ────────────────────────────────────────────────────────────
+const SUITE_KEYS = {
+  'feds-lnav':             ['feds-lnav','lnav','local nav','nav bar','navbar','navigation','feds lnav'],
+  'feds-photoshop-sanity': ['photoshop sanity','photoshop-sanity','photoshopsanity','photoshop'],
+  'feds-sanity':           ['feds-sanity','feds sanity','sanity','home page sanity','homepage sanity'],
+  'feds-header':           ['header','feds-header','feds header'],
+  'feds-footer':           ['footer','feds-footer','feds footer'],
+  'feds-search':           ['search','feds-search','feds search'],
+  'feds-a11y':             ['a11y','accessibility','feds-a11y'],
+  'feds-jarvis':           ['jarvis','feds-jarvis'],
+  'feds-cmp-banner':       ['cmp-banner','cmp banner','consent banner','feds-cmp'],
+  'feds':                  ['feds tests','all feds'],
+  'unav':                  ['unav','universal nav','universal navigation'],
+  'site-redesign':         ['site-redesign','site redesign'],
+  'cc-firefly':            ['firefly','cc-firefly'],
+  'cc-merch':              ['merch','cc-merch','merchandise'],
+  'cc-lingo':              ['cc-lingo','cc lingo'],
+  'cc-sanity':             ['cc-sanity','cc sanity'],
+  'cc':                    ['cc tests','creative cloud tests'],
+  'express':               ['express','express lingo'],
+  'all':                   ['all tests','run everything','run all','everything'],
+};
+
+const PAGE_KEYS = {
+  '/products/photoshop?georouting=off':    ['photoshop page','on photoshop','/products/photoshop'],
+  '/products/illustrator?georouting=off':  ['illustrator page','on illustrator','/products/illustrator'],
+  '/products/premiere?georouting=off':     ['premiere page','on premiere'],
+  '/acrobat?georouting=off':               ['acrobat page','on acrobat'],
+  '/creativecloud?georouting=off':         ['creative cloud page','on creative cloud'],
+};
+
+function parse(text) {
+  const t = text.toLowerCase().trim();
+
+  // Questions
+  if (/what suite|which suite|list suite|what can|help|what test|available/.test(t)) {
+    return { action: 'answer', message: `Available suites:\n\n• feds-lnav — nav bar, links, sign-in, dropdowns\n• feds-photoshop-sanity — Photoshop page checks\n• feds-sanity — homepage sanity\n• feds-header — global header\n• feds-footer — global footer\n• feds-search — search\n• feds-a11y — accessibility (WCAG)\n• unav — universal nav\n• feds-cmp-banner — consent banner\n• cc-firefly — Firefly AI tests\n• cc-merch — merch cards\n• cc-lingo — CC lingo\n• express — Express lingo\n• all — run everything\n\nExamples:\n• "run unav for https://www.adobe.com/creativecloud.html"\n• "run feds-lnav on stage firefox mobile"\n• "run photoshop sanity for de locale no retries"` };
+  }
+
+  if (/^(yes|run it|go|confirm|looks good|ok|yep|yeah|sure|do it|start it)$/.test(t)) {
+    return { action: 'run' };
+  }
+
+  if (/^(no|cancel|stop|abort|never mind|nope)$/.test(t)) {
+    return { action: 'cancel' };
+  }
+
+  // ── Suite ─────────────────────────────────────────────────────────────────
+  let suite = 'feds-lnav';
+  for (const [key, keywords] of Object.entries(SUITE_KEYS)) {
+    if (keywords.some(k => t.includes(k))) { suite = key; break; }
+  }
+
+  // ── Full URL — extract base + path ────────────────────────────────────────
+  let urls = '';
+  let test_page = '';
+  const urlRaw = text.match(/https?:\/\/[^\s,]+/i) || text.match(/(?:url\s*[=:]\s*)(www\.[^\s,]+)/i);
+  if (urlRaw) {
+    const raw = urlRaw[0].replace(/^url\s*[=:]\s*/i, '');
+    const full = raw.startsWith('http') ? raw : 'https://' + raw;
+    try {
+      const u  = new URL(full);
+      urls      = u.origin;
+      test_page = u.pathname !== '/' ? (u.pathname + u.search) : '';
+    } catch {}
+  }
+
+  // ── Environment (only if no full URL given) ───────────────────────────────
+  let environment = 'prod';
+  if (!urls) {
+    if (/\bstage\b/.test(t))             environment = 'stage';
+    else if (/aem.?live|aem live/.test(t)) environment = 'aem-live';
+    else if (/\bprod\b|\bproduction\b/.test(t)) environment = 'prod';
+  }
+
+  // ── Browser ───────────────────────────────────────────────────────────────
+  let browser = 'chrome';
+  if (/\bfirefox\b/.test(t))       browser = 'firefox';
+  else if (/\bsafari\b/.test(t))   browser = 'safari';
+  else if (/all browser/.test(t))  browser = 'all';
+
+  // ── Device ────────────────────────────────────────────────────────────────
+  let device = 'desktop';
+  if (/mobile|iphone|android|phone/.test(t)) device = 'mobile';
+  else if (/tablet|ipad/.test(t))            device = 'tablet';
+  else if (/all device/.test(t))             device = 'all';
+
+  // ── Locale — any 2-letter code or country name ───────────────────────────
+  let locale = 'us';
+  const localeMap = {
+    de: ['\\bde\\b','german','germany'],
+    fr: ['\\bfr\\b','french','france'],
+    jp: ['\\bjp\\b','japan'],
+    gb: ['\\bgb\\b','\\buk\\b','britain'],
+    au: ['\\bau\\b','australia'],
+    ca: ['\\bca\\b','canada'],
+    mx: ['\\bmx\\b','mexico'],
+    br: ['\\bbr\\b','brazil'],
+    in: ['\\bin\\b','india'],
+    es: ['\\bes\\b','spain'],
+    it: ['\\bit\\b','italy'],
+    kr: ['\\bkr\\b','korea'],
+    nl: ['\\bnl\\b','netherlands'],
+    se: ['\\bse\\b','sweden'],
+    no: ['\\bno\\b','norway'],
+    fi: ['\\bfi\\b','finland'],
+    all: ['all locale','every locale'],
+  };
+  for (const [lc, patterns] of Object.entries(localeMap)) {
+    if (patterns.some(p => new RegExp(p).test(t))) { locale = lc; break; }
+  }
+
+  // ── Page path (if no full URL) ────────────────────────────────────────────
+  if (!test_page) {
+    for (const [page, keywords] of Object.entries(PAGE_KEYS)) {
+      if (keywords.some(k => t.includes(k))) { test_page = page; break; }
+    }
+    const pm = text.match(/(?:page|path)\s+(\/[^\s,]+)/i);
+    if (pm) test_page = pm[1];
+  }
+
+  // ── Grep / tag filter ─────────────────────────────────────────────────────
+  let grep = '';
+  const gm = text.match(/(?:grep|tag|filter)\s+"?(@?[^"'\s]+)"?/i);
+  if (gm) grep = gm[1].trim();
+
+  // ── Retries ───────────────────────────────────────────────────────────────
+  let retries = 1;
+  if (/no retry|no retries|0 retries|without retry/.test(t)) retries = 0;
+  else { const rm = t.match(/(\d)\s*retr/); if (rm) retries = parseInt(rm[1]); }
+
+  // ── Workers ───────────────────────────────────────────────────────────────
+  let workers = '';
+  const wm = t.match(/(\d+)\s*worker/);
+  if (wm) workers = wm[1];
+
+  const params = { suite, browser, device, environment, locale, urls, test_page, grep, retries: String(retries), workers };
+  return {
+    action: 'confirm',
+    params,
+    summary: buildSummary(suite, browser, device, urls || environment, locale, test_page),
+  };
+}
+
+function buildSummary(suite, browser, device, envOrUrl, locale, page) {
+  let s = `Run <strong>${suite}</strong> on <strong>${browser} ${device}</strong> against <strong>${envOrUrl}</strong>`;
+  if (locale && locale !== 'us') s += ` · locale: ${locale}`;
+  if (page) s += ` · page: ${page}`;
+  return s;
+}
+
+// ── SERVER CHECK ──────────────────────────────────────────────────────────────
+let serverOnline = false;
+
+async function checkServer() {
+  try {
+    const r = await fetch(`${SERVER_URL}/status`, { signal: AbortSignal.timeout(2000) });
+    const d = await r.json();
+    serverOnline = true;
+    document.getElementById('serverBar').classList.remove('show');
+    document.getElementById('serverWarn').classList.remove('show');
+    if (d.running) {
+      setStatus('running', `Running ${d.suite}...`);
+    } else {
+      setStatus('', 'Ready');
+    }
+  } catch {
+    serverOnline = false;
+    document.getElementById('serverBar').classList.add('show');
+    document.getElementById('serverWarn').classList.add('show');
+    setStatus('offline', 'Server offline');
+  }
+}
+
+setInterval(checkServer, 5000);
+checkServer();
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let busy    = false;
+let pending = null;
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function showSetup() {
+  document.getElementById('inServer').value = SERVER_URL;
+  document.getElementById('setupOverlay').classList.remove('hidden');
+}
+document.getElementById('btnSaveSetup').onclick = () => {
+  const s = document.getElementById('inServer').value.trim();
+  if (s) { SERVER_URL = s; localStorage.setItem('feds_server', s); }
+  document.getElementById('setupOverlay').classList.add('hidden');
+  checkServer();
+};
+document.getElementById('btnCancelSetup').onclick = () =>
+  document.getElementById('setupOverlay').classList.add('hidden');
+
+// ── UI HELPERS ────────────────────────────────────────────────────────────────
+function setStatus(s, lbl) {
+  document.getElementById('statusDot').className = `dot ${s}`;
+  document.getElementById('statusLbl').textContent = lbl;
+}
+
+function ts() {
+  return new Date().toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' });
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function addMsg(role, html, opts) {
+  document.getElementById('emptyState')?.remove();
+  const hist = document.getElementById('history');
+  const div  = document.createElement('div');
+  div.className = `msg ${role}`;
+  if (opts?.id) div.id = opts.id;
+  div.innerHTML = `
+    <div class="av ${role === 'user' ? 'av-user' : 'av-agent'}">${role === 'user' ? 'You' : 'AI'}</div>
+    <div class="bubble">
+      ${html}
+      <div class="bubble-time">${ts()}</div>
+    </div>`;
+  hist.appendChild(div);
+  hist.scrollTop = hist.scrollHeight;
+  return div;
+}
+
+function addThinking() {
+  document.getElementById('emptyState')?.remove();
+  const hist = document.getElementById('history');
+  const div  = document.createElement('div');
+  div.className = 'msg agent';
+  div.id = '_thinking';
+  div.innerHTML = `<div class="av av-agent">AI</div><div class="bubble"><div class="thinking-dots"><span></span><span></span><span></span></div></div>`;
+  hist.appendChild(div);
+  hist.scrollTop = hist.scrollHeight;
+}
+
+function removeThinking() { document.getElementById('_thinking')?.remove(); }
+
+function scrollHistory() {
+  const h = document.getElementById('history');
+  h.scrollTop = h.scrollHeight;
+}
+
+// ── CONFIRM CARD ──────────────────────────────────────────────────────────────
+function confirmCard(params, summary, cardId) {
+  const p = params;
+  const rows = [
+    { k: 'Suite',   v: p.suite },
+    { k: 'Browser', v: p.browser },
+    { k: 'Device',  v: p.device },
+    { k: 'Env',     v: p.urls ? 'custom URL' : p.environment },
+    { k: 'Locale',  v: p.locale || 'us' },
+    { k: 'Retries', v: p.retries },
+  ];
+  if (p.urls)      rows.push({ k: 'Base URL', v: p.urls,     full: true });
+  if (p.test_page) rows.push({ k: 'Page',     v: p.test_page, full: true });
+  if (p.workers)   rows.push({ k: 'Workers',  v: p.workers });
+  if (p.grep)      rows.push({ k: 'Filter',   v: p.grep,     full: true });
+
+  return `
+    <div>${summary}</div>
+    <div class="confirm-card" id="card-${cardId}">
+      <div class="confirm-title">Does this look right?</div>
+      <div class="param-grid">
+        ${rows.map(r => `<div class="param ${r.full?'full':''}"><div class="param-k">${r.k}</div><div class="param-v">${esc(r.v)}</div></div>`).join('')}
+      </div>
+      <div class="confirm-actions">
+        <button class="c-btn c-btn-yes" id="yes-${cardId}" onclick="doRun('${cardId}')">Run it</button>
+        <button class="c-btn c-btn-no"  id="no-${cardId}"  onclick="doCancel('${cardId}')">Cancel</button>
+      </div>
+      <div class="confirm-note">Or just say what to change — "use Firefox instead" or "run on stage"</div>
+    </div>`;
+}
+
+function lockCard(id) {
+  const y = document.getElementById(`yes-${id}`);
+  const n = document.getElementById(`no-${id}`);
+  if (y) y.disabled = true;
+  if (n) n.disabled = true;
+}
+
+function doCancel(id) {
+  lockCard(id);
+  pending = null;
+  addMsg('agent', 'Cancelled. What would you like to test?');
+}
+
+// ── RUN ───────────────────────────────────────────────────────────────────────
+async function doRun(cardId) {
+  if (!pending) return;
+  if (!serverOnline) {
+    addMsg('agent', 'The agent server is not running. Start it with: <code>node scripts/agent-server.js</code>');
+    return;
+  }
+  lockCard(cardId);
+
+  const p = pending;
+  pending = null;
+
+  const runMsgId  = `run-msg-${Date.now()}`;
+  const outId     = `out-${Date.now()}`;
+  const statusId  = `rs-${Date.now()}`;
+
+  addMsg('agent', `
+    <div>Starting <strong>${p.suite}</strong>...</div>
+    <div class="output-block" id="${outId}">Connecting to server...</div>
+    <div id="${statusId}"></div>`, { id: runMsgId });
+
+  document.getElementById('btnStop').style.display = 'flex';
+  setStatus('running', `Running ${p.suite}...`);
+
+  let outEl = document.getElementById(outId);
+  let lines = [];
+
+  try {
+    const res = await fetch(`${SERVER_URL}/run`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(p),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      outEl.textContent = `Error: ${err.error || res.statusText}`;
+      document.getElementById('btnStop').style.display = 'none';
+      setStatus('', 'Ready');
+      return;
+    }
+
+    outEl.textContent = '';
+    const reader   = res.body.getReader();
+    const decoder  = new TextDecoder();
+    let   buf      = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buf += decoder.decode(value, { stream: true });
+      const parts = buf.split('\n\n');
+      buf = parts.pop();
+
+      for (const part of parts) {
+        if (!part.startsWith('data:')) continue;
+        let evt;
+        try { evt = JSON.parse(part.slice(5).trim()); } catch { continue; }
+
+        if (evt.type === 'output') {
+          lines.push(evt.payload);
+          if (lines.length > 200) lines = lines.slice(-200);
+          outEl.textContent = lines.join('');
+          outEl.scrollTop   = outEl.scrollHeight;
+          scrollHistory();
+        } else if (evt.type === 'done') {
+          document.getElementById('btnStop').style.display = 'none';
+          setStatus('', 'Ready');
+          showResults(statusId, evt.payload);
+        } else if (evt.type === 'error') {
+          document.getElementById('btnStop').style.display = 'none';
+          setStatus('', 'Ready');
+          document.getElementById(statusId).innerHTML = `<div style="color:var(--fail);margin-top:8px;font-size:12px">Error: ${esc(evt.payload)}</div>`;
+        }
+      }
+    }
+
+  } catch (e) {
+    outEl.textContent = `Failed to connect: ${e.message}`;
+    document.getElementById('btnStop').style.display = 'none';
+    setStatus('', 'Ready');
+  }
+
+  busy = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function showResults(containerId, payload) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const r = payload?.results;
+  if (!r || !r.results) {
+    el.innerHTML = payload?.code === 0
+      ? `<div style="color:var(--pass);margin-top:8px;font-size:12px;font-weight:600">Run completed.</div>`
+      : `<div style="color:var(--fail);margin-top:8px;font-size:12px">Run finished with exit code ${payload?.code}. Check output above.</div>`;
+    return;
+  }
+
+  const total  = r.results.length;
+  const passed = r.results.filter(x => x.status === 'passed').length;
+  const failed = r.results.filter(x => x.status === 'failed').length;
+  const rate   = total > 0 ? ((passed / total) * 100).toFixed(1) : 0;
+  const color  = rate >= 90 ? 'var(--pass)' : rate >= 70 ? 'var(--warn)' : 'var(--fail)';
+
+  el.innerHTML = `
+    <div class="result-card">
+      <div class="result-stats">
+        <div class="stat total"><div class="stat-n">${total}</div><div class="stat-l">Total</div></div>
+        <div class="stat pass"><div class="stat-n">${passed}</div><div class="stat-l">Passed</div></div>
+        <div class="stat fail"><div class="stat-n">${failed}</div><div class="stat-l">Failed</div></div>
+      </div>
+      <div class="result-bar"><div class="result-bar-fill" style="width:${rate}%;background:${color}"></div></div>
+      <div class="result-rate" style="color:${color}">${rate}% pass rate</div>
+      <div class="result-actions">
+        <a class="btn" href="./index.html">View Dashboard</a>
+      </div>
+    </div>`;
+  scrollHistory();
+}
+
+async function stopRun() {
+  try { await fetch(`${SERVER_URL}/stop`, { method: 'POST' }); } catch {}
+  document.getElementById('btnStop').style.display = 'none';
+  setStatus('', 'Ready');
+  addMsg('agent', 'Run stopped.');
+}
+
+// ── MAIN SEND ─────────────────────────────────────────────────────────────────
+async function send() {
+  if (busy) return;
+  const ibox = document.getElementById('ibox');
+  const text = ibox.value.trim();
+  if (!text) return;
+
+  ibox.value = '';
+  ibox.style.height = 'auto';
+
+  addMsg('user', esc(text).replace(/\n/g, '<br>'));
+  addThinking();
+
+  await new Promise(r => setTimeout(r, 300));
+  removeThinking();
+
+  const result = parse(text);
+
+  if (result.action === 'answer') {
+    addMsg('agent', result.message.replace(/\n/g, '<br>').replace(/•/g, '&bull;').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'));
+    return;
+  }
+
+  if (result.action === 'cancel') {
+    pending = null;
+    addMsg('agent', 'Cancelled. What would you like to run?');
+    return;
+  }
+
+  if (result.action === 'run') {
+    if (pending) {
+      const id = Date.now().toString();
+      const card = document.getElementById('history').lastElementChild;
+      busy = true;
+      document.getElementById('sendBtn').disabled = true;
+      await doRun(id);
+    } else {
+      addMsg('agent', 'Nothing pending. Tell me what you want to test.');
+    }
+    return;
+  }
+
+  if (result.action === 'confirm') {
+    const id = Date.now().toString();
+    pending = result.params;
+    addMsg('agent', confirmCard(result.params, result.summary, id));
+    return;
+  }
+
+  addMsg('agent', 'I\'m not sure what you mean. Try: <em>"run feds-lnav on prod"</em> or <em>"run photoshop sanity on chrome"</em>. Type <em>"what suites can I run?"</em> for a full list.');
+}
+
+function useSug(btn) {
+  document.getElementById('ibox').value = btn.textContent;
+  send();
+}
+
+// ── INPUT ─────────────────────────────────────────────────────────────────────
+const ibox = document.getElementById('ibox');
+ibox.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+ibox.addEventListener('input', () => {
+  ibox.style.height = 'auto';
+  ibox.style.height = Math.min(ibox.scrollHeight, 120) + 'px';
+});
+</script>
+</body>
+</html>
