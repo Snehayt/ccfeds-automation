@@ -13,13 +13,13 @@ on:
           - all
           - feds
           - feds-lnav
-          - feds-cmp-banner
           - feds-header
           - feds-footer
           - feds-search
           - feds-a11y
           - feds-sanity
           - feds-jarvis
+          - unav
           - cc
           - cc-firefly
           - cc-doodlebug
@@ -27,9 +27,6 @@ on:
           - cc-lingo
           - cc-sanity
           - express
-          - cmp
-          - unav
-          - site-redesign
       browser:
         description: 'Browser'
         required: true
@@ -170,26 +167,23 @@ jobs:
 
           # ── Test path resolution ──────────────────────────────────────────────
           case "$SUITE" in
-            all)              TEST_PATH=""; CONFIG="all" ;;
-            feds)             TEST_PATH="tests/feds" ;;
-            feds-lnav)        TEST_PATH="tests/feds/feds-lnav" ;;
-            feds-cmp-banner)  TEST_PATH="tests/feds/cmp-banner.test.js" ;;
-            feds-header)      TEST_PATH="tests/feds/header.test.js" ;;
-            feds-footer)      TEST_PATH="tests/feds/footer.test.js" ;;
-            feds-search)      TEST_PATH="tests/feds/search.test.js" ;;
-            feds-a11y)        TEST_PATH="tests/feds/a11y.test.js" ;;
-            feds-sanity)      TEST_PATH="tests/feds/homePageSanity.test.js tests/feds/bacomsanity.test.js" ;;
-            feds-jarvis)      TEST_PATH="tests/feds/jarvis.desktop.test.js tests/feds/jarvis.mobile.test.js" ;;
-            cc)               TEST_PATH="tests/cc" ;;
-            cc-firefly)       TEST_PATH="tests/cc/firefly.test.js" ;;
-            cc-doodlebug)     TEST_PATH="tests/cc/doodlebug_prompt_based_imagegen_verbs.test.js tests/cc/doodlebugimageupload.test.js" ;;
-            cc-merch)         TEST_PATH="tests/cc/merchcard.test.js tests/cc/merchtable.test.js" ;;
-            cc-lingo)         TEST_PATH="tests/cc/lingo.test.js" ;;
-            cc-sanity)        TEST_PATH="tests/cc/productionsanity.test.js tests/cc/INTLstagesanity.test.js" ;;
-            express)          TEST_PATH="tests/express/lingo.test.js"; CONFIG="configs/express-lingo.config.js" ;;
-            cmp)              TEST_PATH="tests/cmp/cmp-banner.test.js"; CONFIG="configs/feds.config.js" ;;
-            unav)             TEST_PATH="tests/feds/feds-lnav"; CONFIG="configs/feds.config.js" ;;
-            site-redesign)    TEST_PATH="tests/feds/site-redesign.test.js"; CONFIG="configs/feds.config.js" ;;
+            all)          TEST_PATH=""; CONFIG="all" ;;
+            feds)         TEST_PATH="tests/feds" ;;
+            feds-lnav)    TEST_PATH="tests/feds/feds-lnav" ;;
+            feds-header)  TEST_PATH="tests/feds/header.test.js" ;;
+            feds-footer)  TEST_PATH="tests/feds/footer.test.js" ;;
+            feds-search)  TEST_PATH="tests/feds/search.test.js" ;;
+            feds-a11y)    TEST_PATH="tests/feds/a11y.test.js" ;;
+            feds-sanity)  TEST_PATH="tests/feds/homePageSanity.test.js tests/feds/bacomsanity.test.js" ;;
+            feds-jarvis)  TEST_PATH="tests/feds/jarvis.desktop.test.js tests/feds/jarvis.mobile.test.js" ;;
+            unav)         TEST_PATH="tests/feds/unav.test.js" ;;
+            cc)           TEST_PATH="tests/cc" ;;
+            cc-firefly)   TEST_PATH="tests/cc/firefly.test.js" ;;
+            cc-doodlebug) TEST_PATH="tests/cc/doodlebug_prompt_based_imagegen_verbs.test.js tests/cc/doodlebugimageupload.test.js" ;;
+            cc-merch)     TEST_PATH="tests/cc/merchcard.test.js tests/cc/merchtable.test.js" ;;
+            cc-lingo)     TEST_PATH="tests/cc/lingo.test.js" ;;
+            cc-sanity)    TEST_PATH="tests/cc/productionsanity.test.js tests/cc/INTLstagesanity.test.js" ;;
+            express)      TEST_PATH="tests/express/lingo.test.js"; CONFIG="configs/express-lingo.config.js" ;;
           esac
 
           # ── Project flags — FEDs ──────────────────────────────────────────────
@@ -298,13 +292,15 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:     ${{ matrix.url }}
-          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
-          CI:           true
-          SUITE:        ${{ needs.setup.outputs.suite }}
-          DEVICE:       ${{ needs.setup.outputs.device }}
-          LOCALE:       ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+          BASE_URL:                    ${{ matrix.url }}
+          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
+          CI:                          true
+          SUITE:                       ${{ needs.setup.outputs.suite }}
+          DEVICE:                      ${{ needs.setup.outputs.device }}
+          LOCALE:                      ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
+          MILO_LIBS_RUN:               'true'
+          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
         continue-on-error: true
 
       # ── Run CC tests ───────────────────────────────────────────────────────
@@ -319,13 +315,15 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:     ${{ matrix.url }}
-          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
-          CI:           true
-          SUITE:        ${{ needs.setup.outputs.suite }}
-          DEVICE:       ${{ needs.setup.outputs.device }}
-          LOCALE:       ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+          BASE_URL:                    ${{ matrix.url }}
+          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
+          CI:                          true
+          SUITE:                       ${{ needs.setup.outputs.suite }}
+          DEVICE:                      ${{ needs.setup.outputs.device }}
+          LOCALE:                      ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
+          MILO_LIBS_RUN:               'true'
+          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
         continue-on-error: true
 
       # ── Run Express Lingo tests ────────────────────────────────────────────
@@ -340,13 +338,15 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:     ${{ matrix.url }}
-          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
-          CI:           true
-          SUITE:        ${{ needs.setup.outputs.suite }}
-          DEVICE:       ${{ needs.setup.outputs.device }}
-          LOCALE:       ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+          BASE_URL:                    ${{ matrix.url }}
+          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
+          CI:                          true
+          SUITE:                       ${{ needs.setup.outputs.suite }}
+          DEVICE:                      ${{ needs.setup.outputs.device }}
+          LOCALE:                      ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
+          MILO_LIBS_RUN:               'true'
+          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
         continue-on-error: true
 
       # ── Run ALL suites ─────────────────────────────────────────────────────
@@ -359,13 +359,15 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:     ${{ matrix.url }}
-          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
-          CI:           true
-          SUITE:        all
-          DEVICE:       ${{ needs.setup.outputs.device }}
-          LOCALE:       ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+          BASE_URL:                    ${{ matrix.url }}
+          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
+          CI:                          true
+          SUITE:                       all
+          DEVICE:                      ${{ needs.setup.outputs.device }}
+          LOCALE:                      ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
+          MILO_LIBS_RUN:               'true'
+          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
         continue-on-error: true
 
       - name: Run all CC tests
@@ -377,13 +379,15 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:     ${{ matrix.url }}
-          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
-          CI:           true
-          SUITE:        all
-          DEVICE:       ${{ needs.setup.outputs.device }}
-          LOCALE:       ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+          BASE_URL:                    ${{ matrix.url }}
+          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
+          CI:                          true
+          SUITE:                       all
+          DEVICE:                      ${{ needs.setup.outputs.device }}
+          LOCALE:                      ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
+          MILO_LIBS_RUN:               'true'
+          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
         continue-on-error: true
 
       # ── Upload this URL's results as artifact ──────────────────────────────
