@@ -325,15 +325,13 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:                    ${{ matrix.url }}
-          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
-          CI:                          true
-          SUITE:                       ${{ needs.setup.outputs.suite }}
-          DEVICE:                      ${{ needs.setup.outputs.device }}
-          LOCALE:                      ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
-          MILO_LIBS_RUN:               'true'
-          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
+          BASE_URL:     ${{ matrix.url }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
+          CI:           true
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Run CC tests ───────────────────────────────────────────────────────
@@ -348,15 +346,13 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:                    ${{ matrix.url }}
-          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
-          CI:                          true
-          SUITE:                       ${{ needs.setup.outputs.suite }}
-          DEVICE:                      ${{ needs.setup.outputs.device }}
-          LOCALE:                      ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
-          MILO_LIBS_RUN:               'true'
-          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
+          BASE_URL:     ${{ matrix.url }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
+          CI:           true
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Run Express Lingo tests ────────────────────────────────────────────
@@ -371,15 +367,13 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:                    ${{ matrix.url }}
-          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
-          CI:                          true
-          SUITE:                       ${{ needs.setup.outputs.suite }}
-          DEVICE:                      ${{ needs.setup.outputs.device }}
-          LOCALE:                      ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
-          MILO_LIBS_RUN:               'true'
-          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
+          BASE_URL:     ${{ matrix.url }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
+          CI:           true
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Run ALL suites ─────────────────────────────────────────────────────
@@ -392,15 +386,13 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:                    ${{ matrix.url }}
-          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
-          CI:                          true
-          SUITE:                       all
-          DEVICE:                      ${{ needs.setup.outputs.device }}
-          LOCALE:                      ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
-          MILO_LIBS_RUN:               'true'
-          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
+          BASE_URL:     ${{ matrix.url }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
+          CI:           true
+          SUITE:        all
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       - name: Run all CC tests
@@ -412,15 +404,13 @@ jobs:
             ${{ needs.setup.outputs.workers_flag }} \
             --output=test-results
         env:
-          BASE_URL:                    ${{ matrix.url }}
-          TEST_PAGE:                   ${{ needs.setup.outputs.test_page }}
-          CI:                          true
-          SUITE:                       all
-          DEVICE:                      ${{ needs.setup.outputs.device }}
-          LOCALE:                      ${{ needs.setup.outputs.locale }}
-          TRIGGERED_BY:                ${{ github.event.client_payload.triggered_by || github.actor }}
-          MILO_LIBS_RUN:               'true'
-          PR_BRANCH_MILOLIBS_LIVE_URL: ${{ matrix.url }}
+          BASE_URL:     ${{ matrix.url }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
+          CI:           true
+          SUITE:        all
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
         continue-on-error: true
 
       # ── Upload this URL's results as artifact ──────────────────────────────
