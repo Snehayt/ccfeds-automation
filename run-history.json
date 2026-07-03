@@ -1,5 +1,21 @@
 [
   {
+    "id": "run-2026-07-03T08-40-11-35",
+    "timestamp": "2026-07-03T08:40:11.357Z",
+    "suite": "all",
+    "browser": "chrome",
+    "device": "desktop",
+    "locale": "us",
+    "url": "",
+    "page": "",
+    "passed": 0,
+    "failed": 0,
+    "total": 0,
+    "passRate": "0",
+    "triggeredBy": "Snehayt",
+    "runUrl": "https://github.com/Snehayt/ccfeds-automation/actions/runs/28648390986"
+  },
+  {
     "id": "run-2026-07-03T08-25-50-72",
     "timestamp": "2026-07-03T08:25:50.722Z",
     "suite": "unav",
