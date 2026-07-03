@@ -29,6 +29,7 @@ module.exports = {
       tcid: '3',
       name: '@cc-doodlebug-aifacegenerator-promptimagen',
       path: '/products/firefly/features/ai-face-generator?georouting=off',
+      hasVerbSelector: false,
       data: { prompt: CUSTOM_PROMPT },
       tags: '@cc @cc-doodlebug @cc-doodlebug-promptimagen @cc-doodlebug-aifacegenerator',
     },
@@ -41,13 +42,6 @@ module.exports = {
     },
     {
       tcid: '5',
-      name: '@cc-doodlebug-pixelartgenerator-promptimagen',
-      path: '/products/firefly/features/pixel-art-generator?georouting=off',
-      data: { prompt: CUSTOM_PROMPT },
-      tags: '@cc @cc-doodlebug @cc-doodlebug-promptimagen @cc-doodlebug-pixelartgenerator',
-    },
-    {
-      tcid: '6',
       name: '@cc-doodlebug-aianimegenerator-promptimagen',
       path: '/products/firefly/features/ai-anime-generator?georouting=off',
       data: { prompt: CUSTOM_PROMPT },

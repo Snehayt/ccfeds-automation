@@ -41,7 +41,8 @@ test.describe('CC Doodlebug Image Upload Widget', () => {
       });
 
       await test.step('step-5: Verify user lands on Firefly product page', async () => {
-        await page.waitForURL(isFireflyUrl, { timeout: 15000 });
+        // Firefly SPA fires domcontentloaded quickly but delays the load event — use domcontentloaded to avoid timeout
+        await page.waitForURL(isFireflyUrl, { timeout: 15000, waitUntil: 'domcontentloaded' });
       });
     });
   });
