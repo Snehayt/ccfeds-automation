@@ -1,5 +1,21 @@
 [
   {
+    "id": "run-2026-07-03T04-16-43-92",
+    "timestamp": "2026-07-03T04:16:43.927Z",
+    "suite": "unav",
+    "browser": "chrome",
+    "device": "desktop",
+    "locale": "de",
+    "url": "https://www.adobe.com/products/photoshop.html",
+    "page": "",
+    "passed": 0,
+    "failed": 182,
+    "total": 182,
+    "passRate": "0.0",
+    "triggeredBy": "Snehayt",
+    "runUrl": "https://github.com/Snehayt/ccfeds-automation/actions/runs/28637912075"
+  },
+  {
     "id": "run-2026-06-25T05-59-05-78",
     "timestamp": "2026-06-25T05:59:05.787Z",
     "suite": "unav",
