@@ -1,0 +1,415 @@
+name: Run Automation Tests
+
+on:
+  # ── Manual trigger from GitHub UI ─────────────────────────────────────────
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Test suite'
+        required: true
+        type: choice
+        default: 'unav'
+        options:
+          - unav
+          - feds
+          - feds-lnav
+          - feds-header
+          - feds-footer
+          - feds-search
+          - feds-a11y
+          - feds-sanity
+          - feds-jarvis
+          - feds-photoshop-sanity
+          - site-redesign
+          - cc
+          - cc-firefly
+          - cc-merch
+          - cc-lingo
+          - cc-doodlebug
+          - cc-sanity
+          - express
+      browser:
+        description: 'Browser'
+        required: true
+        type: choice
+        default: 'chrome'
+        options: [chrome, firefox, safari, all]
+      device:
+        description: 'Device'
+        required: true
+        type: choice
+        default: 'desktop'
+        options: [desktop, mobile, tablet, all]
+      environment:
+        description: 'Environment'
+        required: true
+        type: choice
+        default: 'prod'
+        options: [prod, aem-live, stage]
+      grep:
+        description: 'Tag filter — e.g. @unav-us-photoshop  (leave empty to run all)'
+        required: false
+        default: ''
+      locale:
+        description: 'Locale to run tests for'
+        required: false
+        type: choice
+        default: 'us'
+        options: [us, gb, de, fr, jp, au, ca, mx, br, in, es, it, kr, nl, se, all]
+      retries:
+        description: 'Retries (0 = none, matches local behaviour)'
+        required: false
+        type: choice
+        default: '0'
+        options: ['0', '1', '2']
+      workers:
+        description: 'Parallel workers (leave empty for config default)'
+        required: false
+        default: ''
+
+  # ── Slack / external trigger ───────────────────────────────────────────────
+  repository_dispatch:
+    types: [run-tests]
+
+  # ── Daily scheduled run — 9 AM IST (Mon–Fri) ──────────────────────────────
+  schedule:
+    - cron: '30 3 * * 1-5'
+
+# ── Job 1: Resolve suite config, test path, projects, URL ─────────────────────
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      config:      ${{ steps.resolve.outputs.config }}
+      test_path:   ${{ steps.resolve.outputs.test_path }}
+      projects:    ${{ steps.resolve.outputs.projects }}
+      grep_value:  ${{ steps.resolve.outputs.grep_value }}
+      urls_matrix: ${{ steps.resolve.outputs.urls_matrix }}
+      suite:       ${{ steps.resolve.outputs.suite }}
+      browser:     ${{ steps.resolve.outputs.browser }}
+      device:      ${{ steps.resolve.outputs.device }}
+      locale:      ${{ steps.resolve.outputs.locale }}
+      environment: ${{ steps.resolve.outputs.environment }}
+      retries_flag: ${{ steps.resolve.outputs.retries_flag }}
+      workers_flag: ${{ steps.resolve.outputs.workers_flag }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Resolve suite, projects, and URL matrix
+        id: resolve
+        run: |
+          # ── Inputs (workflow_dispatch or repository_dispatch) ──────────────
+          SUITE="${{ github.event.inputs.suite        || github.event.client_payload.suite        || 'unav' }}"
+          BROWSER="${{ github.event.inputs.browser    || github.event.client_payload.browser      || 'chrome' }}"
+          DEVICE="${{ github.event.inputs.device      || github.event.client_payload.device       || 'desktop' }}"
+          ENV="${{ github.event.inputs.environment    || github.event.client_payload.environment  || 'prod' }}"
+          GREP="${{ github.event.inputs.grep          || github.event.client_payload.grep         || '' }}"
+          LOCALE="${{ github.event.inputs.locale      || github.event.client_payload.locale       || 'us' }}"
+          RETRIES="${{ github.event.inputs.retries    || github.event.client_payload.retries      || '0' }}"
+          WORKERS="${{ github.event.inputs.workers    || github.event.client_payload.workers      || '' }}"
+
+          # ── Suite → config + testPath from configs/suites.js ───────────────
+          SUITE_JSON=$(node -e "
+            const SUITES = require('./configs/suites.js');
+            const s = SUITES[process.argv[1]];
+            if (!s) { console.error('Unknown suite: ' + process.argv[1]); process.exit(1); }
+            console.log(JSON.stringify(s));
+          " "$SUITE")
+
+          CONFIG=$(echo "$SUITE_JSON"   | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).config))")
+          TEST_PATH=$(echo "$SUITE_JSON" | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).testPath))")
+          FAMILY=$(echo "$SUITE_JSON"   | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).family))")
+
+          # ── Project flags ──────────────────────────────────────────────────
+          if [ "$FAMILY" = "feds" ]; then
+            case "$BROWSER-$DEVICE" in
+              chrome-desktop)  PROJECTS="--project=feds-chrome" ;;
+              firefox-desktop) PROJECTS="--project=feds-firefox" ;;
+              safari-desktop)  PROJECTS="--project=feds-webkit" ;;
+              chrome-mobile)   PROJECTS="--project=feds-iphone --project=feds-android" ;;
+              safari-mobile)   PROJECTS="--project=feds-iphone" ;;
+              chrome-tablet)   PROJECTS="--project=feds-ipad-air-portrait --project=feds-ipad-air-landscape" ;;
+              all-desktop)     PROJECTS="--project=feds-chrome --project=feds-firefox --project=feds-webkit" ;;
+              all-mobile)      PROJECTS="--project=feds-iphone --project=feds-android" ;;
+              all-all)         PROJECTS="" ;;
+              *)               PROJECTS="--project=feds-chrome" ;;
+            esac
+          elif [ "$FAMILY" = "cc" ]; then
+            case "$BROWSER-$DEVICE" in
+              chrome-desktop)  PROJECTS="--project=cc-live-chrome" ;;
+              firefox-desktop) PROJECTS="--project=cc-live-firefox" ;;
+              safari-desktop)  PROJECTS="--project=cc-live-webkit" ;;
+              chrome-mobile)   PROJECTS="--project=cc-live-Android-mobile" ;;
+              safari-mobile)   PROJECTS="--project=cc-live-IOS-mobile" ;;
+              all-desktop)     PROJECTS="--project=cc-live-chrome --project=cc-live-firefox --project=cc-live-webkit" ;;
+              all-all)         PROJECTS="" ;;
+              *)               PROJECTS="--project=cc-live-chrome" ;;
+            esac
+          else
+            # express
+            case "$BROWSER-$DEVICE" in
+              chrome-desktop)  PROJECTS="--project=express-live-chrome" ;;
+              firefox-desktop) PROJECTS="--project=express-live-firefox" ;;
+              safari-desktop)  PROJECTS="--project=express-live-webkit" ;;
+              chrome-mobile)   PROJECTS="--project=express-live-IOS-mobile" ;;
+              all-desktop)     PROJECTS="--project=express-live-chrome --project=express-live-firefox --project=express-live-webkit" ;;
+              *)               PROJECTS="--project=express-live-chrome" ;;
+            esac
+          fi
+
+          # ── Base URL ───────────────────────────────────────────────────────
+          case "$ENV" in
+            prod)     BASE_URL="https://www.adobe.com" ;;
+            aem-live) BASE_URL="https://main--upp--adobecom.aem.live" ;;
+            stage)    BASE_URL="https://www.stage.adobe.com" ;;
+            *)        BASE_URL="https://www.adobe.com" ;;
+          esac
+
+          # ── Flags ──────────────────────────────────────────────────────────
+          RETRIES_FLAG="--retries=$RETRIES"
+          WORKERS_FLAG=""
+          [ -n "$WORKERS" ] && WORKERS_FLAG="--workers=$WORKERS"
+
+          # ── Outputs ────────────────────────────────────────────────────────
+          echo "config=$CONFIG"                   >> $GITHUB_OUTPUT
+          echo "test_path=$TEST_PATH"             >> $GITHUB_OUTPUT
+          echo "projects=$PROJECTS"               >> $GITHUB_OUTPUT
+          echo "grep_value=$GREP"                 >> $GITHUB_OUTPUT
+          echo "urls_matrix=[\"$BASE_URL\"]"      >> $GITHUB_OUTPUT
+          echo "suite=$SUITE"                     >> $GITHUB_OUTPUT
+          echo "browser=$BROWSER"                 >> $GITHUB_OUTPUT
+          echo "device=$DEVICE"                   >> $GITHUB_OUTPUT
+          echo "locale=$LOCALE"                   >> $GITHUB_OUTPUT
+          echo "environment=$ENV"                 >> $GITHUB_OUTPUT
+          echo "retries_flag=$RETRIES_FLAG"       >> $GITHUB_OUTPUT
+          echo "workers_flag=$WORKERS_FLAG"       >> $GITHUB_OUTPUT
+
+  # ── Job 2: Run tests ───────────────────────────────────────────────────────
+  run-tests:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        url: ${{ fromJson(needs.setup.outputs.urls_matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        run: |
+          BROWSER="${{ needs.setup.outputs.browser }}"
+          case "$BROWSER" in
+            firefox) npx playwright install --with-deps firefox ;;
+            safari)  npx playwright install --with-deps webkit ;;
+            all)     npx playwright install --with-deps chromium firefox webkit ;;
+            *)       npx playwright install --with-deps chromium ;;
+          esac
+
+      - name: Run tests
+        run: |
+          GREP="${{ needs.setup.outputs.grep_value }}"
+          npx playwright test ${{ needs.setup.outputs.test_path }} \
+            --config=${{ needs.setup.outputs.config }} \
+            ${{ needs.setup.outputs.projects }} \
+            ${GREP:+--grep "$GREP"} \
+            ${{ needs.setup.outputs.retries_flag }} \
+            ${{ needs.setup.outputs.workers_flag }} \
+            --output=test-results
+        env:
+          BASE_URL:     ${{ matrix.url }}
+          LOCALE:       ${{ needs.setup.outputs.locale }}
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          BROWSER:      ${{ needs.setup.outputs.browser }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          ENVIRONMENT:  ${{ needs.setup.outputs.environment }}
+          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
+          RUN_URL:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          CI:           ''
+        continue-on-error: true
+
+      - name: Upload results artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results-${{ strategy.job-index }}
+          path: nala-results.json
+          if-no-files-found: ignore
+
+  # ── Job 3: Merge results, deploy dashboard, notify Slack ───────────────────
+  completed:
+    name: Publish & Notify
+    needs: [setup, run-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download results artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: results-*
+          merge-multiple: false
+        continue-on-error: true
+
+      - name: Merge results
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            // Collect all nala-results.json from downloaded artifact folders
+            const dirs = fs.readdirSync('.').filter(d => d.startsWith('results-'));
+            const all = [];
+            let merged = null;
+            for (const dir of dirs) {
+              const f = path.join(dir, 'nala-results.json');
+              if (!fs.existsSync(f)) continue;
+              const data = JSON.parse(fs.readFileSync(f, 'utf8'));
+              if (!merged) merged = { ...data, results: [] };
+              all.push(...(data.results || []));
+            }
+            if (merged) {
+              merged.results = all;
+              merged.passed  = all.filter(r => r.status === 'passed').length;
+              merged.failed  = all.filter(r => r.status === 'failed').length;
+              merged.skipped = all.filter(r => r.status === 'skipped').length;
+              merged.total   = all.length;
+              fs.writeFileSync('nala-results.json', JSON.stringify(merged));
+              console.log('Merged', all.length, 'results');
+            } else {
+              console.log('No results found — writing empty placeholder');
+              fs.writeFileSync('nala-results.json', JSON.stringify({ results: [], total: 0, passed: 0, failed: 0, skipped: 0, timestamp: new Date() }));
+            }
+          "
+        continue-on-error: true
+
+      - name: Fetch run history from gh-pages
+        run: |
+          git fetch origin gh-pages:gh-pages 2>/dev/null || true
+          git show gh-pages:run-history.json > run-history.json 2>/dev/null || echo '[]' > run-history.json
+        continue-on-error: true
+
+      - name: Append run to history
+        run: |
+          node -e "
+            const fs = require('fs');
+            const history = JSON.parse(fs.readFileSync('run-history.json', 'utf8'));
+            const run    = JSON.parse(fs.readFileSync('nala-results.json', 'utf8'));
+            history.unshift({
+              runId:       run.runId       || '${{ github.run_id }}',
+              suite:       run.suite       || '${{ needs.setup.outputs.suite }}',
+              environment: run.environment || '${{ needs.setup.outputs.environment }}',
+              browser:     run.browser     || '${{ needs.setup.outputs.browser }}',
+              device:      run.device      || '${{ needs.setup.outputs.device }}',
+              locale:      run.locale      || '${{ needs.setup.outputs.locale }}',
+              branch:      run.gitBranch   || '${{ github.ref_name }}',
+              commitSha:   run.commitSha   || '${{ github.sha }}'.slice(0,7),
+              triggeredBy: run.triggeredBy || '${{ github.actor }}',
+              runUrl:      run.runUrl      || '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+              timestamp:   run.timestamp   || new Date().toISOString(),
+              passed:      run.passed      || 0,
+              failed:      run.failed      || 0,
+              skipped:     run.skipped     || 0,
+              total:       run.total       || 0,
+              qualityScore: run.qualityScore || 0,
+            });
+            // Keep last 100 runs
+            fs.writeFileSync('run-history.json', JSON.stringify(history.slice(0, 100)));
+          "
+        continue-on-error: true
+
+      - name: Parse results for Slack
+        id: results
+        run: |
+          node -e "
+            const fs = require('fs');
+            try {
+              const r = JSON.parse(fs.readFileSync('nala-results.json','utf8'));
+              console.log('passed='  + (r.passed  || 0));
+              console.log('failed='  + (r.failed  || 0));
+              console.log('total='   + (r.total   || 0));
+              console.log('score='   + (r.qualityScore || 0));
+            } catch { console.log('passed=0\nfailed=0\ntotal=0\nscore=0'); }
+          " >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Prepare dashboard for deployment
+        run: |
+          cp nala-results.json dashboard/nala-results.json 2>/dev/null || true
+          cp run-history.json  dashboard/run-history.json  2>/dev/null || true
+        continue-on-error: true
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dashboard
+          keep_files: true
+
+      - name: Notify Slack
+        if: always() && env.SLACK_WH != ''
+        env:
+          SLACK_WH:     ${{ secrets.SLACK_WH }}
+          SUITE:        ${{ needs.setup.outputs.suite }}
+          BROWSER:      ${{ needs.setup.outputs.browser }}
+          DEVICE:       ${{ needs.setup.outputs.device }}
+          ENVIRONMENT:  ${{ needs.setup.outputs.environment }}
+          PASSED:       ${{ steps.results.outputs.passed }}
+          FAILED:       ${{ steps.results.outputs.failed }}
+          TOTAL:        ${{ steps.results.outputs.total }}
+          SCORE:        ${{ steps.results.outputs.score }}
+          RUN_URL:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          DASHBOARD_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+          TRIGGERED_BY: ${{ github.actor }}
+        run: |
+          ICON=$([ "$FAILED" = "0" ] && echo "✅" || echo "❌")
+          RATE=$(node -e "const t=$TOTAL; const p=$PASSED; console.log(t>0 ? (p/t*100).toFixed(1)+'%' : 'N/A')")
+          curl -s -X POST "$SLACK_WH" -H 'Content-Type: application/json' -d "{
+            \"text\": \"$ICON *Run Complete* — Suite: \`$SUITE\` | $BROWSER/$DEVICE | $ENVIRONMENT\",
+            \"attachments\": [{
+              \"color\": \"$([ \"$FAILED\" = \"0\" ] && echo good || echo danger)\",
+              \"fields\": [
+                {\"title\": \"Passed\",        \"value\": \"$PASSED\",  \"short\": true},
+                {\"title\": \"Failed\",        \"value\": \"$FAILED\",  \"short\": true},
+                {\"title\": \"Total\",         \"value\": \"$TOTAL\",   \"short\": true},
+                {\"title\": \"Pass Rate\",     \"value\": \"$RATE\",    \"short\": true},
+                {\"title\": \"Quality Score\", \"value\": \"$SCORE/100\",\"short\": true},
+                {\"title\": \"Triggered By\",  \"value\": \"$TRIGGERED_BY\", \"short\": true}
+              ],
+              \"actions\": [
+                {\"type\": \"button\", \"text\": \"View Run\",       \"url\": \"$RUN_URL\"},
+                {\"type\": \"button\", \"text\": \"View Dashboard\",  \"url\": \"$DASHBOARD_URL\"}
+              ]
+            }]
+          }"

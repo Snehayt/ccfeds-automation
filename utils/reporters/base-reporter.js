@@ -214,11 +214,73 @@ class BaseReporter {
     ) ?? [null, 'local'];
 
     const currTime = new Date();
+
+    // ── Enriched run-level metadata (new fields — backward compatible) ──────
+    const runId       = process.env.GITHUB_RUN_ID    ?? null;
+    const commitSha   = process.env.GITHUB_SHA       ? process.env.GITHUB_SHA.slice(0, 7) : null;
+    const triggeredBy = process.env.TRIGGERED_BY     ?? 'local';
+    // GitHub Actions sets these explicitly; local runs derive from run context
+    const projectName = this.config?.projects?.[0]?.name ?? '';
+    const rawURL      = process.env.BASE_URL ?? this.config?.projects?.[0]?.use?.baseURL ?? '';
+    const testFile    = this.rootSuite?.suites?.[0]?.location?.file ?? '';
+    const rawSuite    = testFile
+      ? testFile.replace(/\\/g, '/').split('/').pop().replace('.test.js', '')
+      : null;
+    const rawEnv      = rawURL.includes('stage') ? 'stage'
+      : rawURL.includes('aem.live') ? 'aem-live'
+      : rawURL.includes('adobe.com') ? 'prod'
+      : null;
+    const rawBrowser  = projectName.includes('firefox') ? 'firefox'
+      : projectName.includes('webkit') ? 'safari'
+      : projectName.match(/chrome|chromium/) ? 'chrome'
+      : null;
+    const rawDevice   = projectName.includes('iphone') || projectName.includes('android') ? 'mobile'
+      : projectName.includes('ipad') ? 'tablet'
+      : rawBrowser ? 'desktop'
+      : null;
+
+    const suite       = process.env.SUITE        ?? rawSuite;
+    const environment = process.env.ENVIRONMENT  ?? rawEnv;
+    const browser     = process.env.BROWSER      ?? rawBrowser;
+    const device      = process.env.DEVICE       ?? rawDevice;
+    const locale      = process.env.LOCALE       ?? null;
+    const baseURL     = process.env.BASE_URL         ?? this.config?.projects?.[0]?.use?.baseURL ?? null;
+    const runUrl      = runId && process.env.GITHUB_REPOSITORY
+      ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${runId}`
+      : null;
+
+    const total   = this.results.length;
+    const passed  = this.passedTests;
+    const failed  = this.failedTests;
+    const skipped = this.skippedTests;
+    const flaky   = this.results.filter((r) => r.retry > 0 && r.status === 'passed').length;
+    const passRate = total > 0 ? passed / total : 0;
+    const flakyRate = total > 0 ? flaky / total : 0;
+    const qualityScore = Math.round((passRate * 0.6 + (1 - flakyRate) * 0.4) * 100);
+
     return {
+      // ── Existing fields (unchanged) ───────────────────────────────────────
       gitBranch,
       gitRepo,
       results: this.results,
       timestamp: currTime,
+      // ── New run-level fields ──────────────────────────────────────────────
+      runId,
+      commitSha,
+      triggeredBy,
+      suite,
+      environment,
+      browser,
+      device,
+      locale,
+      baseURL,
+      runUrl,
+      passed,
+      failed,
+      skipped,
+      flaky,
+      total,
+      qualityScore,
     };
   }
 }

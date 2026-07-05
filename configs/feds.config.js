@@ -21,7 +21,8 @@ const IPHONE_UA  = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_7_2 like Mac OS X) '
 const config = {
   testDir: '../tests/feds',
   outputDir: '../test-results',
-  globalSetup: '../global.setup.js',
+  // Skip URL discovery when BASE_URL is already set (local runs + GitHub Actions)
+  globalSetup: process.env.BASE_URL ? undefined : '../global.setup.js',
   timeout: (process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 90) * 1000,
   expect: { timeout: 5000 },
   fullyParallel: true,
@@ -35,7 +36,12 @@ const config = {
         ['github'],
         ['../utils/reporters/json-reporter.js'],
       ]
-    : [['html', { outputFolder: 'test-html-results', open: 'on-failure' }], ['list'], ['../utils/reporters/base-reporter.js']],
+    : [
+        // HTML report only when explicitly requested: $env:HTML_REPORT=1
+        ...(process.env.HTML_REPORT ? [['html', { outputFolder: 'test-html-results', open: 'on-failure' }]] : []),
+        ['list'],
+        ['../utils/reporters/json-reporter.js'],
+      ],
 
   use: {
     actionTimeout: (process.env.TIMEOUT ? parseInt(process.env.TIMEOUT) : 90) * 1000,

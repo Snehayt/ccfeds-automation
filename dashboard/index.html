@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Automation Tests</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+      background: #f4f6f9;
+      color: #111827;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .app-layout { display: flex; min-height: 100vh; }
+    .app-main   { flex: 1; overflow-y: auto; }
+
+    /* ── Sidebar ─────────────────────────────────────────────────── */
+    .sidebar {
+      width: 200px;
+      min-height: 100vh;
+      background: #1e293b;
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 20px 24px;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .nav-item:hover  { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active { background: rgba(255,255,255,0.1);  color: #fff; }
+
+    /* ── Page ─────────────────────────────────────────────────────── */
+    .page       { padding: 32px; max-width: 1200px; }
+    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 24px; color: #0f172a; }
+
+    .page-state      { padding: 48px 32px; text-align: center; color: #6b7280; font-size: 15px; }
+    .page-state.error { color: #dc2626; }
+
+    /* ── Cards ─────────────────────────────────────────────────── */
+    .section { margin-bottom: 24px; }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      padding: 20px 24px;
+    }
+
+    .card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #374151; }
+
+    /* ── Quality Score Ring ───────────────────────────────────────── */
+    .score-ring {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 6px solid var(--score-color, #16a34a);
+      background: #fff;
+    }
+
+    .score-value { font-size: 28px; font-weight: 700; line-height: 1; }
+    .score-label { font-size: 11px; color: #6b7280; margin-top: 4px; }
+
+    /* ── KPI Cards ────────────────────────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-value { font-size: 26px; font-weight: 700; color: #111827; }
+    .kpi-label { font-size: 12px; color: #6b7280; }
+
+    /* ── Info Grid ────────────────────────────────────────────────── */
+    .info-grid  { display: flex; flex-direction: column; gap: 8px; }
+
+    .info-row   { display: flex; gap: 12px; font-size: 13px; }
+    .info-label { width: 120px; flex-shrink: 0; color: #6b7280; font-weight: 500; }
+    .info-value { color: #111827; }
+
+    /* ── Tables ───────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+    .data-table th {
+      text-align: left;
+      padding: 8px 12px;
+      font-weight: 600;
+      color: #6b7280;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: top;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td      { background: #f9fafb; }
+
+    .test-name { max-width: 280px; word-break: break-word; font-family: monospace; font-size: 12px; }
+    .error-msg { max-width: 400px; color: #dc2626; word-break: break-word; }
+    .link      { color: #2563eb; text-decoration: underline; }
+
+    /* ── Trend Bars ───────────────────────────────────────────────── */
+    .trend-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 120px;
+    }
+
+    .trend-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      gap: 4px;
+    }
+
+    .trend-bar   { width: 100%; border-radius: 3px 3px 0 0; min-height: 4px; }
+    .trend-label { font-size: 10px; color: #6b7280; }
+
+    /* ── Tests page ───────────────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-bar input, .filter-bar select {
+      padding: 7px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 7px;
+      font-size: 13px;
+      background: #fff;
+      color: #111827;
+      outline: none;
+    }
+
+    .filter-bar input { flex: 1; min-width: 200px; }
+    .filter-bar input:focus, .filter-bar select:focus { border-color: #6366f1; }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #374151;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tag-pill:hover { background: #e0e7ff; border-color: #6366f1; color: #4338ca; }
+    .tag-pill.copied { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+
+    .copy-icon { font-size: 11px; opacity: 0.6; }
+
+    .count-badge {
+      display: inline-block;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 99px;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar">
+      <div class="sidebar-brand">Automation Tests</div>
+      <a class="nav-item" data-page="home">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" data-page="runs">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/><circle cx="3" cy="18" r="1" fill="currentColor"/></svg>
+        Runs
+      </a>
+      <a class="nav-item" data-page="failures">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Failures
+      </a>
+      <a class="nav-item" data-page="tests">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Tests
+      </a>
+      <a class="nav-item" data-page="analytics">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics
+      </a>
+    </nav>
+    <main class="app-main" id="main"></main>
+  </div>
+
+  <script>
+    // ── Data ──────────────────────────────────────────────────────────────────
+    let latestRun = null;
+    let history   = [];
+
+    async function fetchJSON(paths) {
+      for (const p of paths) {
+        try {
+          const res = await fetch(p);
+          if (!res.ok) continue;
+          const text = await res.text();
+          if (text.trim()) return JSON.parse(text);
+        } catch (_) {}
+      }
+      return null;
+    }
+
+    async function loadData() {
+      // Cache-bust so every load gets fresh data
+      const t = Date.now();
+      // Try same directory first (GitHub Pages), then parent (local repo)
+      const [run, hist] = await Promise.all([
+        fetchJSON([`./nala-results.json?t=${t}`,  `../nala-results.json?t=${t}`]),
+        fetchJSON([`./run-history.json?t=${t}`,   `../run-history.json?t=${t}`]),
+      ]);
+      if (run)  latestRun = run;
+      if (hist) history   = Array.isArray(hist) ? hist : [];
+      render();
+    }
+
+    // ── Router ─────────────────────────────────────────────────────────────
+    function getPage() {
+      return window.location.hash.replace('#', '') || 'home';
+    }
+
+    function navigate(page) {
+      window.location.hash = page;
+    }
+
+    window.addEventListener('hashchange', render);
+
+    // ── Render ─────────────────────────────────────────────────────────────
+    function render() {
+      const page = getPage();
+
+      // update sidebar active state
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.page === page);
+      });
+
+      const main = document.getElementById('main');
+      if      (page === 'home')      main.innerHTML = renderHome();
+      else if (page === 'runs')      main.innerHTML = renderRuns();
+      else if (page === 'failures')  main.innerHTML = renderFailures();
+      else if (page === 'tests')     { main.innerHTML = renderTests(); wireTests(); }
+      else if (page === 'analytics') main.innerHTML = renderAnalytics();
+      else                           main.innerHTML = renderHome();
+    }
+
+    // ── Home Page ───────────────────────────────────────────────────────────
+    function renderHome() {
+      if (!latestRun) {
+        return `<div class="page-state">
+          No run data yet. Trigger a run from GitHub Actions or run tests locally.
+        </div>`;
+      }
+
+      const { suite, environment, browser, device, locale, triggeredBy, runUrl,
+              passed = 0, failed = 0, skipped = 0, total = 0,
+              qualityScore = 0, timestamp, results = [] } = latestRun;
+
+      const passRate   = total > 0 ? ((passed / total) * 100).toFixed(1) : '0';
+      const scoreColor = qualityScore >= 85 ? '#16a34a' : qualityScore >= 70 ? '#d97706' : '#dc2626';
+      const failures   = results.filter(r => r.status === 'failed').slice(0, 5);
+
+      const runInfoLink = runUrl
+        ? `<div class="info-row"><span class="info-label">Run URL</span><span class="info-value"><a href="${runUrl}" target="_blank" class="link">View on GitHub</a></span></div>`
+        : '';
+
+      const failureRows = failures.map(t => `
+        <tr>
+          <td class="test-name">${esc(t.name || t.title)}</td>
+          <td class="error-msg">${esc(t.errorMessage || '—')}</td>
+          <td>${t.duration ? (t.duration / 1000).toFixed(1) + 's' : '—'}</td>
+        </tr>
+      `).join('');
+
+      const failuresSection = failures.length > 0 ? `
+        <section class="section card">
+          <h2 class="card-title">Recent Failures</h2>
+          <table class="data-table">
+            <thead><tr><th>Test</th><th>Error</th><th>Duration</th></tr></thead>
+            <tbody>${failureRows}</tbody>
+          </table>
+        </section>
+      ` : '';
+
+      const trendRuns = history.slice(0, 10).reverse();
+      const trendSection = trendRuns.length > 1 ? `
+        <section class="section card">
+          <h2 class="card-title">Pass Rate Trend (last ${trendRuns.length} runs)</h2>
+          <div class="trend-bars">
+            ${trendRuns.map(run => {
+              const rate  = run.total > 0 ? (run.passed / run.total) * 100 : 0;
+              const color = rate >= 85 ? '#16a34a' : rate >= 70 ? '#d97706' : '#dc2626';
+              return `
+                <div class="trend-bar-wrap" title="${esc(run.suite || '')} — ${rate.toFixed(1)}%">
+                  <div class="trend-bar" style="height:${rate}%;background:${color}"></div>
+                  <span class="trend-label">${Math.round(rate)}%</span>
+                </div>`;
+            }).join('')}
+          </div>
+        </section>
+      ` : '';
+
+      return `
+        <div class="page">
+          <h1 class="page-title">Dashboard</h1>
+
+          <section class="section">
+            <div class="score-ring" style="--score-color:${scoreColor}">
+              <span class="score-value" style="color:${scoreColor}">${qualityScore}</span>
+              <span class="score-label">Quality Score</span>
+            </div>
+          </section>
+
+          <section class="section kpi-grid">
+            ${kpiCard('Total Tests', total)}
+            ${kpiCard('Passed',      passed,  '#16a34a')}
+            ${kpiCard('Failed',      failed,  '#dc2626')}
+            ${kpiCard('Skipped',     skipped, '#9ca3af')}
+            ${kpiCard('Pass Rate',   passRate + '%')}
+          </section>
+
+          <section class="section card">
+            <h2 class="card-title">Latest Run</h2>
+            <div class="info-grid">
+              ${infoRow('Suite',        suite)}
+              ${infoRow('Environment',  environment)}
+              ${infoRow('Browser',      browser)}
+              ${infoRow('Device',       device)}
+              ${infoRow('Locale',       locale)}
+              ${infoRow('Triggered By', triggeredBy)}
+              ${infoRow('Timestamp',    timestamp ? new Date(timestamp).toLocaleString() : null)}
+              ${runInfoLink}
+            </div>
+          </section>
+
+          ${failuresSection}
+          ${trendSection}
+        </div>
+      `;
+    }
+
+    // ── Runs Page ───────────────────────────────────────────────────────────
+    function renderRuns() {
+      if (history.length === 0) {
+        return `<div class="page-state">No runs yet.</div>`;
+      }
+
+      const rows = history.map((run, i) => {
+        const runId = run.runUrl
+          ? `<a href="${esc(run.runUrl)}" target="_blank" class="link">#${esc(run.runId || String(i))}</a>`
+          : `#${esc(run.runId || String(i))}`;
+
+        return `
+          <tr>
+            <td>${runId}</td>
+            <td>${esc(run.suite)}</td>
+            <td>${esc(run.environment)}</td>
+            <td>${esc(run.browser)}</td>
+            <td style="color:#16a34a">${run.passed ?? '—'}</td>
+            <td style="color:${run.failed > 0 ? '#dc2626' : 'inherit'}">${run.failed ?? '—'}</td>
+            <td>${run.qualityScore ?? '—'}</td>
+            <td>${esc(run.triggeredBy)}</td>
+            <td>${run.timestamp ? new Date(run.timestamp).toLocaleString() : '—'}</td>
+          </tr>`;
+      }).join('');
+
+      return `
+        <div class="page">
+          <h1 class="page-title">Runs</h1>
+          <section class="section card">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Run ID</th><th>Suite</th><th>Environment</th><th>Browser</th>
+                  <th>Passed</th><th>Failed</th><th>Score</th><th>Triggered By</th><th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </section>
+        </div>
+      `;
+    }
+
+    // ── Failures Page ───────────────────────────────────────────────────────
+    function renderFailures() {
+      const failures = (latestRun?.results || []).filter(r => r.status === 'failed');
+
+      if (failures.length === 0) {
+        return `<div class="page-state" style="color:#16a34a">
+          &#10003; No failures in the latest run.
+        </div>`;
+      }
+
+      const rows = failures.map(t => `
+        <tr>
+          <td class="test-name">${esc(t.name || t.title)}</td>
+          <td class="error-msg">${esc(t.errorMessage || '—')}</td>
+          <td>${t.duration ? (t.duration / 1000).toFixed(1) + 's' : '—'}</td>
+          <td>${t.retry ?? 0}</td>
+        </tr>
+      `).join('');
+
+      return `
+        <div class="page">
+          <h1 class="page-title">Failures</h1>
+          <section class="section card">
+            <table class="data-table">
+              <thead><tr><th>Test</th><th>Error</th><th>Duration</th><th>Retries</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </section>
+        </div>
+      `;
+    }
+
+    // ── Tests Page ──────────────────────────────────────────────────────────────
+    function renderTests() {
+      const allResults = [];
+
+      // Collect from latest run + all history runs
+      if (latestRun?.results) allResults.push(...latestRun.results);
+      history.forEach(run => { if (run.results) allResults.push(...run.results); });
+
+      if (allResults.length === 0) {
+        return `<div class="page">
+          <h1 class="page-title">Tests</h1>
+          <div class="page-state">No test data yet. Run a suite locally or via GitHub Actions first.</div>
+        </div>`;
+      }
+
+      // Deduplicate by test name, keep latest status
+      const seen = new Map();
+      allResults.forEach(r => { if (!seen.has(r.name)) seen.set(r.name, r); });
+      const tests = [...seen.values()];
+
+      // Extract unique locales and suites from tags/names
+      const locales = [...new Set(tests.flatMap(t => (t.tags || []).filter(tag =>
+        ['us','gb','de','fr','jp','au','ca','mx','br','in','es','it','kr','nl','se'].includes(tag)
+      )))].sort();
+
+      const suites = [...new Set(tests.map(t => {
+        const name = t.name || '';
+        const m = name.match(/^([a-z]+(?:-[a-z]+)?)-/);
+        return m ? m[1] : null;
+      }).filter(Boolean))].sort();
+
+      return `
+        <div class="page">
+          <h1 class="page-title">
+            Tests
+            <span class="count-badge">${tests.length}</span>
+          </h1>
+
+          <div class="filter-bar">
+            <input id="test-search" type="text" placeholder="Search by name or tag…" />
+            <select id="filter-locale">
+              <option value="">All locales</option>
+              ${locales.map(l => `<option value="${l}">${l.toUpperCase()}</option>`).join('')}
+            </select>
+            <select id="filter-suite">
+              <option value="">All suites</option>
+              ${suites.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+            <select id="filter-status">
+              <option value="">All statuses</option>
+              <option value="passed">Passed</option>
+              <option value="failed">Failed</option>
+              <option value="skipped">Skipped</option>
+            </select>
+          </div>
+
+          <section class="section card">
+            <table class="data-table" id="tests-table">
+              <thead>
+                <tr>
+                  <th>Grep Tag</th>
+                  <th>Test Name</th>
+                  <th>Locale</th>
+                  <th>Status</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tests.map(t => {
+                  const grepTag = '@' + (t.name || '').split('|')[0].trim();
+                  const locale  = (t.tags || []).find(tag =>
+                    ['us','gb','de','fr','jp','au','ca','mx','br','in','es','it','kr','nl','se'].includes(tag)
+                  ) || '—';
+                  const suite   = (t.name || '').match(/^([a-z]+(?:-[a-z]+)?)-/)?.[1] || '—';
+                  const status  = t.status || '—';
+                  const color   = status === 'passed' ? '#16a34a' : status === 'failed' ? '#dc2626' : '#9ca3af';
+                  return `
+                    <tr data-name="${esc(t.name)}" data-locale="${locale}" data-suite="${suite}" data-status="${status}">
+                      <td>
+                        <span class="tag-pill" onclick="copyTag(this, '${esc(grepTag)}')" title="Click to copy grep tag">
+                          ${esc(grepTag)}
+                          <span class="copy-icon">⎘</span>
+                        </span>
+                      </td>
+                      <td class="test-name">${esc(t.name || t.title)}</td>
+                      <td>${locale.toUpperCase()}</td>
+                      <td style="color:${color};font-weight:500">${status}</td>
+                      <td>${t.duration ? (t.duration / 1000).toFixed(1) + 's' : '—'}</td>
+                    </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </section>
+        </div>`;
+    }
+
+    function wireTests() {
+      function filterTable() {
+        const search  = document.getElementById('test-search')?.value.toLowerCase() || '';
+        const locale  = document.getElementById('filter-locale')?.value || '';
+        const suite   = document.getElementById('filter-suite')?.value || '';
+        const status  = document.getElementById('filter-status')?.value || '';
+        document.querySelectorAll('#tests-table tbody tr').forEach(row => {
+          const name   = row.dataset.name?.toLowerCase() || '';
+          const matchSearch = !search || name.includes(search);
+          const matchLocale = !locale || row.dataset.locale === locale;
+          const matchSuite  = !suite  || row.dataset.suite  === suite;
+          const matchStatus = !status || row.dataset.status === status;
+          row.style.display = matchSearch && matchLocale && matchSuite && matchStatus ? '' : 'none';
+        });
+      }
+      ['test-search','filter-locale','filter-suite','filter-status'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', filterTable);
+      });
+    }
+
+    function copyTag(el, tag) {
+      navigator.clipboard.writeText(tag).then(() => {
+        el.classList.add('copied');
+        el.childNodes[0].nodeValue = 'Copied! ';
+        setTimeout(() => {
+          el.classList.remove('copied');
+          el.childNodes[0].nodeValue = tag + ' ';
+        }, 1500);
+      });
+    }
+
+    // ── Analytics Page ──────────────────────────────────────────────────────────
+    function renderAnalytics() {
+      return `<div class="page"><h1 class="page-title">Analytics</h1><div class="page-state">Coming soon — Phase 2.</div></div>`;
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────────────
+    function kpiCard(label, value, color) {
+      const style = color ? `style="color:${color}"` : '';
+      return `
+        <div class="kpi-card">
+          <span class="kpi-value" ${style}>${value ?? '—'}</span>
+          <span class="kpi-label">${label}</span>
+        </div>`;
+    }
+
+    function infoRow(label, value) {
+      return `
+        <div class="info-row">
+          <span class="info-label">${label}</span>
+          <span class="info-value">${value != null ? esc(String(value)) : '—'}</span>
+        </div>`;
+    }
+
+    function esc(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── Sidebar click handlers ───────────────────────────────────────────────
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.addEventListener('click', () => navigate(el.dataset.page));
+    });
+
+    // ── Boot ────────────────────────────────────────────────────────────────
+    loadData();
+  </script>
+</body>
+</html>
