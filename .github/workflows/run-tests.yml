@@ -299,14 +299,6 @@ jobs:
       - name: Run tests
         run: |
           GREP="${{ needs.setup.outputs.grep_value }}"
-          LOCALE="${{ needs.setup.outputs.locale }}"
-
-          # If no manual grep and a specific locale is selected,
-          # auto-filter tests by locale so suites that embed locale in
-          # test names/tags only run for the selected locale.
-          if [ -z "$GREP" ] && [ "$LOCALE" != "all" ]; then
-            GREP="$LOCALE"
-          fi
 
           npx playwright test ${{ needs.setup.outputs.test_path }} \
             --config=${{ needs.setup.outputs.config }} \
