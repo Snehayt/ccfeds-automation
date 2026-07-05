@@ -25,6 +25,7 @@ const SUITES = {
   'feds-jarvis':          { config: 'configs/feds.config.js',            testPath: 'tests/feds/jarvis.desktop.test.js tests/feds/jarvis.mobile.test.js',  family: 'feds',    description: 'Jarvis chat widget' },
   'feds-photoshop-sanity':{ config: 'configs/feds.config.js',            testPath: 'tests/feds/photoshop.sanity.test.js',                                 family: 'feds',    description: 'Photoshop sanity' },
   'unav':                 { config: 'configs/feds.config.js',            testPath: 'tests/feds/unav.test.js',                                             family: 'feds',    description: 'Universal Nav — all locales × pages' },
+  'feds-unav':            { config: 'configs/feds.config.js',            testPath: 'tests/feds/unav.test.js',                                             family: 'feds',    description: 'Universal Nav — all locales × pages' },
   'site-redesign':        { config: 'configs/feds.config.js',            testPath: 'tests/feds/site-redesign.test.js',                                    family: 'feds',    description: 'Site redesign' },
 
   // ── CC ────────────────────────────────────────────────────────────────────
