@@ -4,36 +4,29 @@ on:
   # ── Manual trigger from GitHub UI ─────────────────────────────────────────
   workflow_dispatch:
     inputs:
-      product:
-        description: 'Product — which codebase to test'
+      suite:
+        description: 'Test suite to run'
         required: true
         type: choice
-        default: 'feds'
-        options: [feds, cc, express]
-      feature:
-        description: 'Feature — which test suite to run. Choose "all" to run the full product'
-        required: true
-        type: choice
-        default: 'unav'
+        default: 'feds-unav'
         options:
-          - all
-          # ── FEDS ──────────────────
-          - unav
-          - lnav
-          - header
-          - footer
-          - search
-          - a11y
-          - sanity
-          - jarvis
-          - photoshop-sanity
-          # ── CC ────────────────────
-          - firefly
-          - merch
-          - lingo
-          - doodlebug
-          # ── Express ───────────────
-          # (use "all" for express)
+          - feds-all
+          - feds-unav
+          - feds-lnav
+          - feds-header
+          - feds-footer
+          - feds-search
+          - feds-a11y
+          - feds-sanity
+          - feds-jarvis
+          - feds-photoshop-sanity
+          - cc-all
+          - cc-firefly
+          - cc-merch
+          - cc-lingo
+          - cc-doodlebug
+          - cc-sanity
+          - express-all
       environment:
         description: 'Environment — where to run the tests'
         required: true
@@ -111,14 +104,13 @@ jobs:
         id: resolve
         run: |
           # ── Inputs (workflow_dispatch or repository_dispatch) ──────────────
-          PRODUCT="${{ github.event.inputs.product    || github.event.client_payload.product      || 'feds' }}"
-          FEATURE="${{ github.event.inputs.feature    || github.event.client_payload.feature      || 'unav' }}"
+          SUITE_INPUT="${{ github.event.inputs.suite  || github.event.client_payload.suite        || 'feds-unav' }}"
 
-          # Resolve suite key: "all" → product name, otherwise "product-feature"
-          if [ "$FEATURE" = "all" ]; then
-            SUITE="$PRODUCT"
+          # feds-all → feds, cc-all → cc, express-all → express
+          if echo "$SUITE_INPUT" | grep -q '\-all$'; then
+            SUITE="${SUITE_INPUT%-all}"
           else
-            SUITE="${PRODUCT}-${FEATURE}"
+            SUITE="$SUITE_INPUT"
           fi
 
           BROWSER="${{ github.event.inputs.browser    || github.event.client_payload.browser      || 'chrome' }}"
