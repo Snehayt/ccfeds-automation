@@ -41,7 +41,16 @@ on:
         required: true
         type: choice
         default: 'desktop'
-        options: [desktop, mobile, tablet, all]
+        options:
+          - desktop
+          - iphone
+          - android
+          - mobile
+          - mobile-landscape
+          - ipad-portrait
+          - ipad-landscape
+          - tablet
+          - all
       environment:
         description: 'Environment'
         required: true
@@ -53,11 +62,9 @@ on:
         required: false
         default: ''
       locale:
-        description: 'Locale to run tests for'
+        description: 'Locale — single: us  or comma-separated: us,de,fr  or all'
         required: false
-        type: choice
         default: 'us'
-        options: [us, gb, de, fr, jp, au, ca, mx, br, in, es, it, kr, nl, se, all]
       retries:
         description: 'Retries (0 = none, matches local behaviour)'
         required: false
@@ -136,40 +143,58 @@ jobs:
           TEST_PATH=$(echo "$SUITE_JSON" | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).testPath))")
           FAMILY=$(echo "$SUITE_JSON"   | node -e "process.stdin.resume(); let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>console.log(JSON.parse(d).family))")
 
-          # ── Project flags ──────────────────────────────────────────────────
+          # ── Project flags — device drives selection, browser only matters for desktop
           if [ "$FAMILY" = "feds" ]; then
-            case "$BROWSER-$DEVICE" in
-              chrome-desktop)  PROJECTS="--project=feds-chrome" ;;
-              firefox-desktop) PROJECTS="--project=feds-firefox" ;;
-              safari-desktop)  PROJECTS="--project=feds-webkit" ;;
-              chrome-mobile)   PROJECTS="--project=feds-iphone --project=feds-android" ;;
-              safari-mobile)   PROJECTS="--project=feds-iphone" ;;
-              chrome-tablet)   PROJECTS="--project=feds-ipad-air-portrait --project=feds-ipad-air-landscape" ;;
-              all-desktop)     PROJECTS="--project=feds-chrome --project=feds-firefox --project=feds-webkit" ;;
-              all-mobile)      PROJECTS="--project=feds-iphone --project=feds-android" ;;
-              all-all)         PROJECTS="" ;;
-              *)               PROJECTS="--project=feds-chrome" ;;
+            case "$DEVICE" in
+              desktop)
+                case "$BROWSER" in
+                  firefox) PROJECTS="--project=feds-firefox" ;;
+                  safari)  PROJECTS="--project=feds-webkit" ;;
+                  all)     PROJECTS="--project=feds-chrome --project=feds-firefox --project=feds-webkit" ;;
+                  *)       PROJECTS="--project=feds-chrome" ;;
+                esac ;;
+              iphone)           PROJECTS="--project=feds-iphone" ;;
+              android)          PROJECTS="--project=feds-android" ;;
+              mobile)           PROJECTS="--project=feds-iphone --project=feds-android" ;;
+              mobile-landscape) PROJECTS="--project=feds-iphone-landscape --project=feds-android-landscape" ;;
+              ipad-portrait)    PROJECTS="--project=feds-ipad-air-portrait" ;;
+              ipad-landscape)   PROJECTS="--project=feds-ipad-air-landscape" ;;
+              tablet)           PROJECTS="--project=feds-ipad-air-portrait --project=feds-ipad-air-landscape" ;;
+              all)              PROJECTS="" ;;
+              *)                PROJECTS="--project=feds-chrome" ;;
             esac
           elif [ "$FAMILY" = "cc" ]; then
-            case "$BROWSER-$DEVICE" in
-              chrome-desktop)  PROJECTS="--project=cc-live-chrome" ;;
-              firefox-desktop) PROJECTS="--project=cc-live-firefox" ;;
-              safari-desktop)  PROJECTS="--project=cc-live-webkit" ;;
-              chrome-mobile)   PROJECTS="--project=cc-live-Android-mobile" ;;
-              safari-mobile)   PROJECTS="--project=cc-live-IOS-mobile" ;;
-              all-desktop)     PROJECTS="--project=cc-live-chrome --project=cc-live-firefox --project=cc-live-webkit" ;;
-              all-all)         PROJECTS="" ;;
-              *)               PROJECTS="--project=cc-live-chrome" ;;
+            case "$DEVICE" in
+              desktop)
+                case "$BROWSER" in
+                  firefox) PROJECTS="--project=cc-live-firefox" ;;
+                  safari)  PROJECTS="--project=cc-live-webkit" ;;
+                  all)     PROJECTS="--project=cc-live-chrome --project=cc-live-firefox --project=cc-live-webkit" ;;
+                  *)       PROJECTS="--project=cc-live-chrome" ;;
+                esac ;;
+              iphone|ipad-portrait|ipad-landscape|tablet|mobile-landscape)
+                           PROJECTS="--project=cc-live-IOS-mobile" ;;
+              android)     PROJECTS="--project=cc-live-Android-mobile" ;;
+              mobile)      PROJECTS="--project=cc-live-IOS-mobile --project=cc-live-Android-mobile" ;;
+              all)         PROJECTS="" ;;
+              *)           PROJECTS="--project=cc-live-chrome" ;;
             esac
           else
             # express
-            case "$BROWSER-$DEVICE" in
-              chrome-desktop)  PROJECTS="--project=express-live-chrome" ;;
-              firefox-desktop) PROJECTS="--project=express-live-firefox" ;;
-              safari-desktop)  PROJECTS="--project=express-live-webkit" ;;
-              chrome-mobile)   PROJECTS="--project=express-live-IOS-mobile" ;;
-              all-desktop)     PROJECTS="--project=express-live-chrome --project=express-live-firefox --project=express-live-webkit" ;;
-              *)               PROJECTS="--project=express-live-chrome" ;;
+            case "$DEVICE" in
+              desktop)
+                case "$BROWSER" in
+                  firefox) PROJECTS="--project=express-live-firefox" ;;
+                  safari)  PROJECTS="--project=express-live-webkit" ;;
+                  all)     PROJECTS="--project=express-live-chrome --project=express-live-firefox --project=express-live-webkit" ;;
+                  *)       PROJECTS="--project=express-live-chrome" ;;
+                esac ;;
+              iphone|ipad-portrait|ipad-landscape|tablet|mobile-landscape)
+                           PROJECTS="--project=express-live-IOS-mobile" ;;
+              android)     PROJECTS="--project=express-live-Android-mobile" ;;
+              mobile)      PROJECTS="--project=express-live-IOS-mobile --project=express-live-Android-mobile" ;;
+              all)         PROJECTS="" ;;
+              *)           PROJECTS="--project=express-live-chrome" ;;
             esac
           fi
 
