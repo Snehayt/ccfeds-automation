@@ -5,28 +5,28 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: '🧪 Test suite  |  feds >>>* = Nav/Header/Footer  ·  cc >>>* = Creative Cloud  ·  express >>>* = Express  |  >>> all = run entire product'
+        description: '🧪 Test suite — >>> all tests = run entire product  |  - feature = run one suite'
         required: true
         type: choice
-        default: 'feds - unav'
+        default: 'FEDS - unav'
         options:
-          - 'feds >>> all'
-          - 'feds - unav'
-          - 'feds - lnav'
-          - 'feds - header'
-          - 'feds - footer'
-          - 'feds - search'
-          - 'feds - a11y'
-          - 'feds - sanity'
-          - 'feds - jarvis'
-          - 'feds - photoshop-sanity'
-          - 'cc >>> all'
-          - 'cc - firefly'
-          - 'cc - merch'
-          - 'cc - lingo'
-          - 'cc - doodlebug'
-          - 'cc - sanity'
-          - 'express >>> all'
+          - 'FEDS >>> all tests'
+          - 'FEDS - unav'
+          - 'FEDS - lnav'
+          - 'FEDS - header'
+          - 'FEDS - footer'
+          - 'FEDS - search'
+          - 'FEDS - a11y'
+          - 'FEDS - sanity'
+          - 'FEDS - jarvis'
+          - 'FEDS - photoshop-sanity'
+          - 'CC >>> all tests'
+          - 'CC - firefly'
+          - 'CC - merch'
+          - 'CC - lingo'
+          - 'CC - doodlebug'
+          - 'CC - sanity'
+          - 'EXPRESS >>> all tests'
       environment:
         description: '🌍 Where to run  |  prod = adobe.com  ·  stage = stage.adobe.com  ·  aem-live = branch preview'
         required: true
@@ -104,15 +104,15 @@ jobs:
         id: resolve
         run: |
           # ── Inputs (workflow_dispatch or repository_dispatch) ──────────────
-          SUITE_INPUT="${{ github.event.inputs.suite  || github.event.client_payload.suite        || 'feds - unav' }}"
+          SUITE_INPUT="${{ github.event.inputs.suite  || github.event.client_payload.suite        || 'FEDS - unav' }}"
 
-          # "feds >>> all" → run entire product (key = "feds")
-          # "feds - unav" → run specific feature (key = "feds-unav")
-          if echo "$SUITE_INPUT" | grep -q ' >>>'; then
-            SUITE="${SUITE_INPUT% >>>*}"
+          # "FEDS >>> all tests" → suite key = "feds"
+          # "FEDS - unav"        → suite key = "feds-unav"
+          if echo "$SUITE_INPUT" | grep -q '>>>'; then
+            SUITE=$(echo "$SUITE_INPUT" | cut -d'>' -f1 | tr -d ' ' | tr '[:upper:]' '[:lower:]')
           else
-            PRODUCT="${SUITE_INPUT% - *}"
-            FEATURE="${SUITE_INPUT#* - }"
+            PRODUCT=$(echo "$SUITE_INPUT" | cut -d'-' -f1 | tr -d ' ' | tr '[:upper:]' '[:lower:]')
+            FEATURE=$(echo "$SUITE_INPUT" | sed 's/^[^-]*- //')
             SUITE="${PRODUCT}-${FEATURE}"
           fi
 
