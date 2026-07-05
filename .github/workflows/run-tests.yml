@@ -5,30 +5,30 @@ on:
   workflow_dispatch:
     inputs:
       suite:
-        description: 'Test suite to run'
+        description: '🧪 Test suite  |  feds » * = Nav/Header/Footer  ·  cc » * = Creative Cloud  ·  express » * = Express  |  » all = run entire product'
         required: true
         type: choice
-        default: 'feds-unav'
+        default: 'feds » unav'
         options:
-          - feds-all
-          - feds-unav
-          - feds-lnav
-          - feds-header
-          - feds-footer
-          - feds-search
-          - feds-a11y
-          - feds-sanity
-          - feds-jarvis
-          - feds-photoshop-sanity
-          - cc-all
-          - cc-firefly
-          - cc-merch
-          - cc-lingo
-          - cc-doodlebug
-          - cc-sanity
-          - express-all
+          - 'feds » all'
+          - 'feds » unav'
+          - 'feds » lnav'
+          - 'feds » header'
+          - 'feds » footer'
+          - 'feds » search'
+          - 'feds » a11y'
+          - 'feds » sanity'
+          - 'feds » jarvis'
+          - 'feds » photoshop-sanity'
+          - 'cc » all'
+          - 'cc » firefly'
+          - 'cc » merch'
+          - 'cc » lingo'
+          - 'cc » doodlebug'
+          - 'cc » sanity'
+          - 'express » all'
       environment:
-        description: 'Environment — where to run the tests'
+        description: '🌍 Where to run  |  prod = adobe.com  ·  stage = stage.adobe.com  ·  aem-live = branch preview'
         required: true
         type: choice
         default: 'prod'
@@ -37,33 +37,33 @@ on:
           - stage
           - aem-live
       browser:
-        description: 'Browser — which browser to use for desktop tests'
+        description: '🌐 Browser  |  Only applies to desktop. Mobile uses device-native browser engine'
         required: true
         type: choice
         default: 'chrome'
         options: [chrome, firefox, safari, all]
       device:
-        description: 'Device type — mobile runs iOS + Android. Not all suites have mobile tests (the run will skip unsupported devices)'
+        description: '📱 Device  |  mobile = iOS + Android  ·  tablet = iPad  ·  Not all suites have mobile tests'
         required: true
         type: choice
         default: 'desktop'
         options: [desktop, mobile, tablet, all]
       locale:
-        description: 'Locale — e.g. us  or multiple: us,de,fr  or all'
+        description: '🗺️ Locale  |  Single: us  ·  Multiple: us,de,fr  ·  All: all'
         required: false
         default: 'us'
       grep:
-        description: 'Run specific tests only — paste a tag from the dashboard Tests tab, e.g. @unav-us-photoshop. Leave empty to run all'
+        description: '🔍 Tag filter (optional)  |  Find tags in the dashboard Tests tab  ·  e.g. @unav-us-photoshop  ·  Leave empty to run all'
         required: false
         default: ''
       retries:
-        description: 'How many times to retry a failed test (0 = no retries)'
+        description: '🔁 Retries  |  Times to re-run a failed test before marking it failed'
         required: false
         type: choice
         default: '0'
         options: ['0', '1', '2']
       workers:
-        description: 'Parallel test runners — leave empty to use the default from the config file'
+        description: '⚡ Parallel workers (optional)  |  Leave empty to use the config default'
         required: false
         default: ''
 
@@ -104,13 +104,15 @@ jobs:
         id: resolve
         run: |
           # ── Inputs (workflow_dispatch or repository_dispatch) ──────────────
-          SUITE_INPUT="${{ github.event.inputs.suite  || github.event.client_payload.suite        || 'feds-unav' }}"
+          SUITE_INPUT="${{ github.event.inputs.suite  || github.event.client_payload.suite        || 'feds » unav' }}"
 
-          # feds-all → feds, cc-all → cc, express-all → express
-          if echo "$SUITE_INPUT" | grep -q '\-all$'; then
-            SUITE="${SUITE_INPUT%-all}"
+          # Parse "product » feature" → suite key (e.g. "feds » unav" → "feds-unav", "cc » all" → "cc")
+          PRODUCT="${SUITE_INPUT% » *}"
+          FEATURE="${SUITE_INPUT#* » }"
+          if [ "$FEATURE" = "all" ]; then
+            SUITE="$PRODUCT"
           else
-            SUITE="$SUITE_INPUT"
+            SUITE="${PRODUCT}-${FEATURE}"
           fi
 
           BROWSER="${{ github.event.inputs.browser    || github.event.client_payload.browser      || 'chrome' }}"
