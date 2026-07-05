@@ -242,6 +242,23 @@ jobs:
           echo "retries_flag=$RETRIES_FLAG"       >> $GITHUB_OUTPUT
           echo "workers_flag=$WORKERS_FLAG"       >> $GITHUB_OUTPUT
 
+          # ── Job summary — visible on every past run's page ─────────────────
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 🧪 Run Configuration
+          | Setting | Value |
+          |---|---|
+          | **Suite** | \`$SUITE_INPUT\` |
+          | **Environment** | \`$ENV\` → $BASE_URL |
+          | **Browser** | \`$BROWSER\` |
+          | **Device** | \`$DEVICE\` |
+          | **Locale** | \`$LOCALE\` |
+          | **Grep / Tag filter** | \`${GREP:-none}\` |
+          | **Retries** | \`$RETRIES\` |
+          | **Workers** | \`${WORKERS:-config default}\` |
+          | **Triggered by** | ${{ github.actor }} |
+          | **Branch** | ${{ github.ref_name }} |
+          EOF
+
   # ── Job 2: Run tests ───────────────────────────────────────────────────────
   run-tests:
     needs: setup
