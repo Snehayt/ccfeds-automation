@@ -51,5 +51,3 @@ class JSONReporter extends BaseReporter {
 }
 
 module.exports = JSONReporter;
-
-module.exports = JSONReporter;

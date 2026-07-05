@@ -84,11 +84,15 @@ on:
         default: 'desktop'
         options: [desktop, mobile, tablet, all]
       locale:
-        description: '🗺️ Locale  |  Single: us  ·  Multiple: us,de,fr  ·  All: all'
+        description: '🗺️ Locale code (optional)  |  e.g. de · jp · kr · ca_fr · mena · gb  ·  Leave empty to run all locales  ·  See suite localeMap for supported codes'
         required: false
-        default: 'us'
+        default: ''
+      page:
+        description: '📄 Page filter (UNAV only)  |  home · photoshop · illustrator · acrobat · acrobat-online · sign · catalog · cc · cc-all-apps · cc-business · cc-plans · cc-students · express · education · community · learn · genuine · helpx  ·  LNav: enter a URL path e.g. /creativecloud.html  ·  Leave empty for all pages'
+        required: false
+        default: ''
       grep:
-        description: '🔍 Tag filter (optional)  |  Find tags in the dashboard Tests tab  ·  e.g. @unav-us-photoshop  ·  Leave empty to run all'
+        description: '🔍 Tag filter (optional)  |  Overrides locale/page filters  ·  e.g. @smoke · @unav-us-photoshop  ·  Leave empty to use locale/page filters'
         required: false
         default: ''
       retries:
@@ -115,16 +119,17 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      config:      ${{ steps.resolve.outputs.config }}
-      test_path:   ${{ steps.resolve.outputs.test_path }}
-      projects:    ${{ steps.resolve.outputs.projects }}
-      grep_value:  ${{ steps.resolve.outputs.grep_value }}
-      urls_matrix: ${{ steps.resolve.outputs.urls_matrix }}
-      suite:       ${{ steps.resolve.outputs.suite }}
-      browser:     ${{ steps.resolve.outputs.browser }}
-      device:      ${{ steps.resolve.outputs.device }}
-      locale:      ${{ steps.resolve.outputs.locale }}
-      environment: ${{ steps.resolve.outputs.environment }}
+      config:       ${{ steps.resolve.outputs.config }}
+      test_path:    ${{ steps.resolve.outputs.test_path }}
+      projects:     ${{ steps.resolve.outputs.projects }}
+      grep_value:   ${{ steps.resolve.outputs.grep_value }}
+      urls_matrix:  ${{ steps.resolve.outputs.urls_matrix }}
+      suite:        ${{ steps.resolve.outputs.suite }}
+      browser:      ${{ steps.resolve.outputs.browser }}
+      device:       ${{ steps.resolve.outputs.device }}
+      locale:       ${{ steps.resolve.outputs.locale }}
+      test_page:    ${{ steps.resolve.outputs.test_page }}
+      environment:  ${{ steps.resolve.outputs.environment }}
       retries_flag: ${{ steps.resolve.outputs.retries_flag }}
       workers_flag: ${{ steps.resolve.outputs.workers_flag }}
 
@@ -155,7 +160,8 @@ jobs:
           DEVICE="${{ github.event.inputs.device      || github.event.client_payload.device       || 'desktop' }}"
           ENV="${{ github.event.inputs.environment    || github.event.client_payload.environment  || 'prod' }}"
           GREP="${{ github.event.inputs.grep          || github.event.client_payload.grep         || '' }}"
-          LOCALE="${{ github.event.inputs.locale      || github.event.client_payload.locale       || 'us' }}"
+          LOCALE="${{ github.event.inputs.locale      || github.event.client_payload.locale       || '' }}"
+          PAGE="${{ github.event.inputs.page          || github.event.client_payload.page         || '' }}"
           RETRIES="${{ github.event.inputs.retries    || github.event.client_payload.retries      || '0' }}"
           WORKERS="${{ github.event.inputs.workers    || github.event.client_payload.workers      || '' }}"
 
@@ -223,6 +229,23 @@ jobs:
             *)        BASE_URL="https://www.adobe.com" ;;
           esac
 
+          # ── Locale + page → grep pattern ──────────────────────────────────
+          # Manual grep takes full precedence. Otherwise, translate locale/page
+          # using suite's localeMap and pages[] from configs/suites.js.
+          LOCALE_GREP=""
+          TEST_PAGE=""
+          if [ -z "$GREP" ]; then
+            if [[ "$SUITE" == feds-lnav* ]] && [ -n "$PAGE" ]; then
+              # LNav: page is a URL path, set via TEST_PAGE env var (not grep)
+              TEST_PAGE="$PAGE"
+              # Locale grep still applies for LNav
+              LOCALE_GREP=$(node scripts/get-locale-grep.js "$SUITE" "$LOCALE" 2>/dev/null || echo "")
+            else
+              LOCALE_GREP=$(node scripts/get-locale-grep.js "$SUITE" "$LOCALE" "$PAGE" 2>/dev/null || echo "")
+            fi
+          fi
+          FINAL_GREP="${GREP:-$LOCALE_GREP}"
+
           # ── Flags ──────────────────────────────────────────────────────────
           RETRIES_FLAG="--retries=$RETRIES"
           WORKERS_FLAG=""
@@ -232,12 +255,13 @@ jobs:
           echo "config=$CONFIG"                   >> $GITHUB_OUTPUT
           echo "test_path=$TEST_PATH"             >> $GITHUB_OUTPUT
           echo "projects=$PROJECTS"               >> $GITHUB_OUTPUT
-          echo "grep_value=$GREP"                 >> $GITHUB_OUTPUT
+          echo "grep_value=$FINAL_GREP"           >> $GITHUB_OUTPUT
           echo "urls_matrix=[\"$BASE_URL\"]"      >> $GITHUB_OUTPUT
           echo "suite=$SUITE"                     >> $GITHUB_OUTPUT
           echo "browser=$BROWSER"                 >> $GITHUB_OUTPUT
           echo "device=$DEVICE"                   >> $GITHUB_OUTPUT
           echo "locale=$LOCALE"                   >> $GITHUB_OUTPUT
+          echo "test_page=$TEST_PAGE"             >> $GITHUB_OUTPUT
           echo "environment=$ENV"                 >> $GITHUB_OUTPUT
           echo "retries_flag=$RETRIES_FLAG"       >> $GITHUB_OUTPUT
           echo "workers_flag=$WORKERS_FLAG"       >> $GITHUB_OUTPUT
@@ -251,8 +275,9 @@ jobs:
           | **Environment** | \`$ENV\` → $BASE_URL |
           | **Browser** | \`$BROWSER\` |
           | **Device** | \`$DEVICE\` |
-          | **Locale** | \`$LOCALE\` |
-          | **Grep / Tag filter** | \`${GREP:-none}\` |
+          | **Locale** | \`${LOCALE:-all}\` |
+          | **Page** | \`${PAGE:-all}\` |
+          | **Grep / Tag filter** | \`${FINAL_GREP:-none}\` |
           | **Retries** | \`$RETRIES\` |
           | **Workers** | \`${WORKERS:-config default}\` |
           | **Triggered by** | ${{ github.actor }} |
@@ -310,6 +335,7 @@ jobs:
         env:
           BASE_URL:     ${{ matrix.url }}
           LOCALE:       ${{ needs.setup.outputs.locale }}
+          TEST_PAGE:    ${{ needs.setup.outputs.test_page }}
           SUITE:        ${{ needs.setup.outputs.suite }}
           BROWSER:      ${{ needs.setup.outputs.browser }}
           DEVICE:       ${{ needs.setup.outputs.device }}
