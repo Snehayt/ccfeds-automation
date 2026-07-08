@@ -1,0 +1,241 @@
+name: Run Tests + Publish Dashboard
+
+on:
+  # Manual trigger from GitHub UI or Slack slash command
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: '🧪 Test suite'
+        required: true
+        default: 'feds-lnav'
+        type: choice
+        options:
+          - feds-lnav
+          - feds-site-redesign
+          - feds
+          - express
+          - cc
+          - all
+      environment:
+        description: '🌍 Environment  |  prod = adobe.com  ·  stage = stage.adobe.com  ·  aem-live = branch preview'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+          - stage
+          - aem-live
+      browser:
+        description: '🌐 Browser'
+        required: false
+        default: 'chrome'
+        type: choice
+        options: [chrome, firefox, safari, all]
+      locale:
+        description: '🗺️ Locale code (optional)  |  e.g. de · jp · kr · ca_fr  ·  Leave empty for all'
+        required: false
+        default: ''
+      test_page:
+        description: '📄 Page path (LNav + Site Redesign)  |  e.g. /creativecloud.html?georouting=off  ·  Leave empty for homepage'
+        required: false
+        default: ''
+      test_url:
+        description: '🔗 Full URL override (Site Redesign)  |  e.g. https://www.stage.adobe.com/de/?georouting=off  ·  Overrides environment + page'
+        required: false
+        default: ''
+      extra_params:
+        description: '⚙️ Extra URL params  |  e.g. milolibs=local  ·  milolibs=local&fedsbranch=unav  ·  Leave empty for none'
+        required: false
+        default: ''
+      grep:
+        description: '🔍 Tag filter (optional)  |  Overrides locale filter  ·  e.g. @smoke · @site-redesign-de'
+        required: false
+        default: ''
+
+  # Daily run at 6 AM UTC
+  schedule:
+    - cron: '0 6 * * *'
+
+  # Auto-run on push to main when LNav files change
+  push:
+    branches: [main]
+    paths:
+      - 'tests/feds/feds-lnav/**'
+      - 'features/feds/feds-lnav/**'
+      - 'selectors/feds/feds-lnav.page.js'
+      - 'configs/feds-lnav.config.js'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      # Allure installed here only — package.json stays unchanged
+      - name: Install Allure reporter
+        run: npm install --no-save allure-playwright allure-commandline
+
+      # Map suite → config + test path + family
+      - name: Resolve suite config
+        id: config
+        run: |
+          SUITE="${{ github.event.inputs.suite || 'feds-lnav' }}"
+          case "$SUITE" in
+            feds-lnav)          CONFIG="configs/feds.config.js";    TEST_PATH="tests/feds/feds-lnav/feds-lnav.test.js"; FAMILY="feds" ;;
+            feds-site-redesign) CONFIG="configs/feds.config.js";    TEST_PATH="tests/feds/site-redesign.test.js";       FAMILY="feds" ;;
+            feds)               CONFIG="configs/feds.config.js";    TEST_PATH="tests/feds";                             FAMILY="feds" ;;
+            express)            CONFIG="configs/express-lingo.config.js"; TEST_PATH="tests/express/lingo.test.js";      FAMILY="express" ;;
+            cc)                 CONFIG="configs/cc.config.js";      TEST_PATH="tests/cc";                              FAMILY="cc" ;;
+            all)                CONFIG="";                           TEST_PATH="";                                       FAMILY="feds" ;;
+          esac
+          echo "config=$CONFIG"       >> $GITHUB_OUTPUT
+          echo "test_path=$TEST_PATH" >> $GITHUB_OUTPUT
+          echo "suite=$SUITE"         >> $GITHUB_OUTPUT
+          echo "family=$FAMILY"       >> $GITHUB_OUTPUT
+
+      # Map environment + family → BASE_URL
+      - name: Resolve BASE_URL
+        id: baseurl
+        run: |
+          ENV="${{ github.event.inputs.environment || 'prod' }}"
+          FAMILY="${{ steps.config.outputs.family }}"
+          case "$FAMILY-$ENV" in
+            feds-prod)     BASE_URL="https://www.adobe.com" ;;
+            feds-stage)    BASE_URL="https://www.stage.adobe.com" ;;
+            feds-aem-live) BASE_URL="https://main--federal--adobecom.aem.live" ;;
+            cc-prod)       BASE_URL="https://business.adobe.com" ;;
+            cc-stage)      BASE_URL="https://business.stage.adobe.com" ;;
+            cc-aem-live)   BASE_URL="https://main--da-bacom--adobecom.aem.live" ;;
+            express-prod)  BASE_URL="https://www.adobe.com/express" ;;
+            express-stage) BASE_URL="https://www.stage.adobe.com/express" ;;
+            express-aem-live) BASE_URL="https://main--da-express-milo--adobecom.aem.live/express" ;;
+            *)             BASE_URL="https://www.adobe.com" ;;
+          esac
+          echo "base_url=$BASE_URL" >> $GITHUB_OUTPUT
+
+      # Resolve locale → grep pattern
+      - name: Resolve grep filter
+        id: grep
+        run: |
+          SUITE="${{ steps.config.outputs.suite }}"
+          LOCALE="${{ github.event.inputs.locale || '' }}"
+          GREP_OVERRIDE="${{ github.event.inputs.grep || '' }}"
+          if [ -n "$GREP_OVERRIDE" ]; then
+            echo "grep_value=$GREP_OVERRIDE" >> $GITHUB_OUTPUT
+          elif [ -n "$LOCALE" ]; then
+            case "$SUITE" in
+              feds-lnav)          echo "grep_value=@feds-lnav-${LOCALE}"          >> $GITHUB_OUTPUT ;;
+              feds-site-redesign) echo "grep_value=@site-redesign-${LOCALE}"      >> $GITHUB_OUTPUT ;;
+              *)                  echo "grep_value="                               >> $GITHUB_OUTPUT ;;
+            esac
+          else
+            echo "grep_value=" >> $GITHUB_OUTPUT
+          fi
+
+      # Run Playwright — continue even on failures so report always publishes
+      - name: Run Playwright tests
+        env:
+          CI: true
+          BASE_URL:          ${{ steps.baseurl.outputs.base_url }}
+          TEST_PAGE:         ${{ github.event.inputs.test_page }}
+          TEST_URL:          ${{ github.event.inputs.test_url }}
+          URL_EXTRA_PARAMS:  ${{ github.event.inputs.extra_params }}
+          SUITE:             ${{ steps.config.outputs.suite }}
+        run: |
+          CONFIG="${{ steps.config.outputs.config }}"
+          TEST_PATH="${{ steps.config.outputs.test_path }}"
+          BROWSER="${{ github.event.inputs.browser || 'chrome' }}"
+          GREP="${{ steps.grep.outputs.grep_value }}"
+
+          # Browser → project flag
+          case "$BROWSER" in
+            firefox) PROJECT="--project=feds-firefox" ;;
+            safari)  PROJECT="--project=feds-webkit" ;;
+            all)     PROJECT="" ;;
+            *)       PROJECT="--project=feds-chrome" ;;
+          esac
+
+          CMD="npx playwright test"
+          [ -n "$TEST_PATH" ] && CMD="$CMD $TEST_PATH"
+          [ -n "$CONFIG"    ] && CMD="$CMD --config=$CONFIG"
+          [ -n "$PROJECT"   ] && CMD="$CMD $PROJECT"
+          [ -n "$GREP"      ] && CMD="$CMD --grep \"$GREP\""
+
+          echo "Running: $CMD"
+          eval $CMD
+        continue-on-error: true
+
+      # Generate the Allure HTML report
+      - name: Generate Allure report
+        if: always()
+        run: npx allure generate allure-results --clean -o allure-report
+
+      # Pull previous history so trend charts work across runs
+      - name: Restore previous Allure history
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+        continue-on-error: true
+
+      - name: Copy history into new report
+        if: always()
+        run: |
+          [ -d "gh-pages/allure-report/history" ] && \
+            cp -r gh-pages/allure-report/history allure-report/history || true
+
+      # Publish to GitHub Pages — team dashboard URL:
+      # https://<org>.github.io/<repo>/allure-report/
+      - name: Publish Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          destination_dir: allure-report
+          keep_files: true
+
+      # Post pass/fail + dashboard link back to Slack
+      - name: Notify Slack
+        if: always() && env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="${{ job.status }}"
+          SUITE="${{ steps.config.outputs.suite }}"
+          ENV="${{ github.event.inputs.environment || 'prod' }}"
+          DASHBOARD="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/allure-report"
+          RUN="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          EMOJI=$([ "$STATUS" = "success" ] && echo "✅" || echo "❌")
+
+          curl -s -X POST "$SLACK_WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"text\": \"$EMOJI *$SUITE* on *$ENV* — $STATUS\",
+              \"attachments\": [{
+                \"color\": \"$([ '$STATUS' = 'success' ] && echo 'good' || echo 'danger')\",
+                \"fields\": [
+                  {\"title\":\"Dashboard\",\"value\":\"<$DASHBOARD|View Allure Report>\",\"short\":true},
+                  {\"title\":\"Run logs\",\"value\":\"<$RUN|GitHub Actions>\",\"short\":true}
+                ]
+              }]
+            }"
