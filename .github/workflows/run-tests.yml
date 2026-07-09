@@ -269,21 +269,7 @@ jobs:
           echo "retries_flag=$RETRIES_FLAG"       >> $GITHUB_OUTPUT
           echo "workers_flag=$WORKERS_FLAG"       >> $GITHUB_OUTPUT
 
-          # ── Job summary — visible on every past run's page ─────────────────
-          echo "## 🧪 Run Configuration"                                        >> "$GITHUB_STEP_SUMMARY"
-          echo "| Setting | Value |"                                             >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|"                                                        >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Suite** | \`$SUITE_INPUT\` |"                               >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Environment** | \`$ENV\` → $BASE_URL |"                     >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Browser** | \`$BROWSER\` |"                                 >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Device** | \`$DEVICE\` |"                                   >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Locale** | \`${LOCALE:-all}\` |"                            >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Page** | \`${PAGE:-all}\` |"                                >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Grep / Tag filter** | \`${FINAL_GREP:-none}\` |"            >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Retries** | \`$RETRIES\` |"                                 >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Workers** | \`${WORKERS:-config default}\` |"               >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Triggered by** | ${{ github.actor }} |"                     >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Branch** | ${{ github.ref_name }} |"                        >> "$GITHUB_STEP_SUMMARY"
+          echo "Suite: $SUITE_INPUT | Env: $ENV | Browser: $BROWSER | Device: $DEVICE | Locale: ${LOCALE:-all} | Grep: ${FINAL_GREP:-none}"
 
   # ── Job 2: Run tests ───────────────────────────────────────────────────────
   run-tests:
