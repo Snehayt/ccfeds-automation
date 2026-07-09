@@ -118,6 +118,9 @@ on:
 jobs:
   setup:
     runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
     outputs:
       config:       ${{ steps.resolve.outputs.config }}
       test_path:    ${{ steps.resolve.outputs.test_path }}
@@ -288,6 +291,9 @@ jobs:
   run-tests:
     needs: setup
     runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -358,6 +364,9 @@ jobs:
     name: Publish & Notify
     needs: [setup, run-tests]
     runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
     if: always()
     permissions:
       contents: write
