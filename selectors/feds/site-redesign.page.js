@@ -12,6 +12,9 @@ const FONT = {
 };
 const GAP_STANDARD = '8px';
 
+// FR sub-locales are expected to redirect to /fr/ — shared by navigateTo() and validateLocaleRedirect().
+const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
+
 export default class SiteRedesignPage {
   constructor(page) {
     this.page = page;
@@ -32,11 +35,6 @@ export default class SiteRedesignPage {
     this.appSwitcherAdobeExpress = page.locator('#unav-app-switcher-dialog-id a[aria-label="Adobe Express"]');
     this.appSwitcherAdobeCom     = page.locator('[data-test-id="unav-app-switcher--adobe-dot-com-footer-item"]');
     this.appSwitcherAllApps      = page.locator('[data-test-id="unav-app-switcher--see-all-apps-footer-item"]');
-
-    // ── Redirect tracking (populated by navigateTo) ───────────────────────────
-    this.finalUrl         = '';
-    this.originalLocale   = null;
-    this.redirectedLocale = null;
 
     // ── Redirect tracking (populated by navigateTo) ───────────────────────────
     this.finalUrl         = '';
@@ -194,8 +192,10 @@ export default class SiteRedesignPage {
       report(`${label} padding: ${style.padding} (expected ${expected.padding})`);
     if (expected.margin && style.margin !== expected.margin)
       report(`${label} margin: ${style.margin} (expected ${expected.margin})`);
-    if (expected.gap && style.gap !== expected.gap)
-      report(`${label} gap: ${style.gap} (expected ${expected.gap})`);
+    if (expected.gap) {
+      const gap = style.columnGap ?? style.gap;
+      if (gap !== expected.gap) report(`${label} gap: ${gap} (expected ${expected.gap})`);
+    }
     if (expected.nonZeroPadding) {
       const p = [style.paddingTop, style.paddingRight, style.paddingBottom, style.paddingLeft];
       if (p.some((v) => v === '0px')) report(`${label} has zero padding: ${p.join(' ')}`);
@@ -221,7 +221,7 @@ export default class SiteRedesignPage {
       const s = window.getComputedStyle(el);
       return {
         fontFamily: s.fontFamily, fontSize: s.fontSize, fontWeight: s.fontWeight,
-        padding: s.padding, margin: s.margin, gap: s.gap, borderRadius: s.borderRadius,
+        padding: s.padding, margin: s.margin, gap: s.gap, columnGap: s.columnGap, borderRadius: s.borderRadius,
         paddingTop: s.paddingTop, paddingRight: s.paddingRight, paddingBottom: s.paddingBottom, paddingLeft: s.paddingLeft,
       };
     });
@@ -551,15 +551,21 @@ export default class SiteRedesignPage {
     const socialStyle = await this.#assertFont(this.page.locator('ul.feds-social'), 'Footer social icons', { gap: '24px', warn: true }, null);
     expect(fontFailures, `Footer style violations:\n${fontFailures.join('\n')}`).toHaveLength(0);
 
-    // ── First link per section — Clickability sanity check ────────────────────
+    // ── First link per section — Clickability sanity check + non-empty section ─
     const sectionLinks = await this.page.locator('.feds-menu-section').evaluateAll((sections) =>
       sections.map((section, i) => {
         const a = section.querySelector('a');
-        return { index: i + 1, text: (a?.textContent || '').trim(), href: a?.getAttribute('href') || '' };
+        return {
+          index: i + 1,
+          text: (a?.textContent || '').trim(),
+          href: a?.getAttribute('href') || '',
+          linkCount: section.querySelectorAll('a').length,
+        };
       })
     );
-    for (const { index, text, href } of sectionLinks) {
+    for (const { index, text, href, linkCount } of sectionLinks) {
       expect(href, `Footer section ${index} first link "${text}" missing href`).toBeTruthy();
+      expect(linkCount, `Footer section ${index} has no links`).toBeGreaterThan(0);
     }
 
     // ── Bottom bar elements — Visibility ───────────────────────────────────────
@@ -577,7 +583,7 @@ export default class SiteRedesignPage {
     // ── One readable summary line per category ─────────────────────────────────
     console.info(`[Footer] Visibility — landmark, ${headingCount} heading(s), ${linkData.length} link(s), logo, region, social all visible ✓`);
     console.info(`[Footer] Clickability — ${linkData.length} link(s) + ${sectionLinks.length} section(s) have valid href, locale-correct (${missingDaaLl} missing daa-ll) ✓`);
-    console.info(`[Footer] Typography — headings 16px/700, links 16px/400, icon links 700, region/legal 12px/700, legal gap ${legalStyle.gap}, social gap ${socialStyle.gap} ✓`);
+    console.info(`[Footer] Typography — headings 16px/700, links 16px/400, icon links 700, region/legal 12px/700, legal gap ${legalStyle.columnGap}, social gap ${socialStyle.columnGap} ✓`);
   }
 
   // ── Alignment — row-aligned headings, column-aligned links, no overlap ────
@@ -654,36 +660,6 @@ export default class SiteRedesignPage {
     console.info('[Footer] Clickability — region-picker modal close button closes it ✓');
   }
 
-  async validateFooter() {
-    const sections = await this.page.locator('.feds-menu-section').evaluateAll((els) =>
-      els.map((section) => {
-        const heading = section.querySelector('[role="heading"]');
-        const links   = Array.from(section.querySelectorAll('a'));
-        return {
-          heading:   (heading?.textContent || '').trim(),
-          linkCount: links.length,
-          links:     links.map((a) => ({ text: (a.textContent || '').trim(), href: a.getAttribute('href') })),
-        };
-      })
-    );
-
-    expect(sections.length, 'No footer sections found').toBeGreaterThan(0);
-    let totalLinks = 0;
-    for (const { heading, linkCount, links } of sections) {
-      expect(heading, 'Footer section heading must not be empty').toBeTruthy();
-      expect(linkCount, `Footer section "${heading}" must have at least 1 link`).toBeGreaterThan(0);
-      for (const { text, href } of links) {
-        if (text) {
-          expect(href, `Footer link "${text}" in "${heading}" must have an href`).toBeTruthy();
-          this.#assertLinkLocale(href, `Footer(${heading}): ${text}`);
-        }
-      }
-      totalLinks += linkCount;
-    }
-    console.info(`[Footer] Visibility — ${sections.length} section(s), ${totalLinks} link(s) present ✓`);
-    console.info(`[Footer] Clickability — ${totalLinks} link(s) across ${sections.length} section(s) have valid href, locale-correct ✓`);
-  }
-
   // ── Structural validation methods ─────────────────────────────────────────
 
   async navigateTo(baseURL, localePath, testPagePath) {
@@ -709,8 +685,6 @@ export default class SiteRedesignPage {
     this.redirectedLocale = finalSeg[0] && localeRe.test(finalSeg[0]) && finalSeg[0] !== this.originalLocale
       ? finalSeg[0] : null;
 
-    // FR sub-locales are expected to redirect to /fr/ — allow them
-    const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
     if (this.redirectedLocale && !FR_SUB_LOCALES.has(this.originalLocale)) {
       this.#warn(`Unexpected locale redirect: /${this.originalLocale}/ → /${this.redirectedLocale}/`);
     }
@@ -722,7 +696,6 @@ export default class SiteRedesignPage {
 
   // ── Locale redirect validation (FR sub-locales must redirect to /fr/) ────────
   async validateLocaleRedirect() {
-    const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
     if (!this.originalLocale || !FR_SUB_LOCALES.has(this.originalLocale)) return;
     if (this.redirectedLocale) {
       console.info(`[Locale Redirect] Locale redirect: /${this.originalLocale}/ → /${this.redirectedLocale}/ ✓`);
@@ -814,17 +787,6 @@ export default class SiteRedesignPage {
     console.info(`[GNAV] Clickability — logo visible + href="${resolved}" ✓`);
   }
 
-  async validateDirectNavLinks() {
-    const links = this.directNavLinks.filter({ visible: true });
-    const count = await links.count();
-    expect(count, 'No direct nav links found').toBeGreaterThan(0);
-    for (let i = 0; i < count; i++) {
-      const href = await links.nth(i).getAttribute('href');
-      expect(href, `Direct nav link ${i + 1} is missing href`).toBeTruthy();
-    }
-    console.info(`[GNAV] Clickability — ${count} direct nav link(s) have valid href ✓`);
-  }
-
   async validateAppSwitcher() {
     console.info('[App Switcher] Checking app switcher');
     await expect(this.appSwitcher, 'App switcher button not found').toBeVisible({ timeout: 30000 });
@@ -878,7 +840,7 @@ export default class SiteRedesignPage {
     const cardsContainer = panel.locator('div.feds-gnav-cards').first();
     if (await cardsContainer.count() > 0) {
       const gapStyle = await this.#assertFont(cardsContainer, `${name} cards`, { gap: GAP_STANDARD, warn: true }, null);
-      spacingMsgs.push(`cards gap="${gapStyle.gap}"`);
+      spacingMsgs.push(`cards gap="${gapStyle.columnGap}"`);
     }
     const firstListItem = panel.locator('.links-card-links li').first();
     if (await firstListItem.count() > 0) {

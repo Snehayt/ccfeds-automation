@@ -57,21 +57,6 @@ async function runChecks(page, baseURL, props) {
       await nav.validateLocaleRedirect();
     });
 
-    await test.step('Layout — confirm desktop layout (hamburger hidden)', async () => {
-      // Hamburger appears ~1s after GNAV ready — wait before evaluating
-      await page.locator('button.feds-nav-toggle').waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
-      const isHamburger = await page.evaluate(() => {
-        const btn = document.querySelector('button.feds-nav-toggle');
-        if (!btn) return false;
-        const s = window.getComputedStyle(btn);
-        return s.display !== 'none' && s.visibility !== 'hidden' && btn.offsetWidth > 0;
-      });
-      if (isHamburger) {
-        test.info().annotations.push({ type: 'layout', description: 'mobile/tablet — use site-redesign-devices.test.js' });
-        test.skip(true, 'Mobile/tablet layout — skipping desktop test, use site-redesign-devices.test.js');
-      }
-    });
-
     await test.step('Nav structure — global nav container, Adobe logo, nav list visible', async () => {
       await nav.validateNavStructure();
     });
@@ -90,13 +75,14 @@ async function runChecks(page, baseURL, props) {
       }),
       check('GNAV — nav links have valid href',                          () => nav.validateAllNavLinks()),
       check('GNAV — Adobe logo visible, points to adobe.com, clickable', () => nav.validateAdobeLogo()),
-      check('GNAV — direct nav links visible, have href',                () => nav.validateDirectNavLinks()),
       check('GNAV — nav link typography (14px Adobe Clean)',             () => nav.validateNavFontStyles()),
       check('GNAV — nav button/Sign In/App Switcher typography + padding', () => nav.validateGnavElementStyles()),
       check(`GNAV — RTL direction for Arabic locales (${props.code})`,   () => nav.validateRtlDirection(props.dir)),
     ]);
-    await check('GNAV — App Switcher opens modal with app links, closes', () => nav.validateAppSwitcher());
-    await check('GNAV — Sign In button visible and clickable',            () => nav.validateSignIn());
+    await Promise.all([
+      check('GNAV — App Switcher opens modal with app links, closes', () => nav.validateAppSwitcher()),
+      check('GNAV — Sign In button visible and clickable',            () => nav.validateSignIn()),
+    ]);
 
     // ═══════════════════════════════════════════════════════════════════════
     section(2, 'Products Dropdown — Visibility, Clickability, Typography, Blur');
@@ -153,7 +139,6 @@ async function runChecks(page, baseURL, props) {
     // ═══════════════════════════════════════════════════════════════════════
     await Promise.all([
       check('Footer — landmark, headings, hrefs, font, daa-ll, clickability', () => nav.validateFooterStructure()),
-      check('Footer — sections and links visible',                            () => nav.validateFooter()),
       check('Footer — row/column alignment, no overlap',                      () => nav.validateFooterAlignment()),
     ]);
     // Runs after the parallel group — clicks/opens real UI (modal, navigation intercept)
