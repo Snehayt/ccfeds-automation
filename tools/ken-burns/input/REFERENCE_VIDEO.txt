@@ -1,0 +1,11 @@
+Reference sample (for tuning motion in ken-burns-studio.html)
+
+1. Copy your real video file into THIS folder (same place as this .txt):
+   tools\ken-burns\input\
+
+2. Example name you mentioned: Recording 2026-05-19 221531.mp4
+   (The file must exist here — pasting only the name into this text file is not enough.)
+
+3. Tell the chat the exact filename once the .mp4 is saved in this folder.
+
+The HTML preview cannot auto-read “style” from another video file; we match it by you describing what you want (speed, up/down only, smooth vs snappy) or by iterating after you try it.

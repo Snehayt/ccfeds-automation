@@ -1,0 +1,546 @@
+- generic [active] [ref=f128e1]:
+  - banner:
+    - navigation [ref=f128e2]:
+      - link "Skip to main content" [ref=f128e3] [cursor=pointer]:
+        - /url: "#main-content"
+      - link "Adobe" [ref=f128e5] [cursor=pointer]:
+        - /url: /de/
+        - img "Adobe, Inc." [ref=f128e7]
+      - list [ref=f128e8]:
+        - listitem [ref=f128e9]:
+          - button "Produkte" [ref=f128e10] [cursor=pointer]:
+            - text: Produkte
+            - img [ref=f128e11]
+        - listitem [ref=f128e13]:
+          - button "Anwendungsszenarien" [ref=f128e14] [cursor=pointer]:
+            - text: Anwendungsszenarien
+            - img [ref=f128e15]
+        - listitem [ref=f128e17]:
+          - button "Lösungen" [ref=f128e18] [cursor=pointer]:
+            - text: Lösungen
+            - img [ref=f128e19]
+        - listitem [ref=f128e21]:
+          - button "Schnellaktionen" [ref=f128e22] [cursor=pointer]:
+            - text: Schnellaktionen
+            - img [ref=f128e23]
+        - listitem [ref=f128e25]:
+          - button "Training und Support" [ref=f128e26] [cursor=pointer]:
+            - text: Training und Support
+            - img [ref=f128e27]
+        - listitem [ref=f128e29]:
+          - link "Abo-Optionen" [ref=f128e30] [cursor=pointer]:
+            - /url: /de/creativecloud/plans.html
+      - generic [ref=f128e33]:
+        - button "App-Switcher" [ref=f128e34] [cursor=pointer]:
+          - img [ref=f128e35]
+        - button "Anmelden" [ref=f128e47]
+  - main [ref=f128e48]:
+    - generic [ref=f128e49]:
+      - heading "Home" [level=1] [ref=f128e53]
+      - generic [ref=f128e55]:
+        - generic [ref=f128e56]:
+          - paragraph [ref=f128e57]: Autoplay is on. Use the Pause button for a better experience with a screen reader.
+          - button "Pause" [ref=f128e58] [cursor=pointer]:
+            - img "Pause icon" [ref=f128e60]
+          - tablist [ref=f128e61]:
+            - tab "Creative Cloud, Foto, Video und Design" [selected] [ref=f128e62] [cursor=pointer]:
+              - img "Foto, Video und Design" [ref=f128e63]
+              - generic [ref=f128e64]:
+                - generic [ref=f128e65]: Foto, Video und Design
+                - img [ref=f128e67]
+            - tab "Firefly, Content-Erstellung" [ref=f128e71] [cursor=pointer]:
+              - img "Content-Erstellung" [ref=f128e72]
+              - generic [ref=f128e73]:
+                - generic [ref=f128e74]: Content-Erstellung
+                - img [ref=f128e76]
+            - tab "Acrobat, Basics zum Thema PDF und Dokumente." [ref=f128e80] [cursor=pointer]:
+              - img "Basics zum Thema PDF und Dokumente." [ref=f128e81]
+              - generic [ref=f128e82]:
+                - generic [ref=f128e83]: Basics zum Thema PDF und Dokumente.
+                - img [ref=f128e85]
+            - tab "Adobe for Business, Adobe for Business" [ref=f128e89] [cursor=pointer]:
+              - img "Adobe for Business" [ref=f128e90]
+              - generic [ref=f128e91]:
+                - generic [ref=f128e92]: Adobe for Business
+                - img [ref=f128e94]
+            - tab "Bildungseinrichtungen, Schule und Studium" [ref=f128e98] [cursor=pointer]:
+              - img "Schule und Studium" [ref=f128e99]
+              - generic [ref=f128e100]:
+                - generic [ref=f128e101]: Schule und Studium
+                - img [ref=f128e103]
+        - tabpanel [ref=f128e107]:
+          - generic [ref=f128e110]:
+            - paragraph [ref=f128e111]: Creative Cloud
+            - heading "Kreativität auf höchstem Niveau." [level=2] [ref=f128e112]
+            - paragraph [ref=f128e114]: "Sichere dir über 20 Creative Cloud-Programme zu einem kleineren Preis als für 2 Einzelprodukte. Außerdem dabei: Premium-Features für generative KI und Firefly, um Visuals zu generieren und zu bearbeiten, Fotos neu einzufärben und Audio zu übersetzen. Gestalte Content nach deinen Vorstellungen, z. B. Bilder und Grafiken, Videos oder PDF-Dateien."
+            - paragraph [ref=f128e115]:
+              - link "Kostenlos testen Creative Cloud" [ref=f128e116] [cursor=pointer]:
+                - /url: https://commerce.adobe.com/store/segmentation?cli=mini_plans&ctx=if&co=DE&lang=de&ms=COM&ot=TRIAL&cs=INDIVIDUAL&pa=ccsn_direct_individual&rtc=t&lo=sl&af=uc_new_user_iframe%2Cuc_new_system_close
+                - generic: Kostenlos testen
+        - tabpanel:
+          - generic:
+            - generic:
+              - paragraph: Firefly
+              - heading [level=2]: Führende KI-Modelle – alle an einem Ort.
+              - generic:
+                - paragraph: Generiere und bearbeite Bilder, Videos, Audio und Designs mit führenden KI-Modellen von Adobe, Google, OpenAI und anderen Anbietern.
+                - paragraph:
+                  - strong: Generiere unbegrenzt mit ausgewählten Modellen im ersten Jahr. Spare bis zum 26. August bei den beliebtesten Firefly-Abos.
+              - paragraph:
+                - link:
+                  - /url: /de/products/firefly.html
+                  - text: Mit Firefly kreativ sein
+        - tabpanel:
+          - generic:
+            - generic:
+              - paragraph: Acrobat
+              - heading [level=2]: Aufgaben schneller erledigen.
+              - generic:
+                - paragraph: Erstelle, bearbeite, teile und unterzeichne Dokumente mit bewährten PDF-Tools. Nutze KI für einfache Bearbeitungen, erhalte Antworten, teile Informationen und erstelle professionellen Content.
+              - paragraph:
+                - link:
+                  - /url: https://commerce.adobe.com/store/segmentation?cli=mini_plans&ctx=if&co=DE&lang=de&ms=COM&ot=TRIAL&cs=INDIVIDUAL&pa=PA-1806&rtc=t&lo=sl&af=uc_new_user_iframe%2Cuc_new_system_close
+                  - generic: Kostenlos testen
+        - tabpanel:
+          - generic:
+            - generic:
+              - paragraph: Adobe for Business
+              - heading [level=2]: Customer Experience mit KI orchestrieren.
+              - generic:
+                - paragraph: Vereinheitlicht Daten, Content und Workflows mit der KI von Adobe, um schneller zu arbeiten, Content im benötigten Umfang zu personalisieren und messbare Ergebnisse im gesamten Unternehmen zu erzielen.
+              - paragraph:
+                - link:
+                  - /url: https://business.adobe.com/de/
+                  - text: Es beginnt mit Adobe
+        - tabpanel:
+          - generic:
+            - generic:
+              - paragraph: Bildungseinrichtungen
+              - heading [level=2]: 75% Rabatt für Schule und Studium.
+              - generic:
+                - paragraph: Hole dir branchenführende Tools zum Vorteilspreis. Gestalte spektakuläre Designs, Videos und Präsentationen – und eigne dir wichtige Skills für das spätere Berufsleben an.
+                - paragraph:
+                  - generic:
+                    - generic:
+                      - generic: "Regulär:"
+                      - text: 77,99 €/Monat
+                  - generic:
+                    - generic:
+                      - generic: "Alternativ:"
+                      - text: 19,34 €/Monat inkl. MwSt.
+                  - text: im ersten Jahr (Jahres-Abo mit monatlicher Abrechnung).
+                  - link:
+                    - /url: https://www.adobe.com/de/offer-terms/ccm-ste-introductory.html
+                    - text: Bedingungen beachten
+                  - text: .
+              - paragraph:
+                - link:
+                  - /url: https://commerce.adobe.com/store/segmentation?cli=mini_plans&ctx=if&co=DE&lang=de&ms=e&ot=TRIAL&cs=INDIVIDUAL&pa=ccsn_direct_individual&rtc=t&lo=sl&af=uc_new_user_iframe%2Cuc_new_system_close
+                  - generic: Kostenlos testen
+    - generic [ref=f128e124]:
+      - heading "Alles, was Kreative brauchen." [level=2] [ref=f128e125]
+      - paragraph [ref=f128e126]: "Ob Studium, Social Media, kreativer Job, Performance Marketing oder globales Business: Mit den Programmen von Adobe verwirklichst du jedes Projekt."
+    - generic [ref=f128e131]:
+      - link "Adobe Creative Cloud Kreativität und Design Profi-Tools für deine Ideen. Setze all deine Ideen um – mit den weltweit führenden Programmen für Design, Foto, Video und kreative KI." [ref=f128e132] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/creativecloud.html
+        - generic [ref=f128e133]:
+          - generic [ref=f128e134]:
+            - img "Adobe Creative Cloud" [ref=f128e135]
+            - paragraph [ref=f128e136]: Kreativität und Design
+          - generic [ref=f128e139]:
+            - heading "Profi-Tools für deine Ideen." [level=3] [ref=f128e140]
+            - paragraph [ref=f128e141]: Setze all deine Ideen um – mit den weltweit führenden Programmen für Design, Foto, Video und kreative KI.
+      - link "Adobe Firefly Content-Erstellung Spektakulärer Content. Erstelle und bearbeite Bilder, Videos und Audio – mit kreativer KI." [ref=f128e142] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/products/firefly.html
+        - generic [ref=f128e143]:
+          - generic [ref=f128e144]:
+            - img "Adobe Firefly" [ref=f128e145]
+            - paragraph [ref=f128e146]: Content-Erstellung
+          - generic [ref=f128e149]:
+            - heading "Spektakulärer Content." [level=3] [ref=f128e150]
+            - paragraph [ref=f128e151]: Erstelle und bearbeite Bilder, Videos und Audio – mit kreativer KI.
+      - link "Adobe Acrobat Basics zum Thema PDF und Dokumente. Mehr schaffen in weniger Zeit. Erstelle, bearbeite und teile PDF-Dokumente. Nimm Anpassungen vor und erstelle Präsentationen – ganz einfach mit KI." [ref=f128e152] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/acrobat.html
+        - generic [ref=f128e153]:
+          - generic [ref=f128e154]:
+            - img "Adobe Acrobat" [ref=f128e155]
+            - paragraph [ref=f128e156]: Basics zum Thema PDF und Dokumente.
+          - generic [ref=f128e159]:
+            - heading "Mehr schaffen in weniger Zeit." [level=3] [ref=f128e160]
+            - paragraph [ref=f128e161]: Erstelle, bearbeite und teile PDF-Dokumente. Nimm Anpassungen vor und erstelle Präsentationen – ganz einfach mit KI.
+      - link "Adobe for Business Customer Experience orchestrieren. Steigert euren Geschäftserfolg, handelt schneller und schafft individuelle Erlebnisse – grenzenlos skalierbar." [ref=f128e162] [cursor=pointer]:
+        - /url: https://business.adobe.com/de/
+        - generic [ref=f128e163]:
+          - paragraph [ref=f128e165]: Adobe for Business
+          - generic [ref=f128e168]:
+            - heading "Customer Experience orchestrieren." [level=3] [ref=f128e169]
+            - paragraph [ref=f128e170]: Steigert euren Geschäftserfolg, handelt schneller und schafft individuelle Erlebnisse – grenzenlos skalierbar.
+      - link "Adobe Creative Cloud Schule und Studium Lernende und Lehrende sparen richtig. Sichert euch die besten Kreativ-Tools der Branche zum Vorteilspreis." [ref=f128e171] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/education.html
+        - generic [ref=f128e172]:
+          - generic [ref=f128e173]:
+            - img "Adobe Creative Cloud" [ref=f128e174]
+            - paragraph [ref=f128e175]: Schule und Studium
+          - generic [ref=f128e178]:
+            - heading "Lernende und Lehrende sparen richtig." [level=3] [ref=f128e179]
+            - paragraph [ref=f128e180]: Sichert euch die besten Kreativ-Tools der Branche zum Vorteilspreis.
+    - generic [ref=f128e186]:
+      - paragraph [ref=f128e187]: Features und Releases
+      - heading "Neuheiten." [level=2] [ref=f128e188]
+      - paragraph [ref=f128e189]: Entdecke die neuesten Funktionen von Adobe.
+    - generic [ref=f128e194]:
+      - generic [ref=f128e195]:
+        - heading "Verwandelt KI-Signale mit Adobe Brand Visibility in messbaren Geschäftserfolg." [level=3] [ref=f128e196]
+        - paragraph [ref=f128e197]: Nutzt Daten und Tools, um eure Auffindbarkeit über KI-gestützte Suchmaschinen zu verbessern.
+        - paragraph [ref=f128e198]:
+          - link "Weitere Informationen" [ref=f128e199] [cursor=pointer]:
+            - /url: https://business.adobe.com/de/products/brand-visibility.html
+      - img "Adobe Experience Cloud" [ref=f128e203]
+    - generic [ref=f128e204]:
+      - generic [ref=f128e208]:
+        - generic [ref=f128e209]:
+          - heading "Ändere nur das, was du möchtest." [level=3] [ref=f128e210]
+          - paragraph [ref=f128e211]: Der KI-Assistent von Photoshop bearbeitet nur das, worum du bittest, und lässt den Rest deines Bildes unverändert.
+          - paragraph [ref=f128e212]:
+            - link "KI-Assistenten testen" [ref=f128e213] [cursor=pointer]:
+              - /url: /de/products/photoshop/app.html
+        - img "Adobe Photoshop" [ref=f128e217]
+      - generic [ref=f128e219]:
+        - generic [ref=f128e220]:
+          - 'heading "Wir stellen vor: Farbmodus." [level=3] [ref=f128e221]'
+          - paragraph [ref=f128e222]: Für Editorinnen und Editoren optimierte Farbkorrektur. Jetzt in Premiere (Beta).
+          - paragraph [ref=f128e223]:
+            - link "Premiere entdecken" [ref=f128e224] [cursor=pointer]:
+              - /url: /de/products/premiere/color-mode.html
+        - generic [ref=f128e225]:
+          - 'img "Vorher-Nachher-Vergleich: Ein Rallye-Auto fährt durch eine Wüstenlandschaft; die bearbeitete Version ist heller und lebendiger." [ref=f128e227]'
+          - img "Adobe Premiere" [ref=f128e229]
+      - generic [ref=f128e231]:
+        - generic [ref=f128e232]:
+          - heading "Dokumenten-Workflow so smart wie noch nie." [level=3] [ref=f128e233]
+          - paragraph [ref=f128e234]: Bewährte PDF-Tools, jetzt mit KI für Bearbeitung, Erkenntnisse und Content-Erstellung.
+          - paragraph [ref=f128e235]:
+            - link "Acrobat entdecken" [ref=f128e236] [cursor=pointer]:
+              - /url: /de/acrobat/generative-ai-pdf.html
+        - generic [ref=f128e237]:
+          - img "PDF Space in Adobe Acrobat, in dem Präsentationsfolien gesammelt werden und ein KI-Eingabefeld zu sehen ist, das „Präsentation generieren“ anzeigt" [ref=f128e239]
+          - img "Adobe Acrobat" [ref=f128e241]
+    - group "Kunden-Testimonials." [ref=f128e245]:
+      - button "Previous slide" [ref=f128e246] [cursor=pointer]:
+        - img "Previous slide" [ref=f128e248]
+        - img "Previous slide" [ref=f128e251]
+      - generic [ref=f128e253]:
+        - group [ref=f128e254]:
+          - img [ref=f128e257]
+          - generic [ref=f128e260]:
+            - heading [level=3] [ref=f128e261]: „Ohne Creative Cloud wäre ich nicht da, wo ich jetzt bin. Damit kann ich einfach jede Idee umsetzen.“
+            - paragraph [ref=f128e262]:
+              - strong [ref=f128e263]: Michelle Phan
+            - paragraph [ref=f128e264]: Creator
+            - paragraph [ref=f128e265]:
+              - link [ref=f128e266] [cursor=pointer]:
+                - /url: https://www.adobe.com/de/creativecloud/plans.html
+                - text: Alle Abo-Optionen
+        - group [ref=f128e267]:
+          - img "Filmemacher Antoni Sendra mit nachdenklichem Blick an seiner Workstation für Videoschnitt" [ref=f128e270]
+          - generic [ref=f128e273]:
+            - heading "„Mit Adobe Creative Cloud kann ich meine Kreativität frei entfalten und mich auf das Wesentliche konzentrieren.“" [level=3] [ref=f128e274]
+            - paragraph [ref=f128e275]:
+              - strong [ref=f128e276]: Antoni Sendra
+            - paragraph [ref=f128e277]: Filmemacher
+            - paragraph [ref=f128e278]:
+              - link "Alle Abo-Optionen" [ref=f128e279] [cursor=pointer]:
+                - /url: https://www.adobe.com/de/creativecloud/plans.html
+        - group [ref=f128e280]:
+          - img [ref=f128e283]
+          - generic [ref=f128e286]:
+            - heading [level=4] [ref=f128e287]: „Mit Acrobat fasse ich die wichtigsten Vertragsdetails innerhalb weniger Sekunden zusammen.“
+            - paragraph [ref=f128e288]:
+              - strong [ref=f128e289]: Angi Ciccarelli
+            - paragraph [ref=f128e290]: Immobilienmaklerin
+            - paragraph [ref=f128e291]:
+              - link [ref=f128e292] [cursor=pointer]:
+                - /url: https://www.adobe.com/de/creativecloud/plans.html#filter=acrobat
+                - text: Alle Abo-Optionen
+      - button "Next slide" [ref=f128e293] [cursor=pointer]:
+        - img "Next slide" [ref=f128e295]
+        - img "Next slide" [ref=f128e298]
+      - list [ref=f128e300]:
+        - listitem "Slide 1 of 3" [ref=f128e301]
+        - listitem "Slide 2 of 3" [ref=f128e302]
+        - listitem "Slide 3 of 3" [ref=f128e303]
+    - generic [ref=f128e309]:
+      - heading "Tools, die dich weiterbringen." [level=2] [ref=f128e310]
+      - paragraph [ref=f128e311]: Setze jede Idee um – mit Produkten für Kreativprojekte jeder Art und jeder Größenordnung.
+      - paragraph [ref=f128e312]:
+        - link "Alle Produkte anzeigen" [ref=f128e313] [cursor=pointer]:
+          - /url: /de/products/catalog.html
+    - generic [ref=f128e314]:
+      - link "Firefly Erstelle und verbessere Bilder, Videos und Audio mit KI-gestützten Tools." [ref=f128e319] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/products/firefly.html
+        - generic [ref=f128e320]:
+          - paragraph [ref=f128e321]
+          - heading "Firefly" [level=3] [ref=f128e323]
+          - paragraph [ref=f128e324]: Erstelle und verbessere Bilder, Videos und Audio mit KI-gestützten Tools.
+          - paragraph
+      - link "Adobe Acrobat Die vollständige KI-gestützte PDF- und Design-Lösung für Unternehmens-Workflows" [ref=f128e329] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/acrobat.html
+        - generic [ref=f128e330]:
+          - paragraph [ref=f128e331]
+          - heading "Adobe Acrobat" [level=3] [ref=f128e333]
+          - paragraph [ref=f128e334]: Die vollständige KI-gestützte PDF- und Design-Lösung für Unternehmens-Workflows
+          - paragraph
+      - link "Photoshop Nutze Profi-Werkzeuge für Fotoretusche, digitales Malen und Grafik-Design." [ref=f128e339] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/photoshop.html
+        - generic [ref=f128e340]:
+          - paragraph [ref=f128e341]
+          - heading "Photoshop" [level=3] [ref=f128e343]
+          - paragraph [ref=f128e344]: Nutze Profi-Werkzeuge für Fotoretusche, digitales Malen und Grafik-Design.
+          - paragraph
+      - link "Premiere Produziere packende Storys mit dem führenden Video-Editor – vom Social-Media-Clip bis zum Kinofilm." [ref=f128e349] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/products/premiere.html
+        - generic [ref=f128e350]:
+          - paragraph [ref=f128e351]
+          - heading "Premiere" [level=3] [ref=f128e353]
+          - paragraph [ref=f128e354]: Produziere packende Storys mit dem führenden Video-Editor – vom Social-Media-Clip bis zum Kinofilm.
+          - paragraph
+      - link "Creative Cloud Sichere dir über 20 Programme, darunter Photoshop, Illustrator, Premiere Pro und Acrobat Pro." [ref=f128e359] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/creativecloud.html
+        - generic [ref=f128e360]:
+          - paragraph [ref=f128e361]
+          - heading "Creative Cloud" [level=3] [ref=f128e363]
+          - paragraph [ref=f128e364]: Sichere dir über 20 Programme, darunter Photoshop, Illustrator, Premiere Pro und Acrobat Pro.
+          - paragraph
+      - link "GenStudio Skaliert eure Content Supply Chain." [ref=f128e369] [cursor=pointer]:
+        - /url: https://business.adobe.com/de/products/genstudio.html
+        - generic [ref=f128e370]:
+          - paragraph [ref=f128e371]
+          - heading "GenStudio" [level=3] [ref=f128e373]
+          - paragraph [ref=f128e374]: Skaliert eure Content Supply Chain.
+          - paragraph
+      - link "Unternehmensprodukte Adobe-Lösungen integrieren unsere erstklassigen Produkte, um euch bei schwierigen geschäftlichen Herausforderungen zu unterstützen." [ref=f128e379] [cursor=pointer]:
+        - /url: http://business.adobe.com/de/
+        - generic [ref=f128e380]:
+          - paragraph [ref=f128e381]
+          - heading "Unternehmensprodukte" [level=3] [ref=f128e383]
+          - paragraph [ref=f128e384]: Adobe-Lösungen integrieren unsere erstklassigen Produkte, um euch bei schwierigen geschäftlichen Herausforderungen zu unterstützen.
+          - paragraph
+      - link "Illustrator Gestalte präzise Vektorgrafiken – von Branding bis Illustration. Deine Designs bleiben in jeder Größe gestochen scharf, skalierbar und vollständig editierbar." [ref=f128e389] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/products/illustrator.html
+        - generic [ref=f128e390]:
+          - paragraph [ref=f128e391]
+          - heading "Illustrator" [level=3] [ref=f128e393]
+          - paragraph [ref=f128e394]: Gestalte präzise Vektorgrafiken – von Branding bis Illustration. Deine Designs bleiben in jeder Größe gestochen scharf, skalierbar und vollständig editierbar.
+          - paragraph
+      - link "Alle Produkte Alle Adobe-Produkte anzeigen" [ref=f128e399] [cursor=pointer]:
+        - /url: https://www.adobe.com/de/products/catalog.html
+        - generic [ref=f128e400]:
+          - paragraph [ref=f128e401]
+          - heading "Alle Produkte" [level=3] [ref=f128e403]
+          - paragraph [ref=f128e404]: Alle Adobe-Produkte anzeigen
+          - paragraph
+  - contentinfo [ref=f128e407]:
+    - generic [ref=f128e408]:
+      - generic [ref=f128e409]:
+        - generic [ref=f128e411]:
+          - heading "Für Einzelpersonen und kleine Unternehmen" [level=2] [ref=f128e412]:
+            - generic [ref=f128e413]: Für Einzelpersonen und kleine Unternehmen
+          - list [ref=f128e415]:
+            - listitem [ref=f128e416]:
+              - link "Kreative KI" [ref=f128e417] [cursor=pointer]:
+                - /url: /de/products/firefly.html
+            - listitem [ref=f128e418]:
+              - link "Fotografie" [ref=f128e419] [cursor=pointer]:
+                - /url: /de/creativecloud/photography/apps.html
+            - listitem [ref=f128e420]:
+              - link "Design und Illustration" [ref=f128e421] [cursor=pointer]:
+                - /url: /de/creativecloud/design.html
+            - listitem [ref=f128e422]:
+              - link "Video und Animation" [ref=f128e423] [cursor=pointer]:
+                - /url: /de/creativecloud/video.html
+            - listitem [ref=f128e424]:
+              - link "PDF" [ref=f128e425] [cursor=pointer]:
+                - /url: /de/acrobat.html
+            - listitem [ref=f128e426]:
+              - link "3D" [ref=f128e427] [cursor=pointer]:
+                - /url: /de/products/substance3d.html
+            - listitem [ref=f128e428]:
+              - link "Elements-Produktfamilie" [ref=f128e429] [cursor=pointer]:
+                - /url: /de/products/elements-family.html
+            - listitem [ref=f128e430]:
+              - link "Stock-Bilder und -Videos" [ref=f128e431] [cursor=pointer]:
+                - /url: https://stock.adobe.com/de
+            - listitem [ref=f128e432]:
+              - link "Alle Produkte anzeigen" [ref=f128e433] [cursor=pointer]:
+                - /url: /de/products/catalog.html#category=all
+        - generic [ref=f128e435]:
+          - heading "Für mittlere und große Unternehmen." [level=2] [ref=f128e436]:
+            - generic [ref=f128e437]: Für mittlere und große Unternehmen.
+          - list [ref=f128e439]:
+            - listitem [ref=f128e440]:
+              - link "Kundeninteraktion" [ref=f128e441] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/solutions/customer-engagement.html
+            - listitem [ref=f128e442]:
+              - link "Content Supply Chain" [ref=f128e443] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/solutions/content-supply-chain.html
+            - listitem [ref=f128e444]:
+              - link "Markensichtbarkeit" [ref=f128e445] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/solutions/brand-visibility.html
+            - listitem [ref=f128e446]:
+              - link "CX-Orchestrierung für B2B" [ref=f128e447] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/solutions/b2b-marketing.html
+            - listitem [ref=f128e448]:
+              - link "Alle Produkte anzeigen" [ref=f128e449] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/products.html
+        - generic [ref=f128e451]:
+          - heading "Für Unternehmen und Organisationen." [level=2] [ref=f128e452]:
+            - generic [ref=f128e453]: Für Unternehmen und Organisationen.
+          - list [ref=f128e455]:
+            - listitem [ref=f128e456]:
+              - link "Bildungseinrichtungen" [ref=f128e457] [cursor=pointer]:
+                - /url: /de/education.html
+            - listitem [ref=f128e458]:
+              - link "Gemeinnützige Organisationen" [ref=f128e459] [cursor=pointer]:
+                - /url: /de/nonprofits.html
+            - listitem [ref=f128e460]:
+              - link "Government" [ref=f128e461] [cursor=pointer]:
+                - /url: /de/howtobuy/buying-programs/government.html
+        - generic [ref=f128e463]:
+          - heading "Support." [level=2] [ref=f128e464]:
+            - generic [ref=f128e465]: Support.
+          - list [ref=f128e467]:
+            - listitem [ref=f128e468]:
+              - link "Hilfezentrum" [ref=f128e469] [cursor=pointer]:
+                - /url: https://helpx.adobe.com/de/support.html
+            - listitem [ref=f128e470]:
+              - link "Download und Installation" [ref=f128e471] [cursor=pointer]:
+                - /url: https://helpx.adobe.com/de/download-install.html
+            - listitem [ref=f128e472]:
+              - link "Adobe-Community" [ref=f128e473] [cursor=pointer]:
+                - /url: /de/community.html
+            - listitem [ref=f128e474]:
+              - link "Adobe Learn" [ref=f128e475] [cursor=pointer]:
+                - /url: /de/learn
+            - listitem [ref=f128e476]:
+              - link "Support für Unternehmen" [ref=f128e477] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/support/main.html
+        - generic [ref=f128e479]:
+          - heading "Kontakt." [level=2] [ref=f128e480]:
+            - generic [ref=f128e481]: Kontakt.
+          - list [ref=f128e483]:
+            - listitem [ref=f128e484]:
+              - link "Chat mit dem Vertrieb starten" [ref=f128e485] [cursor=pointer]:
+                - /url: /de/#open-jarvis-chat
+            - listitem [ref=f128e486]:
+              - link "Beratung anfordern" [ref=f128e487] [cursor=pointer]:
+                - /url: https://business.adobe.com/de/request-consultation.html
+        - generic [ref=f128e489]:
+          - heading "Adobe" [level=2] [ref=f128e490]:
+            - generic [ref=f128e491]: Adobe
+          - list [ref=f128e493]:
+            - listitem [ref=f128e494]:
+              - link "Anmeldung bei deinem Konto" [ref=f128e495] [cursor=pointer]:
+                - /url: https://account.adobe.com/
+            - listitem [ref=f128e496]:
+              - link "Über Adobe" [ref=f128e497] [cursor=pointer]:
+                - /url: /de/about-adobe.html
+            - listitem [ref=f128e498]:
+              - link "Stellenangebote" [ref=f128e499] [cursor=pointer]:
+                - /url: /de/careers.html
+            - listitem [ref=f128e500]:
+              - link "Veranstaltungen" [ref=f128e501] [cursor=pointer]:
+                - /url: /de/events.html
+            - listitem [ref=f128e502]:
+              - link "Presse" [ref=f128e503] [cursor=pointer]:
+                - /url: https://news.adobe.com/de
+            - listitem [ref=f128e504]:
+              - link "Soziale Verantwortung" [ref=f128e505] [cursor=pointer]:
+                - /url: /de/corporate-responsibility.html
+            - listitem [ref=f128e506]:
+              - link "Investoren" [ref=f128e507] [cursor=pointer]:
+                - /url: /de/investor-relations.html
+            - listitem [ref=f128e508]:
+              - link "Logistikkette" [ref=f128e509] [cursor=pointer]:
+                - /url: /de/corporate-responsibility/supply-chain.html
+            - listitem [ref=f128e510]:
+              - link "Trust Center" [ref=f128e511] [cursor=pointer]:
+                - /url: /de/trust.html
+            - listitem [ref=f128e512]:
+              - link "Integrität" [ref=f128e513] [cursor=pointer]:
+                - /url: /de/about-adobe/integrity.html
+            - listitem [ref=f128e514]:
+              - link "Adobe für alle" [ref=f128e515] [cursor=pointer]:
+                - /url: /de/diversity.html
+            - listitem [ref=f128e516]:
+              - link "Adobe-Blog" [ref=f128e517] [cursor=pointer]:
+                - /url: https://blog.adobe.com/de/
+            - listitem [ref=f128e518]:
+              - link "Datenschutz" [ref=f128e519] [cursor=pointer]:
+                - /url: /de/privacy.html
+            - listitem [ref=f128e520]:
+              - link "Nutzungsbedingungen" [ref=f128e521] [cursor=pointer]:
+                - /url: /de/legal/terms.html
+            - listitem [ref=f128e522]:
+              - link "Cookie-Einstellungen" [ref=f128e523] [cursor=pointer]:
+                - /url: /de/#openPrivacy
+      - generic [ref=f128e525]:
+        - heading "Produkte" [level=2] [ref=f128e526]:
+          - generic [ref=f128e527]: Produkte
+        - list [ref=f128e529]:
+          - listitem [ref=f128e530]:
+            - link "Bild Acrobat Reader" [ref=f128e531] [cursor=pointer]:
+              - /url: https://get.adobe.com/de/reader/
+              - img "Bild" [ref=f128e534]
+              - generic [ref=f128e536]: Acrobat Reader
+          - listitem [ref=f128e537]:
+            - link "Bild Firefly" [ref=f128e538] [cursor=pointer]:
+              - /url: https://www.adobe.com/de/products/firefly.html
+              - img "Bild" [ref=f128e541]
+              - generic [ref=f128e543]: Firefly
+          - listitem [ref=f128e544]:
+            - link "Bild Adobe Express" [ref=f128e545] [cursor=pointer]:
+              - /url: https://www.adobe.com/de/express/?promoid=Z2G1FSYV&mv=other
+              - img "Bild" [ref=f128e548]
+              - generic [ref=f128e550]: Adobe Express
+          - listitem [ref=f128e551]:
+            - link "Bild Photoshop" [ref=f128e552] [cursor=pointer]:
+              - /url: https://www.adobe.com/de/products/photoshop/free-trial-download.html
+              - img "Bild" [ref=f128e555]
+              - generic [ref=f128e557]: Photoshop
+      - generic [ref=f128e558]:
+        - button "Region ändern" [ref=f128e560] [cursor=pointer]:
+          - generic [ref=f128e561]: Region ändern
+        - generic [ref=f128e562]:
+          - list [ref=f128e564]:
+            - listitem [ref=f128e565]: © 2026 Adobe Inc. All rights reserved.
+            - listitem [ref=f128e566]:
+              - link "Impressum" [ref=f128e567] [cursor=pointer]:
+                - /url: /de/about-adobe/impressum.html
+            - listitem [ref=f128e568]:
+              - link "Verträge hier kündigen" [ref=f128e569] [cursor=pointer]:
+                - /url: "#cancel"
+            - listitem [ref=f128e570]:
+              - link "AdAuswahl" [ref=f128e571] [cursor=pointer]:
+                - /url: /de/privacy/opt-out.html#interest-based-ads
+                - img [ref=f128e572]
+                - text: AdAuswahl
+          - img "Adobe" [ref=f128e574]:
+            - img [ref=f128e576]
+        - list [ref=f128e578]:
+          - listitem [ref=f128e579]:
+            - link "facebook" [ref=f128e580] [cursor=pointer]:
+              - /url: https://www.facebook.com/adobe
+              - img [ref=f128e581]
+          - listitem [ref=f128e583]:
+            - link "instagram" [ref=f128e584] [cursor=pointer]:
+              - /url: https://www.instagram.com/adobe/
+              - img [ref=f128e585]
+          - listitem [ref=f128e587]:
+            - link "twitter" [ref=f128e588] [cursor=pointer]:
+              - /url: https://twitter.com/Adobe
+              - img [ref=f128e589]
+          - listitem [ref=f128e591]:
+            - link "linkedin" [ref=f128e592] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/adobe
+              - img [ref=f128e593]
+    - img "Footer logo" [ref=f128e596]

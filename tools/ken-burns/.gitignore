@@ -1,0 +1,6 @@
+# Local assets and renders (keep everything under this folder)
+input/*
+!input/README.txt
+!input/PASTE_FILES_HERE.txt
+!input/REFERENCE_VIDEO.txt
+output/*

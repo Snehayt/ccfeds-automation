@@ -1,0 +1,32 @@
+================================================================================
+  PASTE YOUR FILES IN THIS FOLDER  (tools\ken-burns\input)
+================================================================================
+
+  DO NOT try to "open" this folder from a link in Cursor chat — that often
+  fails. Use Windows File Explorer instead (see HOW_TO_PUT_FILES_HERE.md).
+
+  Put here:
+    • 1 video  (.mp4, .mov, .webm, or .mkv)
+    • 3 images (.png, .jpg, or .webp)
+
+  Names can be anything (e.g. screen recordings, screenshots).
+  local-render.ps1 picks:
+    • the first video file (sorted by name), OR video.mp4 if you use that name
+    • the first 3 image files (sorted by name), OR slide-01/02/03.png if present
+
+  For a specific order, rename images like: 01_home.png, 02_list.png, 03_detail.png
+
+  Then in PowerShell:
+
+      cd ...\tools\ken-burns
+      .\local-render.ps1
+
+  Output:  ..\output\montage.mp4
+
+================================================================================
+
+
+Recording 2026-05-19 183546.mp4
+{D101B7E3-2CCE-4034-96E6-2AA945601E51} (2).png
+{D101B7E3-2CCE-4034-96E6-2AA945601E51} (3).png
+Screenshot 2026-05-19 181949.png

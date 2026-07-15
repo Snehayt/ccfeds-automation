@@ -1,0 +1,3885 @@
+{
+  "viewports": [
+    {
+      "name": "mobile-portrait",
+      "width": 393,
+      "height": 852,
+      "isMobile": true
+    },
+    {
+      "name": "mobile-landscape",
+      "width": 852,
+      "height": 393,
+      "isMobile": true
+    },
+    {
+      "name": "tablet-portrait",
+      "width": 1024,
+      "height": 1366,
+      "isMobile": true
+    },
+    {
+      "name": "tablet-landscape",
+      "width": 1366,
+      "height": 1024,
+      "isMobile": true
+    },
+    {
+      "name": "desktop-narrow",
+      "width": 1100,
+      "height": 800,
+      "isMobile": false
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 800,
+      "isMobile": false
+    }
+  ],
+  "baseUrl": "https://main--upp--adobecom.aem.live",
+  "testPage": "/homepage/drafts/blaishram/redesign-demo-copy?fedsbranch=localnav-new&georouting=off&mep=off",
+  "timestamp": "2026-05-18T06:32:09.159Z",
+  "partial": false,
+  "summary": {
+    "totalScans": 546,
+    "affectedLocales": 0,
+    "elapsedSec": 735.9
+  },
+  "scans": [
+    {
+      "locale": "us",
+      "name": "United States",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_en",
+      "name": "Israel English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_en",
+      "name": "UAE English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_en",
+      "name": "Saudi Arabia English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_en",
+      "name": "Vietnam English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_en",
+      "name": "CIS English",
+      "viewport": "mobile-portrait",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "ca",
+      "name": "Canada English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_en",
+      "name": "MENA English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_en",
+      "name": "Thailand English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_en",
+      "name": "Philippines English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_en",
+      "name": "Indonesia English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "uk",
+      "name": "United Kingdom",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "au",
+      "name": "Australia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "africa",
+      "name": "Africa",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_en",
+      "name": "Belgium English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_en",
+      "name": "Greece English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_en",
+      "name": "Hong Kong English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ie",
+      "name": "Ireland",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in",
+      "name": "India English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_en",
+      "name": "Luxembourg English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nz",
+      "name": "New Zealand",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sg",
+      "name": "Singapore",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_en",
+      "name": "Malaysia English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ng",
+      "name": "Nigeria",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_en",
+      "name": "Qatar English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_en",
+      "name": "Egypt English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "za",
+      "name": "South Africa",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_en",
+      "name": "Kuwait English",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "de",
+      "name": "Germany",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_de",
+      "name": "Luxembourg German",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_de",
+      "name": "Switzerland German",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "at",
+      "name": "Austria",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fr",
+      "name": "France",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_fr",
+      "name": "Belgium French",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_fr",
+      "name": "Switzerland French",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_fr",
+      "name": "Luxembourg French",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ca_fr",
+      "name": "Canada French",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "jp",
+      "name": "Japan",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_ar",
+      "name": "MENA Arabic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_ar",
+      "name": "Saudi Arabia Arabic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_ar",
+      "name": "UAE Arabic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_ar",
+      "name": "Qatar Arabic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_ar",
+      "name": "Kuwait Arabic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_ar",
+      "name": "Egypt Arabic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_he",
+      "name": "Israel Hebrew",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "bg",
+      "name": "Bulgaria",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cz",
+      "name": "Czech Republic",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "dk",
+      "name": "Denmark",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "es",
+      "name": "Spain",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ee",
+      "name": "Estonia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fi",
+      "name": "Finland",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_el",
+      "name": "Greece Greek",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hu",
+      "name": "Hungary",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "it",
+      "name": "Italy",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_it",
+      "name": "Switzerland Italian",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kr",
+      "name": "Korea",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lt",
+      "name": "Lithuania",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lv",
+      "name": "Latvia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nl",
+      "name": "Netherlands",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_nl",
+      "name": "Belgium Dutch",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "no",
+      "name": "Norway",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pl",
+      "name": "Poland",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pt",
+      "name": "Portugal",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "br",
+      "name": "Brazil",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ro",
+      "name": "Romania",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ru",
+      "name": "Russia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_ru",
+      "name": "CIS Russian",
+      "viewport": "mobile-portrait",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "sk",
+      "name": "Slovakia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "si",
+      "name": "Slovenia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "se",
+      "name": "Sweden",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tr",
+      "name": "Turkey",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ua",
+      "name": "Ukraine",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ar",
+      "name": "Argentina",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "la",
+      "name": "Latin America",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mx",
+      "name": "Mexico",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pe",
+      "name": "Peru",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cl",
+      "name": "Chile",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "co",
+      "name": "Colombia",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cr",
+      "name": "Costa Rica",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ec",
+      "name": "Ecuador",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gt",
+      "name": "Guatemala",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pr",
+      "name": "Puerto Rico",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cn",
+      "name": "China",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tw",
+      "name": "Taiwan",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_zh",
+      "name": "Hong Kong Chinese",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_th",
+      "name": "Thailand Thai",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_fil",
+      "name": "Philippines Filipino",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_id",
+      "name": "Indonesia Indonesian",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_ms",
+      "name": "Malaysia Malay",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_vi",
+      "name": "Vietnam Vietnamese",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in_hi",
+      "name": "India Hindi",
+      "viewport": "mobile-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "us",
+      "name": "United States",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_en",
+      "name": "Israel English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_en",
+      "name": "UAE English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_en",
+      "name": "Saudi Arabia English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_en",
+      "name": "Vietnam English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_en",
+      "name": "CIS English",
+      "viewport": "mobile-landscape",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "ca",
+      "name": "Canada English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_en",
+      "name": "MENA English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_en",
+      "name": "Thailand English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_en",
+      "name": "Philippines English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_en",
+      "name": "Indonesia English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "uk",
+      "name": "United Kingdom",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "au",
+      "name": "Australia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "africa",
+      "name": "Africa",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_en",
+      "name": "Belgium English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_en",
+      "name": "Greece English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_en",
+      "name": "Hong Kong English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ie",
+      "name": "Ireland",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in",
+      "name": "India English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_en",
+      "name": "Luxembourg English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nz",
+      "name": "New Zealand",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sg",
+      "name": "Singapore",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_en",
+      "name": "Malaysia English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ng",
+      "name": "Nigeria",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_en",
+      "name": "Qatar English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_en",
+      "name": "Egypt English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "za",
+      "name": "South Africa",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_en",
+      "name": "Kuwait English",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "de",
+      "name": "Germany",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_de",
+      "name": "Luxembourg German",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_de",
+      "name": "Switzerland German",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "at",
+      "name": "Austria",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fr",
+      "name": "France",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_fr",
+      "name": "Belgium French",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_fr",
+      "name": "Switzerland French",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_fr",
+      "name": "Luxembourg French",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ca_fr",
+      "name": "Canada French",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "jp",
+      "name": "Japan",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_ar",
+      "name": "MENA Arabic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_ar",
+      "name": "Saudi Arabia Arabic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_ar",
+      "name": "UAE Arabic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_ar",
+      "name": "Qatar Arabic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_ar",
+      "name": "Kuwait Arabic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_ar",
+      "name": "Egypt Arabic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_he",
+      "name": "Israel Hebrew",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "bg",
+      "name": "Bulgaria",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cz",
+      "name": "Czech Republic",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "dk",
+      "name": "Denmark",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "es",
+      "name": "Spain",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ee",
+      "name": "Estonia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fi",
+      "name": "Finland",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_el",
+      "name": "Greece Greek",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hu",
+      "name": "Hungary",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "it",
+      "name": "Italy",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_it",
+      "name": "Switzerland Italian",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kr",
+      "name": "Korea",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lt",
+      "name": "Lithuania",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lv",
+      "name": "Latvia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nl",
+      "name": "Netherlands",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_nl",
+      "name": "Belgium Dutch",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "no",
+      "name": "Norway",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pl",
+      "name": "Poland",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pt",
+      "name": "Portugal",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "br",
+      "name": "Brazil",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ro",
+      "name": "Romania",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ru",
+      "name": "Russia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_ru",
+      "name": "CIS Russian",
+      "viewport": "mobile-landscape",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "sk",
+      "name": "Slovakia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "si",
+      "name": "Slovenia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "se",
+      "name": "Sweden",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tr",
+      "name": "Turkey",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ua",
+      "name": "Ukraine",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ar",
+      "name": "Argentina",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "la",
+      "name": "Latin America",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mx",
+      "name": "Mexico",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pe",
+      "name": "Peru",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cl",
+      "name": "Chile",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "co",
+      "name": "Colombia",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cr",
+      "name": "Costa Rica",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ec",
+      "name": "Ecuador",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gt",
+      "name": "Guatemala",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pr",
+      "name": "Puerto Rico",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cn",
+      "name": "China",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tw",
+      "name": "Taiwan",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_zh",
+      "name": "Hong Kong Chinese",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_th",
+      "name": "Thailand Thai",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_fil",
+      "name": "Philippines Filipino",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_id",
+      "name": "Indonesia Indonesian",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_ms",
+      "name": "Malaysia Malay",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_vi",
+      "name": "Vietnam Vietnamese",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in_hi",
+      "name": "India Hindi",
+      "viewport": "mobile-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "us",
+      "name": "United States",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_en",
+      "name": "Israel English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_en",
+      "name": "UAE English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_en",
+      "name": "Saudi Arabia English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_en",
+      "name": "Vietnam English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_en",
+      "name": "CIS English",
+      "viewport": "tablet-portrait",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "ca",
+      "name": "Canada English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_en",
+      "name": "MENA English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_en",
+      "name": "Thailand English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_en",
+      "name": "Philippines English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_en",
+      "name": "Indonesia English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "uk",
+      "name": "United Kingdom",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "au",
+      "name": "Australia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "africa",
+      "name": "Africa",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_en",
+      "name": "Belgium English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_en",
+      "name": "Greece English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_en",
+      "name": "Hong Kong English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ie",
+      "name": "Ireland",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in",
+      "name": "India English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_en",
+      "name": "Luxembourg English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nz",
+      "name": "New Zealand",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sg",
+      "name": "Singapore",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_en",
+      "name": "Malaysia English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ng",
+      "name": "Nigeria",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_en",
+      "name": "Qatar English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_en",
+      "name": "Egypt English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "za",
+      "name": "South Africa",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_en",
+      "name": "Kuwait English",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "de",
+      "name": "Germany",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_de",
+      "name": "Luxembourg German",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_de",
+      "name": "Switzerland German",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "at",
+      "name": "Austria",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fr",
+      "name": "France",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_fr",
+      "name": "Belgium French",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_fr",
+      "name": "Switzerland French",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_fr",
+      "name": "Luxembourg French",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ca_fr",
+      "name": "Canada French",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "jp",
+      "name": "Japan",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_ar",
+      "name": "MENA Arabic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_ar",
+      "name": "Saudi Arabia Arabic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_ar",
+      "name": "UAE Arabic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_ar",
+      "name": "Qatar Arabic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_ar",
+      "name": "Kuwait Arabic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_ar",
+      "name": "Egypt Arabic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_he",
+      "name": "Israel Hebrew",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "bg",
+      "name": "Bulgaria",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cz",
+      "name": "Czech Republic",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "dk",
+      "name": "Denmark",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "es",
+      "name": "Spain",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ee",
+      "name": "Estonia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fi",
+      "name": "Finland",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_el",
+      "name": "Greece Greek",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hu",
+      "name": "Hungary",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "it",
+      "name": "Italy",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_it",
+      "name": "Switzerland Italian",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kr",
+      "name": "Korea",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lt",
+      "name": "Lithuania",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lv",
+      "name": "Latvia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nl",
+      "name": "Netherlands",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_nl",
+      "name": "Belgium Dutch",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "no",
+      "name": "Norway",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pl",
+      "name": "Poland",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pt",
+      "name": "Portugal",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "br",
+      "name": "Brazil",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ro",
+      "name": "Romania",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ru",
+      "name": "Russia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_ru",
+      "name": "CIS Russian",
+      "viewport": "tablet-portrait",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "sk",
+      "name": "Slovakia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "si",
+      "name": "Slovenia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "se",
+      "name": "Sweden",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tr",
+      "name": "Turkey",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ua",
+      "name": "Ukraine",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ar",
+      "name": "Argentina",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "la",
+      "name": "Latin America",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mx",
+      "name": "Mexico",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pe",
+      "name": "Peru",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cl",
+      "name": "Chile",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "co",
+      "name": "Colombia",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cr",
+      "name": "Costa Rica",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ec",
+      "name": "Ecuador",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gt",
+      "name": "Guatemala",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pr",
+      "name": "Puerto Rico",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cn",
+      "name": "China",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tw",
+      "name": "Taiwan",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_zh",
+      "name": "Hong Kong Chinese",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_th",
+      "name": "Thailand Thai",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_fil",
+      "name": "Philippines Filipino",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_id",
+      "name": "Indonesia Indonesian",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_ms",
+      "name": "Malaysia Malay",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_vi",
+      "name": "Vietnam Vietnamese",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in_hi",
+      "name": "India Hindi",
+      "viewport": "tablet-portrait",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "us",
+      "name": "United States",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_en",
+      "name": "Israel English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_en",
+      "name": "UAE English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_en",
+      "name": "Saudi Arabia English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_en",
+      "name": "Vietnam English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_en",
+      "name": "CIS English",
+      "viewport": "tablet-landscape",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "ca",
+      "name": "Canada English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_en",
+      "name": "MENA English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_en",
+      "name": "Thailand English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_en",
+      "name": "Philippines English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_en",
+      "name": "Indonesia English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "uk",
+      "name": "United Kingdom",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "au",
+      "name": "Australia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "africa",
+      "name": "Africa",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_en",
+      "name": "Belgium English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_en",
+      "name": "Greece English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_en",
+      "name": "Hong Kong English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ie",
+      "name": "Ireland",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in",
+      "name": "India English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_en",
+      "name": "Luxembourg English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nz",
+      "name": "New Zealand",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sg",
+      "name": "Singapore",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_en",
+      "name": "Malaysia English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ng",
+      "name": "Nigeria",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_en",
+      "name": "Qatar English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_en",
+      "name": "Egypt English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "za",
+      "name": "South Africa",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_en",
+      "name": "Kuwait English",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "de",
+      "name": "Germany",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_de",
+      "name": "Luxembourg German",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_de",
+      "name": "Switzerland German",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "at",
+      "name": "Austria",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fr",
+      "name": "France",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_fr",
+      "name": "Belgium French",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_fr",
+      "name": "Switzerland French",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_fr",
+      "name": "Luxembourg French",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ca_fr",
+      "name": "Canada French",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "jp",
+      "name": "Japan",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_ar",
+      "name": "MENA Arabic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_ar",
+      "name": "Saudi Arabia Arabic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_ar",
+      "name": "UAE Arabic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_ar",
+      "name": "Qatar Arabic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_ar",
+      "name": "Kuwait Arabic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_ar",
+      "name": "Egypt Arabic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_he",
+      "name": "Israel Hebrew",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "bg",
+      "name": "Bulgaria",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cz",
+      "name": "Czech Republic",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "dk",
+      "name": "Denmark",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "es",
+      "name": "Spain",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ee",
+      "name": "Estonia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fi",
+      "name": "Finland",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_el",
+      "name": "Greece Greek",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hu",
+      "name": "Hungary",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "it",
+      "name": "Italy",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_it",
+      "name": "Switzerland Italian",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kr",
+      "name": "Korea",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lt",
+      "name": "Lithuania",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lv",
+      "name": "Latvia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nl",
+      "name": "Netherlands",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_nl",
+      "name": "Belgium Dutch",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "no",
+      "name": "Norway",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pl",
+      "name": "Poland",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pt",
+      "name": "Portugal",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "br",
+      "name": "Brazil",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ro",
+      "name": "Romania",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ru",
+      "name": "Russia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_ru",
+      "name": "CIS Russian",
+      "viewport": "tablet-landscape",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "sk",
+      "name": "Slovakia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "si",
+      "name": "Slovenia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "se",
+      "name": "Sweden",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tr",
+      "name": "Turkey",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ua",
+      "name": "Ukraine",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ar",
+      "name": "Argentina",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "la",
+      "name": "Latin America",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mx",
+      "name": "Mexico",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pe",
+      "name": "Peru",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cl",
+      "name": "Chile",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "co",
+      "name": "Colombia",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cr",
+      "name": "Costa Rica",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ec",
+      "name": "Ecuador",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gt",
+      "name": "Guatemala",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pr",
+      "name": "Puerto Rico",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cn",
+      "name": "China",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tw",
+      "name": "Taiwan",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_zh",
+      "name": "Hong Kong Chinese",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_th",
+      "name": "Thailand Thai",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_fil",
+      "name": "Philippines Filipino",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_id",
+      "name": "Indonesia Indonesian",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_ms",
+      "name": "Malaysia Malay",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_vi",
+      "name": "Vietnam Vietnamese",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in_hi",
+      "name": "India Hindi",
+      "viewport": "tablet-landscape",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "us",
+      "name": "United States",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_en",
+      "name": "Israel English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_en",
+      "name": "UAE English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_en",
+      "name": "Saudi Arabia English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_en",
+      "name": "Vietnam English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_en",
+      "name": "CIS English",
+      "viewport": "desktop-narrow",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "ca",
+      "name": "Canada English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_en",
+      "name": "MENA English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_en",
+      "name": "Thailand English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_en",
+      "name": "Philippines English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_en",
+      "name": "Indonesia English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "uk",
+      "name": "United Kingdom",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "au",
+      "name": "Australia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "africa",
+      "name": "Africa",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_en",
+      "name": "Belgium English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_en",
+      "name": "Greece English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_en",
+      "name": "Hong Kong English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ie",
+      "name": "Ireland",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in",
+      "name": "India English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_en",
+      "name": "Luxembourg English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nz",
+      "name": "New Zealand",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sg",
+      "name": "Singapore",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_en",
+      "name": "Malaysia English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ng",
+      "name": "Nigeria",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_en",
+      "name": "Qatar English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_en",
+      "name": "Egypt English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "za",
+      "name": "South Africa",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_en",
+      "name": "Kuwait English",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "de",
+      "name": "Germany",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_de",
+      "name": "Luxembourg German",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_de",
+      "name": "Switzerland German",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "at",
+      "name": "Austria",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fr",
+      "name": "France",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_fr",
+      "name": "Belgium French",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_fr",
+      "name": "Switzerland French",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_fr",
+      "name": "Luxembourg French",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ca_fr",
+      "name": "Canada French",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "jp",
+      "name": "Japan",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_ar",
+      "name": "MENA Arabic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_ar",
+      "name": "Saudi Arabia Arabic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_ar",
+      "name": "UAE Arabic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_ar",
+      "name": "Qatar Arabic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_ar",
+      "name": "Kuwait Arabic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_ar",
+      "name": "Egypt Arabic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_he",
+      "name": "Israel Hebrew",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "bg",
+      "name": "Bulgaria",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cz",
+      "name": "Czech Republic",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "dk",
+      "name": "Denmark",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "es",
+      "name": "Spain",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ee",
+      "name": "Estonia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fi",
+      "name": "Finland",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_el",
+      "name": "Greece Greek",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hu",
+      "name": "Hungary",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "it",
+      "name": "Italy",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_it",
+      "name": "Switzerland Italian",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kr",
+      "name": "Korea",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lt",
+      "name": "Lithuania",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lv",
+      "name": "Latvia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nl",
+      "name": "Netherlands",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_nl",
+      "name": "Belgium Dutch",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "no",
+      "name": "Norway",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pl",
+      "name": "Poland",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pt",
+      "name": "Portugal",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "br",
+      "name": "Brazil",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ro",
+      "name": "Romania",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ru",
+      "name": "Russia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_ru",
+      "name": "CIS Russian",
+      "viewport": "desktop-narrow",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "sk",
+      "name": "Slovakia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "si",
+      "name": "Slovenia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "se",
+      "name": "Sweden",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tr",
+      "name": "Turkey",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ua",
+      "name": "Ukraine",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ar",
+      "name": "Argentina",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "la",
+      "name": "Latin America",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mx",
+      "name": "Mexico",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pe",
+      "name": "Peru",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cl",
+      "name": "Chile",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "co",
+      "name": "Colombia",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cr",
+      "name": "Costa Rica",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ec",
+      "name": "Ecuador",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gt",
+      "name": "Guatemala",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pr",
+      "name": "Puerto Rico",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cn",
+      "name": "China",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tw",
+      "name": "Taiwan",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_zh",
+      "name": "Hong Kong Chinese",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_th",
+      "name": "Thailand Thai",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_fil",
+      "name": "Philippines Filipino",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_id",
+      "name": "Indonesia Indonesian",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_ms",
+      "name": "Malaysia Malay",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_vi",
+      "name": "Vietnam Vietnamese",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in_hi",
+      "name": "India Hindi",
+      "viewport": "desktop-narrow",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "us",
+      "name": "United States",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_en",
+      "name": "Israel English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_en",
+      "name": "UAE English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_en",
+      "name": "Saudi Arabia English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_en",
+      "name": "Vietnam English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_en",
+      "name": "CIS English",
+      "viewport": "desktop",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "ca",
+      "name": "Canada English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_en",
+      "name": "MENA English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_en",
+      "name": "Thailand English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_en",
+      "name": "Philippines English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_en",
+      "name": "Indonesia English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "uk",
+      "name": "United Kingdom",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "au",
+      "name": "Australia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "africa",
+      "name": "Africa",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_en",
+      "name": "Belgium English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_en",
+      "name": "Greece English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_en",
+      "name": "Hong Kong English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ie",
+      "name": "Ireland",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in",
+      "name": "India English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_en",
+      "name": "Luxembourg English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nz",
+      "name": "New Zealand",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sg",
+      "name": "Singapore",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_en",
+      "name": "Malaysia English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ng",
+      "name": "Nigeria",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_en",
+      "name": "Qatar English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_en",
+      "name": "Egypt English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "za",
+      "name": "South Africa",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_en",
+      "name": "Kuwait English",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "de",
+      "name": "Germany",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_de",
+      "name": "Luxembourg German",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_de",
+      "name": "Switzerland German",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "at",
+      "name": "Austria",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fr",
+      "name": "France",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_fr",
+      "name": "Belgium French",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_fr",
+      "name": "Switzerland French",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lu_fr",
+      "name": "Luxembourg French",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ca_fr",
+      "name": "Canada French",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "jp",
+      "name": "Japan",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mena_ar",
+      "name": "MENA Arabic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "sa_ar",
+      "name": "Saudi Arabia Arabic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ae_ar",
+      "name": "UAE Arabic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "qa_ar",
+      "name": "Qatar Arabic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kw_ar",
+      "name": "Kuwait Arabic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "eg_ar",
+      "name": "Egypt Arabic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "il_he",
+      "name": "Israel Hebrew",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "bg",
+      "name": "Bulgaria",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cz",
+      "name": "Czech Republic",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "dk",
+      "name": "Denmark",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "es",
+      "name": "Spain",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ee",
+      "name": "Estonia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "fi",
+      "name": "Finland",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gr_el",
+      "name": "Greece Greek",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hu",
+      "name": "Hungary",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "it",
+      "name": "Italy",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ch_it",
+      "name": "Switzerland Italian",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "kr",
+      "name": "Korea",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lt",
+      "name": "Lithuania",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "lv",
+      "name": "Latvia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "nl",
+      "name": "Netherlands",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "be_nl",
+      "name": "Belgium Dutch",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "no",
+      "name": "Norway",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pl",
+      "name": "Poland",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pt",
+      "name": "Portugal",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "br",
+      "name": "Brazil",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ro",
+      "name": "Romania",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ru",
+      "name": "Russia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cis_ru",
+      "name": "CIS Russian",
+      "viewport": "desktop",
+      "status": 404,
+      "skipped": true,
+      "reason": "HTTP 404"
+    },
+    {
+      "locale": "sk",
+      "name": "Slovakia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "si",
+      "name": "Slovenia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "se",
+      "name": "Sweden",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tr",
+      "name": "Turkey",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ua",
+      "name": "Ukraine",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ar",
+      "name": "Argentina",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "la",
+      "name": "Latin America",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "mx",
+      "name": "Mexico",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pe",
+      "name": "Peru",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cl",
+      "name": "Chile",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "co",
+      "name": "Colombia",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cr",
+      "name": "Costa Rica",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ec",
+      "name": "Ecuador",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "gt",
+      "name": "Guatemala",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "pr",
+      "name": "Puerto Rico",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "cn",
+      "name": "China",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "tw",
+      "name": "Taiwan",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "hk_zh",
+      "name": "Hong Kong Chinese",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "th_th",
+      "name": "Thailand Thai",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "ph_fil",
+      "name": "Philippines Filipino",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "id_id",
+      "name": "Indonesia Indonesian",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "my_ms",
+      "name": "Malaysia Malay",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "vn_vi",
+      "name": "Vietnam Vietnamese",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    },
+    {
+      "locale": "in_hi",
+      "name": "India Hindi",
+      "viewport": "desktop",
+      "status": 200,
+      "issues": []
+    }
+  ]
+}

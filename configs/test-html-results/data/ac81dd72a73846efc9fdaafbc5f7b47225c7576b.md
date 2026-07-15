@@ -1,0 +1,173 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: 请使用Chinese语言查看此页面。
+      - link "继续" [ref=e5] [cursor=pointer]:
+        - /url: https://www.stage.adobe.com/cn/express/?akamaiLocale=hk&mep=off
+    - button "Close" [ref=e6] [cursor=pointer]:
+      - img [ref=e7]
+  - banner [ref=e11]:
+    - navigation "Main" [ref=e13]:
+      - generic [ref=e14]:
+        - text: ☰
+        - link "Adobe" [ref=e15] [cursor=pointer]:
+          - /url: https://www.stage.adobe.com/
+          - img [ref=e17]
+      - list [ref=e20]:
+        - listitem [ref=e21]:
+          - button "Creativity & Design" [ref=e22] [cursor=pointer]
+          - text: "| | |"
+        - listitem [ref=e23]:
+          - link "Adobe Express" [disabled] [ref=e24]
+        - listitem [ref=e25]:
+          - button "Create" [ref=e26] [cursor=pointer]
+        - listitem [ref=e27]:
+          - button "Edit" [ref=e28] [cursor=pointer]
+        - listitem [ref=e29]:
+          - button "Print" [ref=e30] [cursor=pointer]
+        - listitem [ref=e31]:
+          - button "Business" [ref=e32] [cursor=pointer]
+        - listitem [ref=e33]:
+          - button "Education" [ref=e34] [cursor=pointer]
+        - listitem [ref=e35]:
+          - button "Plans" [ref=e36] [cursor=pointer]
+      - link "Go to Adobe Express" [ref=e38] [cursor=pointer]:
+        - /url: https://adobesparkpost.app.link/AnkNdGxthOb
+      - generic [ref=e41]:
+        - button "App switcher" [ref=e42] [cursor=pointer]:
+          - img [ref=e43]
+        - button "Sign in" [ref=e55] [cursor=pointer]
+  - main [ref=e56]:
+    - generic [ref=e59]:
+      - img "adobe-express-logo" [ref=e60]
+      - generic [ref=e62]:
+        - heading "The quick and easy create-anything app." [level=1] [ref=e63]
+        - paragraph [ref=e64]: Make stunning social posts, images, videos, flyers, and more with Adobe Express. Dream it. Make it. Easy.
+        - paragraph [ref=e65]:
+          - link "Start 30-day free trial - Adobe Express - INDIVIDUAL" [ref=e66] [cursor=pointer]:
+            - /url: https://commerce.adobe.com/store/segmentation?cli=cc_express&ctx=fp&co=HK&svar=express_M2M&lang=en&ms=COM&ot=TRIAL&cs=INDIVIDUAL&pa=PA-55
+            - generic: Start 30-day free trial
+          - link "Get Adobe Express Free The quick and easy create-anything app." [ref=e67] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/GJrBPFUWBBb?url=%2Fexpress%2F&placement=grid-marquee&locale=en-US&contentRegion=us
+            - text: Get Adobe Express Free
+      - generic [ref=e68]:
+        - button "Create anything, quickly and easily" [ref=e69]:
+          - generic [ref=e70]:
+            - paragraph [ref=e71]
+            - paragraph [ref=e73]:
+              - strong [ref=e74]: Create anything, quickly and easily
+        - button "Edit with one click" [ref=e75]:
+          - generic [ref=e76]:
+            - paragraph [ref=e77]
+            - paragraph [ref=e79]:
+              - strong [ref=e80]: Edit with one click
+        - button "Create fast with generative AI" [ref=e81]:
+          - generic [ref=e82]:
+            - paragraph [ref=e83]
+            - paragraph [ref=e85]:
+              - strong [ref=e86]: Create fast with generative AI
+        - button "Start from standout content" [ref=e87]:
+          - generic [ref=e88]:
+            - paragraph [ref=e89]
+            - paragraph [ref=e91]:
+              - strong [ref=e92]: Start from standout content
+      - generic [ref=e93]:
+        - generic [ref=e94]:
+          - group "4.8 Stars, 345.6K ratings" [ref=e95]:
+            - generic [ref=e96]:
+              - text: "4.8"
+              - img [ref=e97]
+            - generic [ref=e99]: 345.6K ratings
+          - link "Download on the app store" [ref=e100] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/GJrBPFUWBBb?url=%2Fexpress%2F&placement=outside-blocks&locale=en-US&contentRegion=us
+            - img "apple-store" [ref=e101]
+        - generic [ref=e102]:
+          - group "4.6 Stars, 574k ratings" [ref=e103]:
+            - generic [ref=e104]:
+              - text: "4.6"
+              - img [ref=e105]
+            - generic [ref=e107]: 574k ratings
+          - link "Get it on Google Play" [ref=e108] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/GJrBPFUWBBb?url=%2Fexpress%2F&placement=outside-blocks&locale=en-US&contentRegion=us
+            - img "google-store" [ref=e109]
+    - generic [ref=e112]:
+      - generic [ref=e114]:
+        - heading "Adobe Express works for Teams, Enterprise, and Students." [level=2] [ref=e115]
+        - paragraph [ref=e116]: See how Adobe Express makes it easy to create standout content using AI that's designed to be commercially safe.
+      - generic [ref=e119]:
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - heading "Teams" [level=3] [ref=e126]
+            - paragraph [ref=e127]: Keep projects on brand and streamline workflows with real-time collaboration and Adobe Creative Cloud integration.
+          - link "Learn more - Teams" [ref=e129] [cursor=pointer]:
+            - /url: /express/business/teams
+            - text: Learn more
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - heading "Enterprise" [level=3] [ref=e135]
+            - paragraph [ref=e136]: Create on-brand content with easy collaboration, security, and admin features built for large organizations.
+          - link "Learn more - Enterprise" [ref=e138] [cursor=pointer]:
+            - /url: /express/business
+            - text: Learn more
+        - generic [ref=e142]:
+          - generic [ref=e143]:
+            - heading "Students" [level=3] [ref=e144]
+            - paragraph [ref=e145]: Go from basic to bold content for your classes, clubs, and career with professional templates and generative AI.
+          - link "Learn more - Students" [ref=e147] [cursor=pointer]:
+            - /url: /express/learn/students
+            - text: Learn more
+    - generic [ref=e150]:
+      - heading "Discover the top features that everyone loves. cards" [level=3] [ref=e153]: Discover the top features that everyone loves.
+      - region "Discover the top features that everyone loves." [ref=e154]:
+        - generic [ref=e155]:
+          - generic [ref=e158]:
+            - heading "All-new AI Assistant (beta)." [level=4] [ref=e159]
+            - paragraph [ref=e160]:
+              - text: AI Assistant
+              - superscript [ref=e161]: "2"
+              - text: allows you to prompt, create and edit anything. Make quick edits and refine every layer, all while keeping the parts you love intact.
+          - link "Try AI Assistant" [ref=e163] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/XyUY6j9ZwWb?url=%2Fexpress%2F&placement=discover-cards&locale=en-US&contentRegion=us
+        - generic [ref=e164]:
+          - generic [ref=e167]:
+            - heading "Works with Photoshop, Firefly, and more." [level=4] [ref=e168]
+            - paragraph [ref=e169]: Sync content and keep brand assets in reach, all without leaving the app you're already in.
+          - link "Get started" [ref=e171] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/MpnN0Ue0wWb?url=%2Fexpress%2F&placement=discover-cards&locale=en-US&contentRegion=us
+        - generic [ref=e172]:
+          - generic [ref=e175]:
+            - heading "Video made easy." [level=4] [ref=e176]
+            - paragraph [ref=e177]: Make video editing effortless with drag-and-drop content, bulk editing, self-recording, and direct exporting and publishing to Vimeo.
+          - link "Get started" [ref=e179] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/K7QlvIv7FDb?category=media&height=1080&width=1080&unit=px&sceneline=true&tab=videos&isVideoMaker=true&url=%2Fexpress%2F&placement=discover-cards&locale=en-US&contentRegion=us
+        - generic [ref=e180]:
+          - generic [ref=e182]:
+            - heading "Resize any asset." [level=4] [ref=e183]
+            - paragraph [ref=e184]: Turn your design into a social campaign instantly. Resize for any channel in one click, all in a single design file. Download it. Schedule it.
+          - link "Resize now" [ref=e186] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/K7QlvIv7FDb?category=media&height=1080&width=1080&unit=px&sceneline=true&tab=images&url=%2Fexpress%2F&placement=discover-cards&locale=en-US&contentRegion=us
+        - generic [ref=e187]:
+          - generic [ref=e189]:
+            - heading "Create anytime, anywhere." [level=4] [ref=e190]
+            - paragraph [ref=e191]: Create content seamlessly across your desktop browser and phone. Files stay synced so you can work wherever you are.
+          - link "Create now" [ref=e193] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/K7QlvIv7FDb?category=templates&height=1080&width=1080&unit=px&url=%2Fexpress%2F&placement=discover-cards&locale=en-US&contentRegion=us
+        - generic [ref=e194]:
+          - generic [ref=e196]:
+            - heading "Easily stay on brand." [level=4] [ref=e197]
+            - paragraph [ref=e198]:
+              - text: With brand kits
+              - superscript [ref=e199]: "3"
+              - text: ", your team can apply brand fonts and colors to designs, images, and illustrations in a click. Lock elements to keep everyone in sync."
+          - link "Discover brand kits" [ref=e201] [cursor=pointer]:
+            - /url: https://adobesparkpost.app.link/NlWkfRp7FDb?url=%2Fexpress%2F&placement=discover-cards&locale=en-US&contentRegion=us
+      - generic [ref=e202]:
+        - button "Previous Discover the top features that everyone loves." [disabled] [ref=e203]:
+          - img [ref=e204]
+        - button "Next Discover the top features that everyone loves." [ref=e208] [cursor=pointer]:
+          - img [ref=e209]
+  - contentinfo
+```
