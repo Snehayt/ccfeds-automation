@@ -174,7 +174,7 @@ export default class SiteRedesignPage {
 
   #warn(label) {
     console.warn(`WARN — ${label}`);
-    test.info().annotations.push({ type: 'warning', description: label });
+    test.info().annotations.push({ type: 'Warning', description: label });
   }
 
   // Compares computed style (fontFamily/fontSize/fontWeight/padding) against `expected`
@@ -991,7 +991,11 @@ export default class SiteRedesignPage {
     console.info(`[Lang Attribute] Checking html[lang] matches "${localeLang}"`);
     const lang = await this.page.locator('html').getAttribute('lang');
     expect(lang, 'html must have a lang attribute').toBeTruthy();
-    expect(lang.toLowerCase(), `html lang="${lang}" does not match "${localeLang}"`).toContain(localeLang.toLowerCase());
+    // Compare the primary language subtag only (the part before "-"), not a substring-anywhere
+    // match — e.g. lang="en-SK" must not pass for localeLang="sk" just because "SK" (the region)
+    // happens to appear in the string.
+    const primarySubtag = lang.toLowerCase().split('-')[0];
+    expect(primarySubtag, `html lang="${lang}" does not match "${localeLang}"`).toBe(localeLang.toLowerCase());
     console.info(`[Lang Attribute] PASS — html lang="${lang}"`);
   }
 
@@ -1283,6 +1287,10 @@ export default class SiteRedesignPage {
       }
       await this.footerChangeRegion.evaluate((el) => el.click()).catch(() => {});
       clicked.push({ label: 'Footer region picker', daaLl: regionDaaLl });
+      // This click reopens #langnav — validateFooterRegionModal() already covers its own
+      // open/close behavior; this click exists only to trigger the analytics collect call,
+      // so close it immediately instead of leaving it open for the rest of the test.
+      await this.page.locator('#langnav button.dialog-close').click({ timeout: 3000 }).catch(() => {});
 
       // Wait for collect calls to stabilize (no new calls for 400ms) instead of a fixed delay.
       let lastCount = collectCalls.length;

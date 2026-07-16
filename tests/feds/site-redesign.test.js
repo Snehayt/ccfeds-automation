@@ -43,12 +43,12 @@ async function runChecks(page, baseURL, props) {
     await test.step('Page load — check HTTP status', async () => {
       const { url, status } = await nav.navigateTo(baseURL, '', props.path);
       if (status === 404 || status === 410) {
-        test.info().annotations.push({ type: 'skip-reason', description: `Page not found (HTTP ${status}): ${url}` });
+        test.info().annotations.push({ type: 'Skip-reason', description: `Page not found (HTTP ${status}): ${url}` });
         test.skip(true, `Page not found (HTTP ${status}) for ${props.country}`);
         return;
       }
       if (status >= 400) {
-        test.info().annotations.push({ type: 'error', description: `HTTP ${status}: ${url}` });
+        test.info().annotations.push({ type: 'Error', description: `HTTP ${status}: ${url}` });
         expect(status, `Expected 2xx for ${url}`).toBeLessThan(400);
       }
     });
@@ -71,7 +71,7 @@ async function runChecks(page, baseURL, props) {
       check('GNAV — all nav items visible',                              () => nav.validateGnavElements()),
       check('GNAV — nav height non-zero', async () => {
         const height = await nav.validateNavHeight();
-        test.info().annotations.push({ type: 'nav-height-px', description: `${height}px` });
+        test.info().annotations.push({ type: 'Nav-height-px', description: `${height}px` });
       }),
       check('GNAV — nav links have valid href',                          () => nav.validateAllNavLinks()),
       check('GNAV — Adobe logo visible, points to adobe.com, clickable', () => nav.validateAdobeLogo()),
@@ -118,8 +118,8 @@ async function runChecks(page, baseURL, props) {
         );
       }
     }
-    test.info().annotations.push({ type: 'dropdown-count', description: `${dropdownCount}: ${dropdownNames.join(', ')}` });
-    test.info().annotations.push({ type: 'promo', description: promoFoundIn ? `present in: ${promoFoundIn}` : 'not present' });
+    test.info().annotations.push({ type: 'Dropdown-count', description: `${dropdownCount}: ${dropdownNames.join(', ')}` });
+    test.info().annotations.push({ type: 'Promo', description: promoFoundIn ? `present in: ${promoFoundIn}` : 'not present' });
 
     // ═══════════════════════════════════════════════════════════════════════
     section(4, 'Blur Effect — backdrop blurs behind every open dropdown');
@@ -168,11 +168,9 @@ async function runChecks(page, baseURL, props) {
       const violations     = getViolationSummary(results);
       const criticalSerious = violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
       if (violations.length > 0)
-        test.info().annotations.push({ type: 'a11y-violations', description: JSON.stringify(violations, null, 2) });
-      test.info().annotations.push({
-        type: 'accessibility',
-        description: criticalSerious.length === 0 ? 'pass' : `FAIL — ${criticalSerious.map((v) => v.id).join(', ')}`,
-      });
+        test.info().annotations.push({ type: 'A11y-violations', description: JSON.stringify(violations, null, 2) });
+      if (criticalSerious.length > 0)
+        test.info().annotations.push({ type: 'Accessibility', description: `FAIL — ${criticalSerious.map((v) => v.id).join(', ')}` });
       expect(criticalSerious, `Critical/serious a11y violations:\n${JSON.stringify(violations, null, 2)}`).toHaveLength(0);
     });
     await check('Accessibility — axe-core WCAG 2.1 AA scan on footer landmark', async () => {
@@ -180,11 +178,9 @@ async function runChecks(page, baseURL, props) {
       const violations     = getViolationSummary(results);
       const criticalSerious = violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
       if (violations.length > 0)
-        test.info().annotations.push({ type: 'footer-a11y-violations', description: JSON.stringify(violations, null, 2) });
-      test.info().annotations.push({
-        type: 'footer-accessibility',
-        description: criticalSerious.length === 0 ? 'pass' : `FAIL — ${criticalSerious.map((v) => v.id).join(', ')}`,
-      });
+        test.info().annotations.push({ type: 'Footer-a11y-violations', description: JSON.stringify(violations, null, 2) });
+      if (criticalSerious.length > 0)
+        test.info().annotations.push({ type: 'Footer-accessibility', description: `FAIL — ${criticalSerious.map((v) => v.id).join(', ')}` });
       expect(criticalSerious, `Footer a11y violations:\n${JSON.stringify(violations, null, 2)}`).toHaveLength(0);
     });
 
@@ -211,10 +207,10 @@ test.describe('Site Redesign GNAV', () => {
 
   features.forEach((props) => {
     test(`${props.name} | ${props.country}`, { tag: props.tags }, async ({ page, baseURL }, testInfo) => {
-      testInfo.annotations.push({ type: 'country',   description: props.country });
-      testInfo.annotations.push({ type: 'locale',    description: props.code });
-      testInfo.annotations.push({ type: 'language',  description: props.lang });
-      testInfo.annotations.push({ type: 'direction', description: props.dir });
+      testInfo.annotations.push({ type: 'Country',   description: props.country });
+      testInfo.annotations.push({ type: 'Locale',    description: props.code });
+      testInfo.annotations.push({ type: 'Language',  description: props.lang });
+      testInfo.annotations.push({ type: 'Direction', description: props.dir });
 
       console.info(`[SiteRedesign] Testing: ${baseURL}${props.path}`);
       await runChecks(page, baseURL, props);
