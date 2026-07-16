@@ -27,7 +27,7 @@ async function runChecks(page, baseURL, props) {
 
   async function check(name, fn) {
     try {
-      await test.step(name, fn);
+      return await test.step(name, fn);
     } catch (e) {
       const detail = e.message.split('\n').slice(0, 4).join(' | ').replace(/\s+/g, ' ').trim();
       failures.push({ name, detail });
@@ -77,7 +77,9 @@ async function runChecks(page, baseURL, props) {
       check('GNAV — Adobe logo visible, points to adobe.com, clickable', () => nav.validateAdobeLogo()),
       check('GNAV — nav link typography (14px Adobe Clean)',             () => nav.validateNavFontStyles()),
       check('GNAV — nav button/Sign In/App Switcher typography + padding', () => nav.validateGnavElementStyles()),
-      check(`GNAV — RTL direction for Arabic locales (${props.code})`,   () => nav.validateRtlDirection(props.dir)),
+      ...(props.dir === 'rtl'
+        ? [check(`GNAV — RTL direction for Arabic locales (${props.code})`, () => nav.validateRtlDirection(props.dir))]
+        : []),
     ]);
     await Promise.all([
       check('GNAV — App Switcher opens modal with app links, closes', () => nav.validateAppSwitcher()),
@@ -99,7 +101,7 @@ async function runChecks(page, baseURL, props) {
     // skipped here by their actual (locale-specific) aria-controls value, not a
     // hardcoded English string — full coverage either way, nothing skipped without
     // an equivalent check already having run.
-    let promoFoundIn = null;
+    const promoFoundIn = [];
     const dropdownCount = await nav.allDropdownBtns.count();
     const dropdownNames = [];
     if (dropdownCount > 0) {
@@ -113,13 +115,25 @@ async function runChecks(page, baseURL, props) {
         const name         = ((await btn.textContent()) || '').trim() || `Dropdown ${i + 1}`;
         dropdownNames.push(name);
         if (ariaControls === productsAriaControls || ariaControls === useCasesAriaControls) continue;
-        await check(`Dropdown — ${name} opens, links have href, closes`, () =>
-          nav.validateDropdown(ariaControls, name, (hasPromo) => { if (hasPromo) promoFoundIn = name; })
-        );
+
+        const opened = await check(`Dropdown — ${name} opens, links have href`, () => nav.openDropdown(ariaControls, name));
+        if (!opened) continue; // open failed — nothing to validate/close
+
+        if (opened.hasPromo) {
+          promoFoundIn.push(name);
+          await check(`Dropdown — ${name} promo card image/title/CTA valid`, () => nav.validatePromoContent(opened.promo, name));
+        }
+
+        await check(`Dropdown — ${name} closes`, () => nav.closeDropdown(opened.btn, opened.panel, name));
       }
     }
     test.info().annotations.push({ type: 'Dropdown-count', description: `${dropdownCount}: ${dropdownNames.join(', ')}` });
-    test.info().annotations.push({ type: 'Promo', description: promoFoundIn ? `present in: ${promoFoundIn}` : 'not present' });
+    test.info().annotations.push({
+      type: 'Promo',
+      description: promoFoundIn.length
+        ? `${promoFoundIn.length} present in: ${promoFoundIn.join(', ')}`
+        : 'not present',
+    });
 
     // ═══════════════════════════════════════════════════════════════════════
     section(4, 'Blur Effect — backdrop blurs behind every open dropdown');

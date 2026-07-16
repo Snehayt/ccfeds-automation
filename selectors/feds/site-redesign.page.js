@@ -26,10 +26,6 @@ export default class SiteRedesignPage {
     this.directNavLinks  = page.locator('ul.feds-gnav-items > li > a.feds-link');
     this.adobeLogoLink   = page.locator('.feds-brand-container a').first();
     this.adobeLogoImg    = page.locator('.feds-brand-container .feds-brand img').first();
-    this.primaryCta      = page.locator('ul.feds-gnav-items a.feds-primary-cta').filter({ visible: true }).first();
-    this.secondaryCta    = page.locator('ul.feds-gnav-items a.feds-secondary-cta').filter({ visible: true }).first();
-    this.mobileMenuBtn   = page.locator('button.feds-nav-toggle');
-    this.breadcrumbItems = page.locator('ul.feds-breadcrumbs a, .feds-breadcrumbs-wrapper a');
     this.signInBtn       = page.locator('[data-test-id="unav-profile--sign-in"]');
     this.appSwitcherModal        = page.locator('#unav-app-switcher-dialog-id');
     this.appSwitcherAdobeExpress = page.locator('#unav-app-switcher-dialog-id a[aria-label="Adobe Express"]');
@@ -50,7 +46,6 @@ export default class SiteRedesignPage {
     this.learnAndSupport = page.locator('li:nth-child(5) > button.mega-menu.feds-link');
     this.plans          = page.locator('li:last-child > a.feds-link[href*="plans.html"]');
     this.appSwitcher = page.locator('#unav-app-switcher');
-    this.signInButton = page.locator('#unav-profile');
 
     // Products
     this.featuredPro = page.locator('li:nth-of-type(1) > button.tab');
@@ -62,37 +57,8 @@ export default class SiteRedesignPage {
     this.marketingAndCommercePro = page.locator('li:nth-of-type(7) > button.tab');
     this.allProductsPro = page.locator('li:nth-of-type(8) > a.feds-link');
 
-    // Use Cases — index-based (daa-lh values may be localised; nth is locale-safe)
-    this.useCasesCards         = page.locator('#use-cases article.featured-card');
-    this.contentCreation       = this.useCasesCards.nth(0); // Content Creation
-    this.pdfDocumentEssentials = this.useCasesCards.nth(1); // PDF & Document Essentials
-    this.creativityDesign      = this.useCasesCards.nth(2); // Creativity & Design
-    this.adobeForBusiness      = this.useCasesCards.nth(3); // Adobe for Business
-    this.studentsTeachers      = this.useCasesCards.nth(4); // Students & Teachers
-
-    // Solutions (2 list columns + promo card)
-    this.solutionsCards  = page.locator('#solutions h2.links-card-title');
-    this.organizations   = this.solutionsCards.nth(0);
-    this.industries      = this.solutionsCards.nth(1);
-
-    // Quick Actions (4 columns: PDF Tools, Photo Tools, Video Tools, Generative AI)
-    this.quickActionsCards = page.locator('#quick-actions h2.links-card-title');
-    this.pdfTools          = this.quickActionsCards.nth(0);
-    this.photoTools        = this.quickActionsCards.nth(1);
-    this.videoTools        = this.quickActionsCards.nth(2);
-    this.generativeAi      = this.quickActionsCards.nth(3);
-
-    // Learn & Support (4 columns: Help, Learn, Community, More Resources)
-    this.learnAndSupportCards = page.locator('#learn-and-support h2.links-card-title');
-    this.help          = this.learnAndSupportCards.nth(0);
-    this.learn         = this.learnAndSupportCards.nth(1);
-    this.community     = this.learnAndSupportCards.nth(2);
-    this.moreResources = this.learnAndSupportCards.nth(3);
-
-
     // Footer
     this.footerTitles            = page.locator('.feds-menu-content [role="heading"]');
-    this.footer                  = page.locator('footer.global-footer');
     this.footerLogo              = page.locator('.feds-footer-logo');
     this.footerChangeRegion      = page.locator('a.feds-regionPicker');
     // Social icons
@@ -100,78 +66,10 @@ export default class SiteRedesignPage {
     this.footerInstagramIcon     = page.locator('ul.feds-social a[aria-label*="Instagram" i]');
     this.footerTwitterIcon       = page.locator('ul.feds-social a[aria-label*="Twitter" i], ul.feds-social a[aria-label*="X" i]');
     this.footerLinkedInIcon      = page.locator('ul.feds-social a[aria-label*="LinkedIn" i]');
-    // Legal links
-    this.footerCookiePreferences = page.locator('a[data-id="open-adchoices-modal"], a[href*="privacy"][href*="cookie"], .feds-footer-privacy-listitem a');
-    this.footerPrivacyLink       = page.locator('a[href*="privacy.html"], .feds-footer-privacy-listitem a[href*="privacy"]');
     this.footerLegalCopyright    = page.locator('div.feds-footer-miscLinks-legal');
-    this.footerMiscLinksLegal    = page.locator('div.feds-footer-miscLinks-legal');
-
-    // IndividualsAndSmallBusiness
-    this.forIndividualsAndSmallBusiness = this.footerTitles.nth(0);
-    this.creativeAI = page.locator('.feds-menu-section').nth(0).locator('a').nth(0);
-    this.photography = page.locator('.feds-menu-section').nth(0).locator('a').nth(1);
-    this.designAndIllustration = page.locator('.feds-menu-section').nth(0).locator('a').nth(2);
-    this.videoAndAnimation = page.locator('.feds-menu-section').nth(0).locator('a').nth(3);
-    this.pdf = page.locator('.feds-menu-section').nth(0).locator('a').nth(4);
-    this.threeD = page.locator('.feds-menu-section').nth(0).locator('a').nth(5);
-    this.elementsFamily = page.locator('.feds-menu-section').nth(0).locator('a').nth(6);
-    this.stockImagesAndVideo = page.locator('.feds-menu-section').nth(0).locator('a').nth(7);
-    this.viewAllProducts = page.locator('.feds-menu-section').nth(0).locator('a').nth(8);
-
-
-
-    // For MediumAndLargeBusiness
-    this.forMediumAndLargeBusiness = this.footerTitles.nth(1);
-    this.personalizationAtScale = page.locator('.feds-menu-section').nth(1).locator('a').nth(0);
-    this.contentSupplyChain = page.locator('.feds-menu-section').nth(1).locator('a').nth(1);
-    this.unifiedCustomerExperience = page.locator('.feds-menu-section').nth(1).locator('a').nth(2);
-    this.creativityAndProduction = page.locator('.feds-menu-section').nth(1).locator('a').nth(3);
-    this.b2bGtmOrchestration = page.locator('.feds-menu-section').nth(1).locator('a').nth(4);
-    this.viewAllProductsMedium = page.locator('.feds-menu-section').nth(1).locator('a').nth(5);
-
-    // For Organizations
-    this.forOrganizations = this.footerTitles.nth(2);
-    this.education = page.locator('.feds-menu-section').nth(2).locator('a').nth(0);
-    this.nonprofits = page.locator('.feds-menu-section').nth(2).locator('a').nth(1);
-    this.government = page.locator('.feds-menu-section').nth(2).locator('a').nth(2);
-
-    //Footer Support
-    this.footerSupport = this.footerTitles.nth(3);
-    this.helpCenter = page.locator('.feds-menu-section').nth(3).locator('a').nth(0);
-    this.downloadAndInstall = page.locator('.feds-menu-section').nth(3).locator('a').nth(1);
-    this.adobeCommunity = page.locator('.feds-menu-section').nth(3).locator('a').nth(2);
-    this.adobeLearn = page.locator('.feds-menu-section').nth(3).locator('a').nth(3);
-    this.mediumAndLargeBusinessSupport = page.locator('.feds-menu-section').nth(3).locator('a').nth(4);
-
-    // Footer Contact
-    this.footerContact = this.footerTitles.nth(4);
-    this.chatWithSales = page.locator('.feds-menu-section').nth(4).locator('a').nth(0);
-    this.requestInformation = page.locator('.feds-menu-section').nth(4).locator('a').nth(1);
-
-    // Footer Adobe
-    this.footerAdobe = this.footerTitles.nth(5);
-    this.logIntoYourAccount = page.locator('.feds-menu-section').nth(5).locator('a').nth(0);
-    this.about = page.locator('.feds-menu-section').nth(5).locator('a').nth(1);
-    this.careers = page.locator('.feds-menu-section').nth(5).locator('a').nth(2);
-    this.events = page.locator('.feds-menu-section').nth(5).locator('a').nth(3);
-    this.newsroom = page.locator('.feds-menu-section').nth(5).locator('a').nth(4);
-    this.corporateResponsibility = page.locator('.feds-menu-section').nth(5).locator('a').nth(5);
-    this.investorRelations = page.locator('.feds-menu-section').nth(5).locator('a').nth(6);
-    this.supplyChain = page.locator('.feds-menu-section').nth(5).locator('a').nth(7);
-    this.trustCenter = page.locator('.feds-menu-section').nth(5).locator('a').nth(8);
-    this.integrity = page.locator('.feds-menu-section').nth(5).locator('a').nth(9);
-    this.adobeForAll = page.locator('.feds-menu-section').nth(5).locator('a').nth(10);
-    this.adobeBlog = page.locator('.feds-menu-section').nth(5).locator('a').nth(11);
-    this.privacy = page.locator('.feds-menu-section').nth(5).locator('a').nth(12);
-    this.termsOfUse = page.locator('.feds-menu-section').nth(5).locator('a').nth(13);
-    this.cookiePreferences = page.locator('.feds-menu-section').nth(5).locator('a').nth(14);
   }
 
   // ── Step helpers ──────────────────────────────────────────────────────────
-  #ok(label) {
-    console.info(label);
-  }
-
   #warn(label) {
     console.warn(`WARN — ${label}`);
     test.info().annotations.push({ type: 'Warning', description: label });
@@ -371,7 +269,11 @@ export default class SiteRedesignPage {
     for (let i = 0; i < tabCount; i++) {
       const tab = tabs.nth(i);
       const label = (await tab.textContent()).trim();
-      await tab.click();
+      // force: true — WebKit's pre-click stability check can hang here (confirmed via manual
+      // testing this tab is genuinely visible/clickable; it's WebKit's actionability polling
+      // not converging during the tab strip's resize-recalculation on switch, not a real block).
+      // The click's actual effect is still verified below (dark background + visible cards).
+      await tab.click({ force: true });
       await this.page.waitForFunction(
         (panelId) => (document.querySelector(`#${panelId} a[href]`) !== null),
         panelId, { timeout: 5000 }
@@ -920,11 +822,14 @@ export default class SiteRedesignPage {
     return { headingCount: headingData.length, linkCount: linkData.length, ctaCount: ctaData.length };
   }
 
-  // Full lifecycle for a generic dropdown: open → #checkDropdownStyles → promo card → close.
+  // Opens a generic dropdown → #checkDropdownStyles → detects an optional promo card.
   // Products/Use Cases call #checkDropdownStyles directly instead (see those methods) since
   // they already open/close the panel for their own business-logic checks — this avoids
-  // opening the same dropdown twice.
-  async validateDropdown(ariaControls, name, onPromoCheck = null) {
+  // opening the same dropdown twice. Returns { btn, panel, promo, hasPromo } — caller must
+  // call closeDropdown() with the returned btn/panel once done (and validatePromoContent()
+  // first if hasPromo, as its own check, so a promo defect is reported distinctly instead
+  // of being folded into this open check).
+  async openDropdown(ariaControls, name) {
     const btn   = this.page.locator(`button.mega-menu.feds-link[aria-controls="${ariaControls}"]`);
     const panel = this.page.locator(`#${ariaControls}`).first();
 
@@ -934,23 +839,15 @@ export default class SiteRedesignPage {
 
     const { headingCount, linkCount, ctaCount } = await this.#checkDropdownStyles(panel, name);
 
-    // Promo card (optional — Solutions has Acrobat for Business) — same Visibility/Clickability taxonomy.
-    const promo = panel.locator('article.promo-card-small');
+    const promo = panel.locator('article.promo-card');
     const hasPromo = (await promo.count()) > 0;
-    if (onPromoCheck) onPromoCheck(hasPromo);
-    if (hasPromo) {
-      await expect(promo, `"${name}" promo card not visible`).toBeVisible({ timeout: 15000 });
-      await expect(promo.locator('picture.promo-card__bg'), `"${name}" promo image not visible`).toBeVisible({ timeout: 15000 });
-      await expect(promo.locator('div.promo-card-small__text'), `"${name}" promo text not visible`).toBeVisible({ timeout: 15000 });
-      console.info(`[${name}] Visibility — promo card, image, text visible ✓`);
-      const promoCta = promo.locator('a').filter({ visible: true }).first();
-      if ((await promoCta.count()) > 0) {
-        const promoHref = await promoCta.getAttribute('href');
-        expect(promoHref, `"${name}" promo CTA must have href`).toBeTruthy();
-        console.info(`[${name}] Clickability — promo CTA has valid href ✓`);
-      }
-    }
 
+    console.info(`[${name}] PASS — headings: ${headingCount}, links: ${linkCount}, CTAs: ${ctaCount}, promo: ${hasPromo}`);
+    return { btn, panel, promo, hasPromo };
+  }
+
+  // Closes a dropdown previously opened via openDropdown() and verifies the backdrop blur reverts.
+  async closeDropdown(btn, panel, name) {
     await btn.click();
     await expect(panel, `"${name}" panel did not close`).toBeHidden({ timeout: 15000 });
     await expect.poll(
@@ -958,8 +855,36 @@ export default class SiteRedesignPage {
       { message: `"${name}" — page backdrop should stop blurring after close`, timeout: 8000 }
     ).toBe('blur(0px)');
     console.info(`[${name}] Blur — reverted to blur(0px) after close ✓`);
+  }
 
-    console.info(`[${name}] PASS — headings: ${headingCount}, links: ${linkCount}, CTAs: ${ctaCount}, promo: ${hasPromo}`);
+  // Promo card content — image, title (text + 24px/900 typography), and CTA (text, href,
+  // locale-correctness, 14px/700 pill typography). Called from the test file as its own
+  // named check, using the promo locator returned by openDropdown(), while the dropdown
+  // panel is still open.
+  async validatePromoContent(promo, name) {
+    await expect(promo, `"${name}" promo card not visible`).toBeVisible({ timeout: 15000 });
+    await expect(promo.locator('picture.promo-card__bg'), `"${name}" promo image not visible`).toBeVisible({ timeout: 15000 });
+    await expect(promo.locator('div.promo-card__text-content'), `"${name}" promo text not visible`).toBeVisible({ timeout: 15000 });
+
+    const styleFailures = [];
+    const promoTitleEl = promo.locator('h2.promo-card__title');
+    const titleStyle    = await this.#assertFont(promoTitleEl, `"${name}" promo title`, FONT.DISPLAY_HEADING, styleFailures);
+    const promoTitle     = (await promoTitleEl.textContent().catch(() => '')).trim();
+    expect(promoTitle, `"${name}" promo title must not be empty`).toBeTruthy();
+
+    const promoCta = promo.locator('a').filter({ visible: true }).first();
+    expect(await promoCta.count(), `"${name}" promo card must have a visible CTA link`).toBeGreaterThan(0);
+    const ctaStyle = await this.#assertFont(promoCta, `"${name}" promo CTA`, { ...FONT.NAV_BOLD, nonZeroPadding: true }, styleFailures);
+    expect(styleFailures, `Promo style violations in "${name}":\n${styleFailures.join('\n')}`).toHaveLength(0);
+
+    const promoCtaText = (await promoCta.textContent()).trim();
+    const promoHref    = await promoCta.getAttribute('href');
+    expect(promoCtaText, `"${name}" promo CTA must have text`).toBeTruthy();
+    expect(promoHref, `"${name}" promo CTA must have href`).toBeTruthy();
+    this.#assertLinkLocale(promoHref, `"${name}" promo CTA`);
+
+    console.info(`[${name}] Visibility — promo card, image, title "${promoTitle}" (${titleStyle.fontSize}/${titleStyle.fontWeight}) visible ✓`);
+    console.info(`[${name}] Clickability — promo CTA "${promoCtaText}" (${ctaStyle.fontSize}/${ctaStyle.fontWeight}) has valid href, locale-correct ✓`);
   }
 
   async validateNavHeight() {
@@ -1097,14 +1022,12 @@ export default class SiteRedesignPage {
     console.info('[Keyboard Nav] PASS — Enter/Escape/Toggle verified');
   }
 
-  // ── Analytics — daa-ll attributes + AEP Web SDK collect calls ────────────
-  // Follows the same approach as unav.page.js#validateAnalytics: capture collect calls via
-  // request interception, click via evaluate() (bypasses aria-disabled), verify open/close via
-  // aria-expanded, wait for collect calls to stabilize, then validate each name's format precisely
-  // (starts with daa-ll, correct |Close suffix, contains "|gnav|") instead of a loose includes() match.
-  async validateAnalyticsDaaLl() {
-    console.info('[Header Analytics] Checking daa-ll attributes and collect calls');
-
+  // Intercepts AEP Web SDK collect calls fired during `fn`, blocks real navigation so element
+  // clicks don't leave the page, and waits for calls to stabilize (400ms with no new call,
+  // capped at 1500ms) before returning. Shared by validateAnalyticsDaaLl() and
+  // validateFooterAnalytics() — both click through a batch of elements and then need to read
+  // back whatever collect calls fired as a result.
+  async #captureCollectCalls(fn) {
     const collectCalls = [];
     const onRequest = (req) => {
       if (!/\/collect(\?|$)/.test(req.url()) || !req.url().includes('configId=')) return;
@@ -1123,6 +1046,41 @@ export default class SiteRedesignPage {
     const onNewPage = (newPage) => { newPage.close().catch(() => {}); };
     this.page.context().on('page', onNewPage);
 
+    try {
+      await fn();
+
+      // Wait for collect calls to stabilize (no new calls for 400ms) instead of a fixed delay.
+      let lastCount = collectCalls.length;
+      let stableMs  = 0;
+      const deadline = Date.now() + 1500;
+      while (Date.now() < deadline) {
+        await this.page.waitForTimeout(100);
+        const current = collectCalls.length;
+        if (current === lastCount) {
+          stableMs += 100;
+          if (stableMs >= 400) break;
+        } else {
+          stableMs = 0;
+          lastCount = current;
+        }
+      }
+    } finally {
+      await this.page.unroute('**/*', blockNavigations);
+      this.page.off('request', onRequest);
+      this.page.context().off('page', onNewPage);
+    }
+
+    return collectCalls;
+  }
+
+  // ── Analytics — daa-ll attributes + AEP Web SDK collect calls ────────────
+  // Follows the same approach as unav.page.js#validateAnalytics: capture collect calls via
+  // request interception, click via evaluate() (bypasses aria-disabled), verify open/close via
+  // aria-expanded, wait for collect calls to stabilize, then validate each name's format precisely
+  // (starts with daa-ll, correct |Close suffix, contains "|gnav|") instead of a loose includes() match.
+  async validateAnalyticsDaaLl() {
+    console.info('[Header Analytics] Checking daa-ll attributes and collect calls');
+
     const [dropdownInfo, logoDaaLl, directNavInfo, appSwitcherDaaLl] = await Promise.all([
       this.allDropdownBtns.evaluateAll((els) => els.map((el) => ({ daaLl: el.getAttribute('daa-ll'), text: (el.textContent || '').trim() }))),
       this.adobeLogoLink.getAttribute('daa-ll'),
@@ -1137,7 +1095,7 @@ export default class SiteRedesignPage {
       clicked.push({ label, daaLl, isClose });
     };
 
-    try {
+    const collectCalls = await this.#captureCollectCalls(async () => {
       for (let i = 0; i < dropdownInfo.length; i++) {
         const btn   = this.allDropdownBtns.nth(i);
         const label = dropdownInfo[i].text || `dropdown ${i + 1}`;
@@ -1166,27 +1124,7 @@ export default class SiteRedesignPage {
       else this.#warn('Analytics: "Sign In" missing daa-ll');
 
       await this.page.keyboard.press('Escape').catch(() => {});
-
-      // Wait for collect calls to stabilize (no new calls for 400ms) instead of a fixed delay.
-      let lastCount = collectCalls.length;
-      let stableMs  = 0;
-      const deadline = Date.now() + 1500;
-      while (Date.now() < deadline) {
-        await this.page.waitForTimeout(100);
-        const current = collectCalls.length;
-        if (current === lastCount) {
-          stableMs += 100;
-          if (stableMs >= 400) break;
-        } else {
-          stableMs = 0;
-          lastCount = current;
-        }
-      }
-    } finally {
-      await this.page.unroute('**/*', blockNavigations);
-      this.page.off('request', onRequest);
-      this.page.context().off('page', onNewPage);
-    }
+    });
 
     for (const { label, opened, closed } of panelResults) {
       if (!opened) this.#warn(`Header Analytics: "${label}" ✗ did not open`);
@@ -1252,24 +1190,6 @@ export default class SiteRedesignPage {
   async validateFooterAnalytics() {
     console.info('[Footer Analytics] Checking sampled footer link daa-ll + collect calls');
 
-    const collectCalls = [];
-    const onRequest = (req) => {
-      if (!/\/collect(\?|$)/.test(req.url()) || !req.url().includes('configId=')) return;
-      try {
-        const xdm = JSON.parse(req.postData() || '{}').events?.[0]?.xdm ?? {};
-        collectCalls.push(xdm.web?.webInteraction?.name ?? '');
-      } catch { collectCalls.push(''); }
-    };
-    this.page.on('request', onRequest);
-
-    const blockNavigations = async (route) => {
-      if (route.request().isNavigationRequest()) await route.fulfill({ status: 204, body: '' });
-      else await route.continue();
-    };
-    await this.page.route('**/*', blockNavigations);
-    const onNewPage = (newPage) => { newPage.close().catch(() => {}); };
-    this.page.context().on('page', onNewPage);
-
     const sections = this.page.locator('.feds-menu-section');
     const sectionCount = await sections.count();
     const sectionLinkInfo = await sections.evaluateAll((els) => els.map((el) => {
@@ -1279,7 +1199,7 @@ export default class SiteRedesignPage {
     const regionDaaLl = await this.footerChangeRegion.getAttribute('daa-ll').catch(() => null);
 
     const clicked = [];
-    try {
+    const collectCalls = await this.#captureCollectCalls(async () => {
       for (let i = 0; i < sectionCount; i++) {
         const link = sections.nth(i).locator('a').first();
         await link.evaluate((el) => el.click()).catch(() => {});
@@ -1291,27 +1211,7 @@ export default class SiteRedesignPage {
       // open/close behavior; this click exists only to trigger the analytics collect call,
       // so close it immediately instead of leaving it open for the rest of the test.
       await this.page.locator('#langnav button.dialog-close').click({ timeout: 3000 }).catch(() => {});
-
-      // Wait for collect calls to stabilize (no new calls for 400ms) instead of a fixed delay.
-      let lastCount = collectCalls.length;
-      let stableMs  = 0;
-      const deadline = Date.now() + 1500;
-      while (Date.now() < deadline) {
-        await this.page.waitForTimeout(100);
-        const current = collectCalls.length;
-        if (current === lastCount) {
-          stableMs += 100;
-          if (stableMs >= 400) break;
-        } else {
-          stableMs = 0;
-          lastCount = current;
-        }
-      }
-    } finally {
-      await this.page.unroute('**/*', blockNavigations);
-      this.page.off('request', onRequest);
-      this.page.context().off('page', onNewPage);
-    }
+    });
 
     let missingDaaLl = 0, noCall = 0;
     for (const { label, daaLl } of clicked) {
