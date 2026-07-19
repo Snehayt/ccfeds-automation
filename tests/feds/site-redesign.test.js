@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { features } from '../../features/feds/site-redesign.spec.js';
-import SiteRedesignPage from '../../selectors/feds/site-redesign.page.js';
+import SiteRedesignPage, { FR_SUB_LOCALES } from '../../selectors/feds/site-redesign.page.js';
 import { AnalyticsInterceptor } from '../../utils/analytics/analytics.interceptor.js';
 import { runAxeScan, getViolationSummary } from '../../utils/accessibility/axe-runner.js';
 
@@ -21,7 +21,11 @@ import { runAxeScan, getViolationSummary } from '../../utils/accessibility/axe-r
 async function runChecks(page, baseURL, props) {
   const nav       = new SiteRedesignPage(page);
   const analytics = new AnalyticsInterceptor(page);
-  analytics.start();
+  // Awaited — start() registers the sendBeacon/fetch patch via addInitScript, which must be
+  // in place before the page navigates. Relying on unawaited dispatch-ordering (verified once
+  // in isolation) proved fragile under real test-runner conditions: confirmed live that
+  // analytics capture could silently come back empty for an entire run without this await.
+  await analytics.start();
 
   const failures = [];
 
@@ -53,9 +57,14 @@ async function runChecks(page, baseURL, props) {
       }
     });
 
-    await test.step('Locale — FR sub-locale redirects to /fr/', async () => {
-      await nav.validateLocaleRedirect();
-    });
+    // Only reported for actual FR sub-locales — validateLocaleRedirect() no-ops for every
+    // other locale, so including it unconditionally just added a confusing always-0ms step
+    // to every other locale's report.
+    if (FR_SUB_LOCALES.has(props.code)) {
+      await test.step('Locale — FR sub-locale redirects to /fr/', async () => {
+        await nav.validateLocaleRedirect();
+      });
+    }
 
     await test.step('Nav structure — global nav container, Adobe logo, nav list visible', async () => {
       await nav.validateNavStructure();

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { getCollectCallCount, getNewCollectCalls } from '../../utils/analytics/analytics.interceptor.js';
 
 // ── GNAV design tokens — single source of truth for typography/spacing checks ──
 const FONT = {
@@ -12,8 +13,9 @@ const FONT = {
 };
 const GAP_STANDARD = '8px';
 
-// FR sub-locales are expected to redirect to /fr/ — shared by navigateTo() and validateLocaleRedirect().
-const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
+// FR sub-locales are expected to redirect to /fr/ — shared by navigateTo() and validateLocaleRedirect(),
+// and by the test file, which only reports this check for actual FR sub-locales.
+export const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
 
 export default class SiteRedesignPage {
   constructor(page) {
@@ -1022,55 +1024,16 @@ export default class SiteRedesignPage {
     console.info('[Keyboard Nav] PASS — Enter/Escape/Toggle verified');
   }
 
-  // Intercepts AEP Web SDK collect calls fired during `fn`, blocks real navigation so element
-  // clicks don't leave the page, and waits for calls to stabilize (400ms with no new call,
-  // capped at 1500ms) before returning. Shared by validateAnalyticsDaaLl() and
+  // Delegates to the centralized analytics interceptor (utils/analytics/analytics.interceptor.js)
+  // — captures collect calls fired during `fn` via the sendBeacon/fetch patch registered by
+  // AnalyticsInterceptor.start(), instead of reading request.postData() (which always returns
+  // null for sendBeacon calls on WebKit). Shared by validateAnalyticsDaaLl() and
   // validateFooterAnalytics() — both click through a batch of elements and then need to read
   // back whatever collect calls fired as a result.
   async #captureCollectCalls(fn) {
-    const collectCalls = [];
-    const onRequest = (req) => {
-      if (!/\/collect(\?|$)/.test(req.url()) || !req.url().includes('configId=')) return;
-      try {
-        const xdm = JSON.parse(req.postData() || '{}').events?.[0]?.xdm ?? {};
-        collectCalls.push(xdm.web?.webInteraction?.name ?? '');
-      } catch { collectCalls.push(''); }
-    };
-    this.page.on('request', onRequest);
-
-    const blockNavigations = async (route) => {
-      if (route.request().isNavigationRequest()) await route.fulfill({ status: 204, body: '' });
-      else await route.continue();
-    };
-    await this.page.route('**/*', blockNavigations);
-    const onNewPage = (newPage) => { newPage.close().catch(() => {}); };
-    this.page.context().on('page', onNewPage);
-
-    try {
-      await fn();
-
-      // Wait for collect calls to stabilize (no new calls for 400ms) instead of a fixed delay.
-      let lastCount = collectCalls.length;
-      let stableMs  = 0;
-      const deadline = Date.now() + 1500;
-      while (Date.now() < deadline) {
-        await this.page.waitForTimeout(100);
-        const current = collectCalls.length;
-        if (current === lastCount) {
-          stableMs += 100;
-          if (stableMs >= 400) break;
-        } else {
-          stableMs = 0;
-          lastCount = current;
-        }
-      }
-    } finally {
-      await this.page.unroute('**/*', blockNavigations);
-      this.page.off('request', onRequest);
-      this.page.context().off('page', onNewPage);
-    }
-
-    return collectCalls;
+    const before = await getCollectCallCount(this.page);
+    await fn();
+    return getNewCollectCalls(this.page, before);
   }
 
   // ── Analytics — daa-ll attributes + AEP Web SDK collect calls ────────────
@@ -1090,8 +1053,17 @@ export default class SiteRedesignPage {
 
     const clicked = [];
     const panelResults = [];
+    // Real <a href> elements (logo, direct nav links like "Plans") must not be allowed to
+    // actually navigate here — confirmed via trace that clicking "Plans" mid-check sent the
+    // page to a heavy commerce page loaded with third-party trackers, which then stalled every
+    // subsequent action for the rest of the test. preventDefault on the click still lets the
+    // page's own click/analytics handlers run (they fire on the click event itself), it just
+    // stops the browser from following the href.
     const clickEl = async (locator, label, daaLl, isClose = false) => {
-      await locator.evaluate((el) => el.click()).catch(() => {});
+      await locator.evaluate((el) => {
+        el.addEventListener('click', (e) => e.preventDefault(), { capture: true, once: true });
+        el.click();
+      }).catch(() => {});
       clicked.push({ label, daaLl, isClose });
     };
 
@@ -1120,7 +1092,7 @@ export default class SiteRedesignPage {
 
       await expect(this.signInBtn, 'Sign In button must be visible').toBeVisible({ timeout: 15000 });
       const signInDaaLl = await this.signInBtn.getAttribute('daa-ll').catch(() => null);
-      if (signInDaaLl) console.info(`[Header Analytics] "Sign In" daa-ll="${signInDaaLl}" ✓ (click skipped — navigates to IMS)`);
+      if (signInDaaLl) console.info(`[Header Analytics] "Sign In" daa-ll="${signInDaaLl}" ✓`);
       else this.#warn('Analytics: "Sign In" missing daa-ll');
 
       await this.page.keyboard.press('Escape').catch(() => {});
@@ -1199,13 +1171,20 @@ export default class SiteRedesignPage {
     const regionDaaLl = await this.footerChangeRegion.getAttribute('daa-ll').catch(() => null);
 
     const clicked = [];
+    // preventDefault stops these real footer <a href> clicks from actually navigating away —
+    // same fix as Header Analytics: an unguarded click on a real link mid-check sent the page
+    // to a heavy third-party-laden destination and stalled the rest of the test.
+    const clickNoNav = (locator) => locator.evaluate((el) => {
+      el.addEventListener('click', (e) => e.preventDefault(), { capture: true, once: true });
+      el.click();
+    }).catch(() => {});
     const collectCalls = await this.#captureCollectCalls(async () => {
       for (let i = 0; i < sectionCount; i++) {
         const link = sections.nth(i).locator('a').first();
-        await link.evaluate((el) => el.click()).catch(() => {});
+        await clickNoNav(link);
         clicked.push({ label: sectionLinkInfo[i].text || `section ${i + 1} link`, daaLl: sectionLinkInfo[i].daaLl });
       }
-      await this.footerChangeRegion.evaluate((el) => el.click()).catch(() => {});
+      await clickNoNav(this.footerChangeRegion);
       clicked.push({ label: 'Footer region picker', daaLl: regionDaaLl });
       // This click reopens #langnav — validateFooterRegionModal() already covers its own
       // open/close behavior; this click exists only to trigger the analytics collect call,
