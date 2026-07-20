@@ -87,19 +87,6 @@ export async function getCollectCallCount(page) {
 // names added since `sinceCount` — i.e. caused by the action just performed, not by
 // anything earlier in the page's history.
 export async function getNewCollectCalls(page, sinceCount) {
-  let last = await page.evaluate(() => (window.__collectCalls || []).length);
-  let stableMs = 0;
-  const deadline = Date.now() + 1500;
-  while (Date.now() < deadline) {
-    await page.waitForTimeout(100);
-    const current = await page.evaluate(() => (window.__collectCalls || []).length);
-    if (current === last) {
-      stableMs += 100;
-      if (stableMs >= 400) break;
-    } else {
-      stableMs = 0;
-      last = current;
-    }
-  }
+  await page.waitForTimeout(500);
   return page.evaluate((from) => (window.__collectCalls || []).slice(from), sinceCount);
 }
