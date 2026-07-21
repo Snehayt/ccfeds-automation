@@ -230,7 +230,6 @@ test.describe('Site Redesign GNAV', () => {
 
   features.forEach((props) => {
     test(`${props.name} | ${props.country}`, { tag: props.tags }, async ({ page, baseURL }, testInfo) => {
-      testInfo.annotations.push({ type: 'Country',   description: props.country });
       testInfo.annotations.push({ type: 'Locale',    description: props.code });
       testInfo.annotations.push({ type: 'Language',  description: props.lang });
       testInfo.annotations.push({ type: 'Direction', description: props.dir });
