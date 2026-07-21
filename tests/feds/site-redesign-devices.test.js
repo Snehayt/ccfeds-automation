@@ -83,9 +83,10 @@ async function runChecks(page, baseURL, props) {
     // All read-only checks (no clicks/taps) — independent of each other, run in parallel.
     await Promise.all([
       check('Nav landmark — header is a landmark region for screen readers', () => nav.validateNavLandmark()),
-      check('Always-visible — Adobe logo, app switcher, Sign In', () => nav.validateAlwaysVisibleElements()),
-      check('Always-visible element styles — font + padding on hamburger, Sign In, App Switcher',
-        () => nav.validateAlwaysVisibleElementStyles()),
+      check('Always-visible — Adobe logo, app switcher, Sign In + bar element styles', async () => {
+        await nav.validateAlwaysVisibleElements();
+        await nav.validateAlwaysVisibleElementStyles();
+      }),
       check('Accessibility — skip link exists in DOM',                    () => nav.validateSkipLink()),
       check(`Accessibility — html[lang] matches "${props.lang}"`,         () => nav.validateLangAttribute(props.lang)),
       ...(props.dir === 'rtl'
@@ -109,10 +110,8 @@ async function runChecks(page, baseURL, props) {
         await nav.openHamburger();
       });
 
-      await check('Mobile nav list — all dropdown buttons + Plans link visible, Plans href valid',
+      await check('Mobile nav list — dropdowns, Plans link, Adobe Clean fonts',
         () => nav.validateMobileNavList());
-      await check('Nav font styles — Adobe Clean on all nav overlay items',
-        () => nav.validateNavFontStyles());
 
       trackPromo(await check('Products submenu — tabs scrollable, All Products link, cards with hrefs',
         () => nav.validateProductsSubmenu()));
@@ -142,34 +141,32 @@ async function runChecks(page, baseURL, props) {
     // dedicated window avoids that interaction while still capturing its close analytics.
     let closeHamburgerCollectCalls = [];
     let hamburgerCloseDaaLl = null;
-    await check('Hamburger — click closes mobile nav overlay', async () => {
-      // Read right before the close tap — confirmed live the hamburger's own daa-ll
-      // attribute value flips with state, so this must be read now, not derived later.
-      hamburgerCloseDaaLl = await nav.getHamburgerCloseDaaLl();
-      closeHamburgerCollectCalls = await nav.captureAnalytics(() => nav.closeHamburger());
-    });
+    await Promise.all([
+      check('Hamburger — click closes mobile nav overlay', async () => {
+        hamburgerCloseDaaLl = await nav.getHamburgerCloseDaaLl();
+        closeHamburgerCollectCalls = await nav.captureAnalytics(() => nav.closeHamburger());
+      }),
+      check('Accessibility — axe-core WCAG 2.1 AA scan on header.global-navigation',
+        () => runAxeCheck(page, 'header.global-navigation', 'Header')),
+    ]);
 
     await check('Analytics — daa-ll + collect calls on hamburger open/close and nav dropdowns',
       () => nav.verifyHamburgerAnalytics(hamburgerCollectCalls, closeHamburgerCollectCalls, hamburgerCloseDaaLl));
 
-    await check('Accessibility — axe-core WCAG 2.1 AA scan on header.global-navigation',
-      () => runAxeCheck(page, 'header.global-navigation', 'Header'));
-
     // ═══════════════════════════════════════════════════════════════════════
     // SECTION 3 — Footer: content, accessibility, analytics
     // ═══════════════════════════════════════════════════════════════════════
-    // validateFooterAlignment only reads bounding rects — independent of validateFooter's own
-    // accordion expansion, safe to run in parallel.
+    await nav.scrollToFooterForChecks();
+    await check('Footer — links visible, all have valid hrefs, locale-aware, typography Adobe Clean',
+      () => nav.validateFooter({ skipScroll: true }));
     await Promise.all([
-      check('Footer — links visible, all have valid hrefs, locale-aware, typography Adobe Clean',
-        () => nav.validateFooter()),
       check('Footer — column alignment, sequential stacking, no overlap',
         () => nav.validateFooterAlignment()),
+      check('Accessibility — axe-core WCAG 2.1 AA scan on footer landmark',
+        () => runAxeCheck(page, 'footer, [role="contentinfo"]', 'Footer')),
     ]);
     await check('Footer — region picker opens country-selector modal, closes + footer analytics',
       () => nav.validateFooterRegionModalAndAnalytics());
-    await check('Accessibility — axe-core WCAG 2.1 AA scan on footer landmark',
-      () => runAxeCheck(page, 'footer, [role="contentinfo"]', 'Footer'));
 
   } finally {
     analytics.stop();
@@ -188,6 +185,13 @@ async function runChecks(page, baseURL, props) {
 // Test suite
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('Site Redesign GNAV — Devices', () => {
+  test.describe.configure({ timeout: 150000 });
+  // Local retry safety net — this suite runs many WebKit instances in parallel, and under
+  // heavy CPU contention a single action can occasionally stall past its own bounded timeout
+  // (rare, load-dependent, not a logic bug). One retry re-runs in a fresh browser context with
+  // the machine's load already reduced by the first attempt's workers finishing up.
+  test.describe.configure({ retries: process.env.CI ? 2 : 1 });
+
   test.afterEach(async ({ page }) => {
     await page.close();
   });

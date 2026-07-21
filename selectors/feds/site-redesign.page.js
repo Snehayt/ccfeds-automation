@@ -157,7 +157,7 @@ export default class SiteRedesignPage {
     await Promise.all(elementsToCheck.map(async ({ element, conditions }) => {
       const shouldBeVisible = conditions.defaultVisibility ?? true;
       if (shouldBeVisible) {
-        await expect(element).toBeVisible({ timeout: 25000 });
+        await expect(element).toBeVisible({ timeout: 8000 });
         const text = (
           (await element.innerText().catch(() => ''))
           || (await element.getAttribute('aria-label').catch(() => ''))
@@ -569,7 +569,7 @@ export default class SiteRedesignPage {
   async navigateTo(baseURL, localePath, testPagePath) {
     const url = `${baseURL}${localePath}${testPagePath}`.replace('//', '/').replace(':/', '://');
     console.info(`[Navigate] Navigating to: ${url}`);
-    const response    = await this.page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    const response    = await this.page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
     const status      = response?.status() ?? 0;
     this.finalUrl     = this.page.url();
     console.info(`[Navigate] ${url} → HTTP ${status}`);

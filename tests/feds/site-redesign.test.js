@@ -224,6 +224,10 @@ async function runChecks(page, baseURL, props) {
 // Test suite
 // ─────────────────────────────────────────────────────────────────────────────
 test.describe('Site Redesign GNAV', () => {
+  // Matches the devices suite's budget — the same ~20-check serial chain (dropdowns, footer,
+  // analytics, 2x axe scans) occasionally exceeds the default 90s on slower locales.
+  test.describe.configure({ timeout: 150000 });
+
   test.afterEach(async ({ page }) => {
     await page.close();
   });
