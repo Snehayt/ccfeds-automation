@@ -167,6 +167,44 @@ A flagged change could mean:
 **Rule**: does **any row sharing PREF-LANG's language** have this GeoIP in its `supportedRegions`? If yes,
 recommend *that row* — even if it isn't literally the cookie's own row.
 
+**Important correction on *how* to find "supported market" — match on the `Lang` + `SupportedRegions`
+columns, not by looking up one fixed row and trusting its own fields in isolation.** Earlier drafts of this
+logic treated "is this GeoIP supported for this cookie" as one lookup: resolve the cookie's row by `prefix`,
+then check that single row's own `supportedRegions`. That happens to work when the cookie value and the
+target row are the same row, but the *general* algorithm is a **two-column search across the whole
+dataset**:
+
+1. Take PREF-LANG's language value (from the cookie, however it was derived).
+2. Scan every row in `supported-markets.json` and keep the ones where **`Lang` == that language AND
+   `SupportedRegions` contains the GeoIP**.
+3. Whichever row(s) survive that filter are the "supported market(s)" — use *that* row's copy, not a
+   row looked up by prefix alone.
+
+(This is exactly what `findLanguageMatchesForGeo(lang, geoIp, ...)` in `lingo.page.js` already implements —
+call out explicitly when documenting/porting this logic that the filter is on `lang` + `supportedRegions`
+together, never a single-row prefix lookup standing in for the whole check.)
+
+**Worked example 2 (live-confirmed, root site):**
+`https://www.adobe.com/?languageBanner=on&akamaiLocale=ph`, cookie `international=ph_fil`.
+
+- GeoIP = `ph`. Cookie = `ph_fil` → this row's `Lang` = `fil`, `SupportedRegions` = `ph`.
+- Filter the dataset for `Lang == "fil" AND SupportedRegions includes "ph"` → the `ph_fil` row itself
+  satisfies both columns → it's the supported market for this GeoIP+cookie pair.
+- Result: **Banner** — "Tingnan ang pahinang ito sa Filipino." / "Magpatuloy" — confirmed live.
+
+**Worked example 3 (live-confirmed, same URL, bare-lang cookie) — this is a code-level correction, not
+just a doc one:** same URL as example 2, but cookie `international=fil` (the bare `lang` value, not the
+`ph_fil` prefix) → **identical result**, same Filipino banner.
+
+This proves the cookie is not reliably the row's `prefix` — it can be the bare `lang` code instead. A
+resolver that only does `getRowByPrefix(cookieValue)` (as `lingo.page.js` originally did) silently fails
+on this case: there is no row whose `prefix === "fil"`, so the lookup returns nothing and PREF-LANG
+wrongly falls back to English. Fixed in `LingoEnBannerPage.resolvePrefLang(prefLangCode,
+supportedMarketsData)`: it now checks the cookie value against **both** the `prefix` column and the `lang`
+column (falling back to `defaultMarket` last) before deciding PREF-LANG's language — never a single-column,
+single-row lookup standing in for the whole check. `computeExpectedUi` calls this instead of resolving a
+`cookieRow` by prefix directly.
+
 **Worked trace** (confirmed live, `https://www.stage.adobe.com/?akamaiLocale=mx&languageBanner=on`, cookie
 `international=es`):
 

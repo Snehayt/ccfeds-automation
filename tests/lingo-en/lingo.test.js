@@ -46,8 +46,8 @@ function findJsonChanges(liveArr = [], snapArr = []) {
 const DEFAULT_EXTRA_PARAMS = 'languageBanner=on&mas-geo-detection=on&langfirst=on';
 
 /**
- * Resolve the full test URL for the US root path, honoring BASE_URL/URL_EXTRA_PARAMS from the
- * config (stage/prod/aem.live + optional milolibs), and the row's geoIp as akamaiLocale.
+ * Resolve the full test URL, honoring BASE_URL/URL_EXTRA_PARAMS from the config (stage/prod/
+ * aem.live + optional milolibs), and the row's geoIp as akamaiLocale.
  */
 function resolveTestUrl(pagePath, geoIp) {
   const base = process.env.BASE_URL || 'https://www.stage.adobe.com';
@@ -61,6 +61,31 @@ function resolveTestUrl(pagePath, geoIp) {
     }
   }
   return url.toString();
+}
+
+/**
+ * `PAGE_PATHS` (comma-separated, e.g. "/,/creativecloud.html,/acrobat.html") is how you pick
+ * which URL(s) get the full spec matrix in a given run — one Playwright execution, one report,
+ * covering however many pages you list. Defaults to just the US root ('/') when unset. Combine
+ * with Playwright's own `-g`/`--grep` (matched against the test title, which includes the row's
+ * `@lingoEN-geo-...-cookie-...` name plus its tags) to also narrow down to specific cases — e.g.
+ * `-g "geo-mx|geo-fr"` for just those two GeoIPs, across whichever pages PAGE_PATHS lists.
+ *
+ * Every page gets its own `@page-{slug}` tag and a `-page-{slug}` suffix on the test name, so:
+ *   - the dashboard/HTML report can filter by page via that tag,
+ *   - running multiple pages in one execution never produces duplicate test titles (Playwright
+ *     requires unique titles; two pages testing the same GeoIP+cookie row would otherwise collide).
+ * The `@name`-prefix convention this repo's reporter (utils/reporters/base-reporter.js) parses
+ * is preserved — the suffix is appended inside the same `@...` token, not as a separate one.
+ */
+const PAGE_PATHS = (process.env.PAGE_PATHS || process.env.PAGE_PATH || '/')
+  .split(',')
+  .map((p) => p.trim())
+  .filter(Boolean);
+
+function pageSlug(pagePath) {
+  if (pagePath === '/' || pagePath === '') return 'root';
+  return pagePath.replace(/^\/+|\/+$/g, '').replace(/[/.]/g, '-');
 }
 
 // ─── JSON Snapshot — run first (skills.md §2) ──────────────────────────────
@@ -108,9 +133,9 @@ test.describe('LingoEn | JSON Snapshot', () => {
 
 // ─── Shared test runner ─────────────────────────────────────────────────────
 
-async function runLingoEnRow(page, context, feature) {
+async function runLingoEnRow(page, context, feature, pagePath = feature.path) {
   const geo = new LingoEnBannerPage(page);
-  const pageUrl = resolveTestUrl(feature.path, feature.geoIp);
+  const pageUrl = resolveTestUrl(pagePath, feature.geoIp);
 
   await context.clearCookies();
   if (feature.cookieValue !== undefined) {
@@ -143,25 +168,107 @@ async function runLingoEnRow(page, context, feature) {
     await geo.assertBanner(copy);
   } else if (feature.uiExpectation === 'modal') {
     const row = supportedMarketsData?.data?.find((r) => (r.prefix ?? '') === (feature.bannerRowPrefix ?? ''));
-    await geo.assertModal(LingoEnBannerPage.getModalCopy(row));
+    const buttonCountry = row ? LingoEnBannerPage.resolveCountryDisplayName(row.lang, feature.geoIp) : undefined;
+    await geo.assertModal(LingoEnBannerPage.getModalCopy(row, buttonCountry));
   }
+
+  // Pricing: log what's actually shown per GeoIP/cookie/recommended-market combo, and soft-fail
+  // the confirmed "showing US$ where a distinct local currency is standard" pattern (skills.md
+  // gap — no currency-per-market source of truth exists in supported-markets.json, so this only
+  // checks the well-known-currency cases in EXPECTED_CURRENCY_BY_GEO, not every market).
+  const pricingSymbols = await geo.getPricingSymbols();
+  console.info('[LingoEn][Pricing]', JSON.stringify({
+    name: feature.name,
+    pagePath,
+    geoIp: feature.geoIp,
+    cookieValue: feature.cookieValue,
+    bannerRowPrefix: feature.bannerRowPrefix,
+    pricingSymbols,
+  }));
+  const currencyIssue = LingoEnBannerPage.checkPricingCurrency(feature.geoIp, pricingSymbols);
+  expect.soft(currencyIssue, `[${feature.name}] ${currencyIssue}`).toBeNull();
 }
 
-// ─── Test groups, driven by the generated matrix ───────────────────────────
+// ─── Test groups, driven by the generated matrix, one pass per PAGE_PATHS entry ────────────
 
-test.describe('LingoEn | No Action', () => {
-  for (const f of lingoEnFeatures.filter((f) => f.uiExpectation === 'none')) {
-    test(f.name, { tag: f.tags.split(' ').filter(Boolean) }, async ({ page, context }) => {
-      await runLingoEnRow(page, context, f);
-    });
-  }
-});
+for (const pagePath of PAGE_PATHS) {
+  const slug = pageSlug(pagePath);
 
-test.describe('LingoEn | Banner', () => {
-  for (const f of lingoEnFeatures.filter((f) => f.uiExpectation === 'banner')) {
-    test(f.name, { tag: f.tags.split(' ').filter(Boolean) }, async ({ page, context }) => {
-      await runLingoEnRow(page, context, f);
-    });
-  }
-});
+  test.describe(`LingoEn | No Action | ${pagePath}`, () => {
+    for (const f of lingoEnFeatures.filter((f) => f.uiExpectation === 'none')) {
+      test(`${f.name}-page-${slug}`, { tag: [...f.tags.split(' ').filter(Boolean), `@page-${slug}`] }, async ({ page, context }) => {
+        await runLingoEnRow(page, context, f, pagePath);
+      });
+    }
+  });
+
+  test.describe(`LingoEn | Banner | ${pagePath}`, () => {
+    for (const f of lingoEnFeatures.filter((f) => f.uiExpectation === 'banner')) {
+      test(`${f.name}-page-${slug}`, { tag: [...f.tags.split(' ').filter(Boolean), `@page-${slug}`] }, async ({ page, context }) => {
+        await runLingoEnRow(page, context, f, pagePath);
+      });
+    }
+  });
+
+  test.describe(`LingoEn | Modal | ${pagePath}`, () => {
+    for (const f of lingoEnFeatures.filter((f) => f.uiExpectation === 'modal')) {
+      test(`${f.name}-page-${slug}`, { tag: [...f.tags.split(' ').filter(Boolean), `@page-${slug}`] }, async ({ page, context }) => {
+        await runLingoEnRow(page, context, f, pagePath);
+      });
+    }
+  });
+}
+
+// ─── Banner write-path — what clicking Continue/Close actually writes to the cookie ────────
+//
+// Read-path tests above only ever SET the cookie and check the resulting UI. These verify the
+// other direction: given a rendered banner, does interacting with it write the `international`
+// cookie correctly? Continue -> the recommended row's own value (bannerRowPrefix). Close (X) ->
+// resets/defaults to 'us'. Tested against a representative sample of banner rows, not all 55 —
+// the write behavior is generic UI wiring, not per-language logic, so one sample per distinct
+// code path (Continue vs Close) across a couple of languages is enough to catch a regression.
+const WRITE_PATH_SAMPLE = lingoEnFeatures.filter((f) =>
+  ['@lingoEN-geo-mx-cookie-mx', '@lingoEN-geo-fr-cookie-be_nl', '@lingoEN-geo-ph-cookie-ph_fil'].includes(f.name));
+
+for (const pagePath of PAGE_PATHS) {
+  const slug = pageSlug(pagePath);
+
+  test.describe(`LingoEn | Banner Write-Path | ${pagePath}`, () => {
+    for (const f of WRITE_PATH_SAMPLE) {
+      test(`${f.name}-continue-writes-cookie-page-${slug}`, { tag: ['@lingo-en', '@write-path', `@page-${slug}`] }, async ({ page, context }) => {
+        const geo = new LingoEnBannerPage(page);
+        const pageUrl = resolveTestUrl(pagePath, f.geoIp);
+        await context.clearCookies();
+        if (f.cookieValue !== undefined) await geo.setInternationalCookieValue(context, f.cookieValue, pageUrl);
+
+        await geo.navigateAndCaptureSupportedMarkets(pageUrl);
+        await geo.assertBanner();
+        await geo.clickBannerContinue();
+
+        const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
+        expect(
+          writtenValue,
+          `Clicking Continue on the [${f.name}] banner should write cookie='${f.bannerRowPrefix}', got '${writtenValue}'`,
+        ).toBe(f.bannerRowPrefix);
+      });
+
+      test(`${f.name}-close-writes-us-cookie-page-${slug}`, { tag: ['@lingo-en', '@write-path', `@page-${slug}`] }, async ({ page, context }) => {
+        const geo = new LingoEnBannerPage(page);
+        const pageUrl = resolveTestUrl(pagePath, f.geoIp);
+        await context.clearCookies();
+        if (f.cookieValue !== undefined) await geo.setInternationalCookieValue(context, f.cookieValue, pageUrl);
+
+        await geo.navigateAndCaptureSupportedMarkets(pageUrl);
+        await geo.assertBanner();
+        await geo.clickBannerCloseButton();
+
+        const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
+        expect(
+          writtenValue,
+          `Closing (X) the [${f.name}] banner should write cookie='us', got '${writtenValue}'`,
+        ).toBe('us');
+      });
+    }
+  });
+}
 

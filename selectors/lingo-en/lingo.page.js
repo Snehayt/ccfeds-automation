@@ -31,6 +31,10 @@ export class LingoEnBannerPage {
     this.geoModalClose = this.geoRoutingModal
       .locator('button[aria-label="Close"], .dialog-close, [class*="close-button"], button.close')
       .first();
+
+    // Pricing (merchandising card price blocks — .price-currency-symbol seen across current/
+    // struck-through/alternative price variants, e.g. "Ar$" for Argentina, "US$"/"$" for US).
+    this.priceCurrencySymbols = page.locator('.price-currency-symbol');
   }
 
   // ─── URL / path parsing ────────────────────────────────────────────────────
@@ -200,16 +204,36 @@ export class LingoEnBannerPage {
    * }} opts
    * @returns {{ outcome: 'none'|'banner'|'modal', targetRow?: object, allOptions?: object[] }}
    */
+  /**
+   * Resolve PREF-LANG's language from the raw `international` cookie value. The cookie is NOT
+   * always the row's `prefix` — live testing confirmed the same GeoIP+banner result from BOTH
+   * `international=ph_fil` (a prefix) AND `international=fil` (a bare `lang` value) for the same
+   * `akamaiLocale=ph` case (skills.md §3.2). So this can't be a single-row-by-prefix lookup —
+   * it must check the value against both the `prefix` column and the `lang` column across the
+   * whole dataset, since either can be what's actually stored in the cookie.
+   */
+  static resolvePrefLang(prefLangCode, supportedMarketsData) {
+    if (!prefLangCode) return 'en'; // §3.5: no cookie set == English/US default
+    const data = supportedMarketsData?.data;
+    const code = String(prefLangCode).toLowerCase();
+
+    const byPrefix = LingoEnBannerPage.getRowByPrefix(prefLangCode, supportedMarketsData);
+    if (byPrefix?.lang) return byPrefix.lang.toLowerCase();
+
+    const byLang = data?.find((r) => r.lang?.toLowerCase() === code);
+    if (byLang) return code; // cookie value IS a bare lang code that exists in the dataset
+
+    const byDefaultMarket = data?.find((r) => (r.defaultMarket ?? '').toLowerCase() === code);
+    if (byDefaultMarket?.lang) return byDefaultMarket.lang.toLowerCase();
+
+    return 'en';
+  }
+
   static computeExpectedUi({ pagePrefix, geoIp, prefLangCode, supportedMarketsData, isBacom = false }) {
     const pageRow = LingoEnBannerPage.getRowByPrefix(pagePrefix, supportedMarketsData);
     const pageLang = pageRow?.lang?.toLowerCase() ?? 'en';
 
-    // §3.5: no cookie set == treated as English/US default — resolved explicitly, not implicitly.
-    const cookieRow = prefLangCode
-      ? (LingoEnBannerPage.getRowByPrefix(prefLangCode, supportedMarketsData)
-        ?? supportedMarketsData?.data?.find((r) => (r.defaultMarket ?? '').toLowerCase() === String(prefLangCode).toLowerCase()))
-      : undefined;
-    const prefLang = cookieRow?.lang?.toLowerCase() ?? 'en';
+    const prefLang = LingoEnBannerPage.resolvePrefLang(prefLangCode, supportedMarketsData);
 
     const pagePrefixGeoSupported = LingoEnBannerPage.isSupportedCombo(pagePrefix, geoIp, supportedMarketsData);
 
@@ -239,6 +263,20 @@ export class LingoEnBannerPage {
       bannerText: row.text || row.bannerText || undefined,
       continueText: row.continueText || undefined,
     };
+  }
+
+  /**
+   * `modalDescription`'s `{country}` placeholder is filled in client-side, not from any
+   * supported-markets.json field — confirmed via `Intl.DisplayNames([row.lang], { type: 'region'
+   * }).of(geoIp)`, which reproduces the live UI exactly (e.g. `zh`+`CN` -> "中国", `fr`+`CH` ->
+   * "Suisse"). Reproduce it the same way rather than guessing at a JSON field that doesn't exist.
+   */
+  static resolveCountryDisplayName(lang, geoIp) {
+    try {
+      return new Intl.DisplayNames([lang], { type: 'region' }).of(String(geoIp).toUpperCase());
+    } catch {
+      return undefined;
+    }
   }
 
   static getModalCopy(row, buttonCountry) {
@@ -284,6 +322,22 @@ export class LingoEnBannerPage {
     return { domain: hostname.includes('adobe.com') ? '.adobe.com' : hostname };
   }
 
+  /** Read back the current `international` cookie value (write-path verification). */
+  async getInternationalCookieValue(context, pageUrl) {
+    const cookies = await context.cookies(pageUrl);
+    return cookies.find((c) => c.name === 'international')?.value;
+  }
+
+  /** Click the banner's "Continue" link (navigates to the recommended market's site). */
+  async clickBannerContinue() {
+    await this.languageBannerLink.first().click();
+  }
+
+  /** Click the banner's close (X) button, dismissing it without navigating. */
+  async clickBannerCloseButton() {
+    await this.languageBannerClose.first().click();
+  }
+
   /**
    * Set the `international` cookie (PREF-LANG) before navigation. Always call after
    * `context.clearCookies()`. Omit entirely to test the "no cookie" case (§3.5).
@@ -298,6 +352,71 @@ export class LingoEnBannerPage {
       secure: true,
       sameSite: 'Lax',
     }]);
+  }
+
+  // ─── Pricing ────────────────────────────────────────────────────────────────
+
+  /**
+   * Collect every distinct currency symbol shown in price blocks on the page right now
+   * (current price, struck-through old price, and "Alternatively at ..." variants can each
+   * render their own `.price-currency-symbol` element — usually identical, but not guaranteed).
+   * Price blocks hydrate async via a separate commerce call after initial page load, independent
+   * of banner/modal rendering — waits for the first symbol element before reading, so this
+   * doesn't race and capture a stale/placeholder price regardless of parallel or serial execution.
+   */
+  async getPricingSymbols() {
+    await this.priceCurrencySymbols.first().waitFor({ state: 'attached', timeout: 15000 }).catch(() => {});
+    const count = await this.priceCurrencySymbols.count();
+    const symbols = [];
+    for (let i = 0; i < count; i++) {
+      const text = (await this.priceCurrencySymbols.nth(i).innerText().catch(() => '')).trim();
+      if (text) symbols.push(text);
+    }
+    return [...new Set(symbols)];
+  }
+
+  /**
+   * Well-known ISO-4217 currency per GeoIP (world knowledge, not app behavior — not sourced from
+   * supported-markets.json, which has no currency field at all). `ec` and `pr` are deliberately
+   * USD: Ecuador is officially dollarized and Puerto Rico is a US territory, so `US$` there is
+   * correct, not a bug. Only covers the GeoIPs this suite currently tests.
+   */
+  static EXPECTED_CURRENCY_BY_GEO = {
+    ae: 'AED', ar: 'ARS', at: 'EUR', be: 'EUR', bg: 'BGN', ch: 'CHF', br: 'BRL', cl: 'CLP',
+    cr: 'CRC', co: 'COP', cz: 'CZK', de: 'EUR', dk: 'DKK', dz: 'DZD', ec: 'USD', ee: 'EUR',
+    eg: 'EGP', es: 'EUR', fi: 'EUR', fr: 'EUR', gr: 'EUR', gt: 'GTQ', hk: 'HKD', hu: 'HUF',
+    id: 'IDR', il: 'ILS', in: 'INR', it: 'EUR', jp: 'JPY', kr: 'KRW', kw: 'KWD', lt: 'EUR',
+    lu: 'EUR', lv: 'EUR', my: 'MYR', mx: 'MXN', nl: 'EUR', no: 'NOK', pe: 'PEN', ph: 'PHP',
+    pr: 'USD', pl: 'PLN', ro: 'RON', qa: 'QAR', pt: 'EUR', sa: 'SAR', se: 'SEK', si: 'EUR',
+    sk: 'EUR', th: 'THB', tw: 'TWD', ua: 'UAH', vn: 'VND', cn: 'CNY',
+  };
+
+  /** Accepted displayed-symbol patterns per ISO currency code (symbol formatting varies by row). */
+  static CURRENCY_SYMBOL_PATTERNS = {
+    USD: /^(US\$|\$)$/, EUR: /€/, MXN: /MXN|MX\$|\$/, ARS: /Ar\$/, CHF: /CHF/, BRL: /R\$/,
+    CLP: /Ch\$/, CRC: /₡|CRC/, COP: /Col\$/, CZK: /Kč|CZK/, DKK: /DKK/, DZD: /DZD/,
+    EGP: /LE|EGP|E£/, GTQ: /Q|GTQ/, HKD: /HK\$/, HUF: /Ft|HUF/, IDR: /Rp/, ILS: /NIS|₪/,
+    INR: /₹|INR/, JPY: /円|¥|JPY/, KRW: /₩|KRW/, KWD: /KD|KWD/, MYR: /RM/, NOK: /NOK/,
+    PEN: /S\/|PEN/, PHP: /₱|PHP/, PLN: /zł|PLN/, RON: /lei|RON/, QAR: /QR|QAR/,
+    SAR: /SAR/, SEK: /SEK/, THB: /฿|THB/, TWD: /NT\$|TWD/, UAH: /₴|UAH/, VND: /₫|VND/,
+    CNY: /¥|CNY|RMB/, AED: /AED/, BGN: /BGN|лв/,
+  };
+
+  /**
+   * Flags the specific confirmed-live bug pattern (skills.md-worthy finding): a market with a
+   * well-known distinct local currency showing `US$`/`$` pricing instead. Returns null when fine
+   * or when the GeoIP isn't in the known-currency map (no false positives on untracked markets).
+   * Deliberately does NOT flag other mismatches (e.g. non-Eurozone markets showing €) — those may
+   * be an intentional Adobe pricing policy, not a bug, and there's no source of truth to say
+   * either way, so only the unambiguous USD-leak pattern is hard-checked.
+   */
+  static checkPricingCurrency(geoIp, symbols) {
+    const expected = LingoEnBannerPage.EXPECTED_CURRENCY_BY_GEO[(geoIp ?? '').toLowerCase()];
+    if (!expected || !symbols?.length) return null;
+    if (expected === 'USD') return null; // US$ is correct here — nothing to flag
+    const showsOnlyUsd = symbols.every((s) => LingoEnBannerPage.CURRENCY_SYMBOL_PATTERNS.USD.test(s));
+    if (!showsOnlyUsd) return null;
+    return `GeoIP '${geoIp}' expected ${expected} pricing but page shows US$/$ only (symbols: ${JSON.stringify(symbols)})`;
   }
 
   // ─── UI helpers ─────────────────────────────────────────────────────────────

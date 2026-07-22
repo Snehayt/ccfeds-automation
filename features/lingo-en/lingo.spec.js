@@ -707,5 +707,26 @@ export const lingoEnFeatures =
     "cookieValue": "jp",
     "uiExpectation": "none",
     "tags": "@lingo-en @us-path @no-action-reason-language-mismatch"
+  },
+  {
+    "tcid": 64,
+    "name": "@lingoEN-geo-cn-cookie-cn",
+    "description": "US path | GeoIP CN | cookie=cn (简体中文, lang=zh) -> GeoIP not in root's supportedRegions -> Modal, not Banner",
+    "path": "/",
+    "geoIp": "cn",
+    "cookieValue": "cn",
+    "uiExpectation": "modal",
+    "bannerRowPrefix": "cn",
+    "tags": "@lingo-en @us-path @modal"
+  },
+  {
+    "tcid": 65,
+    "name": "@lingoEN-geo-cn-cookie-none",
+    "description": "US path | GeoIP CN | no cookie set (PREF-LANG defaults to en) -> no English row covers cn -> Modal, single option (cn)",
+    "path": "/",
+    "geoIp": "cn",
+    "uiExpectation": "modal",
+    "bannerRowPrefix": "cn",
+    "tags": "@lingo-en @us-path @modal"
   }
 ];
