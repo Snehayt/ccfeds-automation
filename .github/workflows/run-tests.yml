@@ -139,10 +139,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Add Git bash to PATH
-        shell: pwsh
-        run: echo "C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -291,10 +287,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Add Git bash to PATH
-        shell: pwsh
-        run: echo "C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -365,10 +357,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Add Git bash to PATH
-        shell: pwsh
-        run: echo "C:\Program Files\Git\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - uses: actions/setup-node@v4
         with:
