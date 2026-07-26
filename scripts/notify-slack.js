@@ -53,17 +53,19 @@ const envLabel = {
   stage: 'Stage',
 }[ENV_NAME] || ENV_NAME;
 
-// Slack Workflow Trigger format — 9 variables with embedded labels for readability
+// Slack Workflow Trigger format — 11 variables with embedded labels for readability
 const payload = {
   status_emoji: `${statusEmoji} ${statusText}`,
   suite: TEST_URL ? `Suite: ${SUITE} | URL: ${TEST_URL}` : `Suite: ${SUITE}`,
   browser: `Browser: ${browserLabel}`,
   device: `Device: ${deviceLabel}`,
+  environment: `Environment: ${envLabel}`,
   passed: `Passed: ${passed}`,
   failed: `Failed: ${failed}`,
   pass_rate: `Pass Rate: ${passRate}%`,
   dashboard_url: `Dashboard: ${DASHBOARD_URL || 'https://snehayt.github.io/ccfeds-automation/'}`,
   run_url: `Run: ${RUN_URL}`,
+  triggered_by: `Triggered By: ${TRIGGERED_BY}`,
 };
 
 const parsedUrl = new url.URL(SLACK_WH);
