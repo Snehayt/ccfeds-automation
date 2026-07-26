@@ -416,6 +416,7 @@ jobs:
               commitSha:   run.commitSha   || '${{ github.sha }}'.slice(0,7),
               triggeredBy: run.triggeredBy || '${{ github.actor }}',
               runUrl:      run.runUrl      || '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}',
+              resultsUrl:  'runs/${{ github.run_id }}.json',
               timestamp:   run.timestamp   || new Date().toISOString(),
               passed:      run.passed      || 0,
               failed:      run.failed      || 0,
@@ -445,8 +446,14 @@ jobs:
 
       - name: Prepare dashboard for deployment
         run: |
+          mkdir -p dashboard/runs
           cp nala-results.json dashboard/nala-results.json 2>/dev/null || true
           cp run-history.json  dashboard/run-history.json  2>/dev/null || true
+          # Keep the full per-test result (incl. stdout/stderr/error stack) for
+          # this specific run, so console logs stay viewable after it's no
+          # longer the "latest" run. gh-pages keep_files:true retains older
+          # dashboard/runs/*.json files across deploys.
+          cp nala-results.json "dashboard/runs/${{ github.run_id }}.json" 2>/dev/null || true
         continue-on-error: true
 
       - name: Deploy to GitHub Pages
