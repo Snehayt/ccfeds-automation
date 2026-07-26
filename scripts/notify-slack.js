@@ -48,9 +48,9 @@ const deviceLabel = {
 }[DEVICE] || DEVICE;
 
 const envLabel = {
-  'aem-live': 'AEM Live',
-  prod: 'Adobe.com Prod',
-  stage: 'Stage',
+  'aem-live': 'aem-live',
+  prod: 'prod',
+  stage: 'stage',
 }[ENV_NAME] || ENV_NAME;
 
 // Slack Workflow Trigger format — 11 variables with embedded labels for readability
