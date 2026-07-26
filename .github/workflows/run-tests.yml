@@ -294,12 +294,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
       - name: Install Playwright browsers
         run: |
           BROWSER="${{ needs.setup.outputs.browser }}"
@@ -360,9 +354,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Download results artifacts
         uses: actions/download-artifact@v4
@@ -466,23 +457,17 @@ jobs:
           keep_files: true
 
       - name: Notify Slack
-        if: always() && env.SLACK_WH != ''
+        if: always()
         env:
           SLACK_WH: ${{ secrets.SLACK_WH }}
           SUITE: ${{ needs.setup.outputs.suite }}
           BROWSER: ${{ needs.setup.outputs.browser }}
           DEVICE: ${{ needs.setup.outputs.device }}
-          ENVIRONMENT: ${{ needs.setup.outputs.environment }}
+          ENV_NAME: ${{ needs.setup.outputs.environment }}
           PASSED: ${{ steps.results.outputs.passed }}
           FAILED: ${{ steps.results.outputs.failed }}
           TOTAL: ${{ steps.results.outputs.total }}
-          SCORE: ${{ steps.results.outputs.score }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           DASHBOARD_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
           TRIGGERED_BY: ${{ github.actor }}
-        run: |
-          ICON=$([ "$FAILED" = "0" ] && echo "✅" || echo "❌")
-          RATE=$(node -e "const t=$TOTAL; const p=$PASSED; console.log(t>0 ? (p/t*100).toFixed(1)+'%' : 'N/A')")
-          curl -s -X POST "$SLACK_WH" \
-            -H 'Content-Type: application/json' \
-            --data-raw "{\"text\":\"$ICON Run Complete - Suite: $SUITE | $BROWSER/$DEVICE | $ENVIRONMENT | Passed: $PASSED | Failed: $FAILED | Pass Rate: $RATE | Score: $SCORE/100 | Triggered By: $TRIGGERED_BY | Run: $RUN_URL | Dashboard: $DASHBOARD_URL\"}"
+        run: node scripts/notify-slack.js
