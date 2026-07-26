@@ -1,5 +1,3 @@
-import { sendSlackMessage } from '../../libs/slack.js';
-
 // Playwright will include ANSI color characters and regex from below
 // https://github.com/microsoft/playwright/issues/13522
 // https://github.com/chalk/ansi-regex/blob/main/index.js#L3
@@ -78,16 +76,10 @@ class BaseReporter {
   async onEnd() {
     // this.printPersistingOption();
     // await this.persistData();
-    const summary = this.printResultSummary();
-    const resultSummary = { summary };
-
-    if (process.env.SLACK_WH) {
-      try {
-        await sendSlackMessage(process.env.SLACK_WH, resultSummary);
-      } catch (error) {
-        console.log('----Failed to publish result to slack channel----');
-      }
-    }
+    this.printResultSummary();
+    // Slack notification is sent once by scripts/notify-slack.js in the
+    // GitHub Actions "completed" job — not here, to avoid a second,
+    // differently-shaped post racing the Workflow Builder webhook.
   }
 
   printResultSummary() {
