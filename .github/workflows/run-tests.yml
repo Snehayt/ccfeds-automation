@@ -112,7 +112,7 @@ on:
 
   # ── Daily scheduled run — 9 AM IST (Mon–Fri) ──────────────────────────────
   schedule:
-    - cron: '30 3 * * 1-5'
+    - cron: '33 2 * * *'
 
 # ── Job 1: Resolve suite config, test path, projects, URL ─────────────────────
 jobs:
