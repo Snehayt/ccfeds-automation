@@ -354,7 +354,7 @@
     const ACTIONS_URL   = `https://github.com/${REPO.owner}/${REPO.repo}/actions/workflows/run-tests.yml`;
     const DASHBOARD_URL = `https://${REPO.owner}.github.io/${REPO.repo}/`;
     // Real schedule already defined in run-tests.yml — shown as-is, not fabricated.
-    const KNOWN_CRON = { expr: '30 3 * * 1-5', label: '9:00 AM IST, Monday–Friday' };
+    const KNOWN_CRON = { expr: '0 3 * * *', label: '8:30 AM IST, every day' };
 
     async function fetchJSON(paths) {
       for (const p of paths) {
@@ -653,9 +653,11 @@
       const bookmarkedRuns = getRunBookmarks();
 
       const rows = history.map((run, i) => {
+        const total = run.total ?? 0;
+        const passed = run.passed ?? 0;
         const statusPill = run.failed > 0
-          ? `<span class="status-pill status-fail">Failed</span>`
-          : `<span class="status-pill status-pass">Passed</span>`;
+          ? `<span class="status-pill status-fail">${passed}/${total} passed</span>`
+          : `<span class="status-pill status-pass">${passed}/${total} passed</span>`;
         const runKey = run.runId || String(i);
         const isBookmarked = bookmarkedRuns.includes(runKey);
 
@@ -669,9 +671,9 @@
             <td>${esc(run.device || '—')}</td>
             <td>${esc(run.locale || '—')}</td>
             <td>${esc(run.triggeredBy)}</td>
-            <td>${esc(run.branch || '—')}</td>
-            <td class="test-name">${run.commitSha ? esc(String(run.commitSha).slice(0, 7)) : '—'}</td>
-            <td>${run.qualityScore ?? '—'}</td>
+            <td>${total}</td>
+            <td style="color:#16a34a">${passed}</td>
+            <td style="color:${run.failed > 0 ? '#dc2626' : 'inherit'}">${run.failed ?? 0}</td>
             <td>${run.timestamp ? new Date(run.timestamp).toLocaleString() : '—'}</td>
             <td>
               <a href="#run/${i}" class="link">Open</a>
@@ -693,8 +695,9 @@
               <thead>
                 <tr>
                   <th>Run ID</th><th>Status</th><th>Suite</th><th>Environment</th><th>Browser</th>
-                  <th>Device</th><th>Locale</th><th>Triggered By</th><th>Branch</th><th>Commit</th>
-                  <th>Score</th><th>Timestamp</th><th>Actions</th>
+                  <th>Device</th><th>Locale</th><th>Triggered By</th>
+                  <th>Total</th><th>Passed</th><th>Failed</th>
+                  <th>Timestamp</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody>${rows}</tbody>
@@ -764,9 +767,11 @@
       // Compare with previous run of the same suite, if we can find one.
       const sameHistory = history.filter(h => h.suite === run.suite);
       const prev = isLatest ? sameHistory[0] : sameHistory[sameHistory.indexOf(run) + 1];
+      const prevPassRate = prev && prev.total ? (prev.passed / prev.total) * 100 : null;
+      const thisPassRate = total > 0 ? (passed / total) * 100 : 0;
       const compareBlock = prev ? `
         <div class="info-row"><span class="info-label">vs previous run</span><span class="info-value">
-          Score ${prev.qualityScore ?? '—'} → ${run.qualityScore ?? '—'} (${deltaLabel((run.qualityScore||0) - (prev.qualityScore||0))})
+          Pass rate ${prevPassRate != null ? prevPassRate.toFixed(1) : '—'}% → ${thisPassRate.toFixed(1)}% (${deltaLabel(prevPassRate != null ? +((thisPassRate - prevPassRate).toFixed(1)) : 0)})
         </span></div>` : `<div class="info-row"><span class="info-label">vs previous run</span><span class="info-value muted">No earlier run of this suite recorded.</span></div>`;
 
       const logsNote = `
@@ -818,7 +823,6 @@
                 ${infoRow('Total', total)}
                 ${infoRow('Retries', retries != null ? retries : 'Not tracked for past runs')}
                 ${infoRow('Duration', totalMs != null ? formatDuration(totalMs) : 'Not recorded in run history')}
-                ${infoRow('Quality Score', run.qualityScore ?? '—')}
               </div>
             </section>
             <section class="section card">
@@ -999,7 +1003,7 @@
           </section>
 
           <section class="section soon-card">
-            <b>Saved Filters</b> (Nightly / Smoke / Regression / Production) aren't available yet — they need suite tagging to be standardized first, so presets stay reliable instead of guessing at matches.
+            <b>Saved Filters</b> (Nightly / Smoke / Regression / Production) are <b>coming shortly</b> — they need suite tagging standardized first, so presets stay reliable instead of guessing at matches.
           </section>
         </div>
       `;
@@ -1245,7 +1249,7 @@
         chart.setOption({
           tooltip: { trigger: 'axis', formatter: (p) => {
             const h = ordered[p[0].dataIndex];
-            return `${h.suite || ''} — ${p[0].name}<br/>Pass: ${h.passed ?? 0} · Fail: ${h.failed ?? 0}<br/>Score: ${h.qualityScore ?? '—'}`;
+            return `${h.suite || ''} — ${p[0].name}<br/>Pass: ${h.passed ?? 0} · Fail: ${h.failed ?? 0}`;
           }},
           grid: { left: 40, right: 16, top: 12, bottom: 36 },
           xAxis: { type: 'category', data: dates, axisLabel: { fontSize: 10, rotate: 30 } },
@@ -1397,7 +1401,6 @@
           ['Suite', a.suite, b.suite],
           ['Environment', a.environment, b.environment],
           ['Pass Rate', passRate(a) + '%', passRate(b) + '%'],
-          ['Quality Score', a.qualityScore ?? '—', b.qualityScore ?? '—'],
           ['Passed', a.passed ?? '—', b.passed ?? '—'],
           ['Failed', a.failed ?? '—', b.failed ?? '—'],
           ['Timestamp', a.timestamp ? new Date(a.timestamp).toLocaleString() : '—', b.timestamp ? new Date(b.timestamp).toLocaleString() : '—'],
