@@ -600,7 +600,7 @@
           <div class="quick-actions section">
             ${quickActionBtn('calendar', 'Schedules', '#schedules', false, 'qa-blue')}
             ${quickActionBtn('chart', 'Analytics', '#analytics', false, 'qa-purple')}
-            ${quickActionBtn('report', 'Latest Report', runUrl, true, 'qa-teal')}
+            ${quickActionBtn('report', 'Latest Run', runUrl, true, 'qa-teal')}
             ${quickActionBtn('bars', 'Compare Runs', '#compare', false, 'qa-orange')}
           </div>
 
@@ -630,7 +630,7 @@
     };
     function quickActionBtn(icon, label, href, external, colorCls = '') {
       const svg = `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${QUICK_ICONS[icon] || ''}</svg>`;
-      if (!href) return `<span class="btn btn-theme ${colorCls} soon" title="No report available for this run">${svg}${esc(label)}</span>`;
+      if (!href) return `<span class="btn btn-theme ${colorCls} soon" title="No run URL available for this run">${svg}${esc(label)}</span>`;
       return `<a class="btn btn-theme ${colorCls}" href="${href}"${external ? ' target="_blank" rel="noopener"' : ''}>${svg}${esc(label)}</a>`;
     }
 
