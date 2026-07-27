@@ -424,8 +424,6 @@
         ['device', run.device],
       ];
       if (opts.full) {
-        items.push(['branch', run.branch]);
-        if (run.commitSha) items.push(['commit', String(run.commitSha).slice(0, 7)]);
         if (run.timestamp) items.push(['updated', new Date(run.timestamp).toLocaleString()]);
       } else if (run.locale) {
         items.push(['locale', run.locale]);
@@ -785,21 +783,24 @@
           ${run.runUrl ? `<div style="margin-top:10px"><a class="btn btn-secondary" href="${run.runUrl}" target="_blank" rel="noopener">View Full Workflow Logs ↗</a></div>` : ''}
         </div>`;
 
-      const failRows = hasResults ? results.filter(r => r.status === 'failed').map((t, i) => {
+      const allTestRows = hasResults ? results.map((t, i) => {
         const id = `rundetail-${i}`;
+        const isFail = t.status === 'failed';
         const console = [t.stdout, t.stderr].flat().filter(Boolean).join('\n');
         return `
         <div class="fail-row">
-          <div class="fail-hdr" onclick="toggleFail('${id}')">
-            <span class="badge badge-fail">FAIL</span>
+          <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
+            <span class="badge badge-${isFail ? 'fail' : t.status}">${isFail ? 'FAIL' : t.status.toUpperCase()}</span>
             <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
-            <span class="fail-chev" id="chev-${id}">▼</span>
+            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : '—'}</span>
+            ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
           </div>
+          ${isFail ? `
           <div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>
           <div class="fail-extra" id="fail-extra-${id}">
             ${infoRow('Duration', t.duration ? (t.duration/1000).toFixed(1)+'s' : '—')}
             ${console ? `<div class="info-row"><span class="info-label">Console</span><span class="info-value" style="font-family:monospace;font-size:11px;white-space:pre-wrap">${esc(console)}</span></div>` : infoRow('Console', 'Nothing captured for this test')}
-          </div>
+          </div>` : ''}
         </div>`;
       }).join('') : '';
 
@@ -831,8 +832,6 @@
             <section class="section card">
               <div class="card-title">Execution Metadata</div>
               <div class="info-grid">
-                ${infoRow('Branch', run.branch)}
-                ${infoRow('Commit SHA', run.commitSha)}
                 ${infoRow('Triggered By', run.triggeredBy)}
                 ${infoRow('Environment', run.environment)}
                 ${infoRow('Browser', run.browser)}
@@ -848,10 +847,10 @@
             <div class="info-grid">${compareBlock}</div>
           </section>
 
-          ${hasResults && failRows ? `
+          ${hasResults && allTestRows ? `
           <section class="section card">
-            <div class="card-title">Failed Tests <span class="card-meta">click a row for console output</span></div>
-            ${failRows}
+            <div class="card-title">All Tests <span class="count-badge">${results.length}</span> <span class="card-meta">click a failed row for console output</span></div>
+            ${allTestRows}
           </section>` : ''}
 
           <section class="section">
