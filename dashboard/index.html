@@ -559,7 +559,7 @@
           <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
             <span class="badge badge-${isFail ? 'fail' : 'passed'}">${isFail ? 'FAIL' : 'PASS'}</span>
             <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
-            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : '—'}</span>
+            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
             ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
           </div>
           ${isFail ? `<div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>` : ''}
@@ -669,13 +669,13 @@
             <td>${esc(run.suite)}</td>
             <td>${esc(run.environment)}</td>
             <td>${esc(run.browser)}</td>
-            <td>${esc(run.device || '—')}</td>
-            <td>${esc(run.locale || '—')}</td>
+            <td>${esc(run.device || 'N/A')}</td>
+            <td>${esc(run.locale || 'N/A')}</td>
             <td>${esc(run.triggeredBy)}</td>
             <td>${total}</td>
             <td style="color:#16a34a">${passed}</td>
             <td style="color:${run.failed > 0 ? '#dc2626' : 'inherit'}">${run.failed ?? 0}</td>
-            <td>${run.timestamp ? new Date(run.timestamp).toLocaleString() : '—'}</td>
+            <td>${run.timestamp ? new Date(run.timestamp).toLocaleString() : 'N/A'}</td>
             <td>
               <a href="#run/${i}" class="link">Open</a>
               <a href="#compare?a=${i}" class="link" style="margin-left:8px">Compare</a>
@@ -772,7 +772,7 @@
       const thisPassRate = total > 0 ? (passed / total) * 100 : 0;
       const compareBlock = prev ? `
         <div class="info-row"><span class="info-label">vs previous run</span><span class="info-value">
-          Pass rate ${prevPassRate != null ? prevPassRate.toFixed(1) : '—'}% → ${thisPassRate.toFixed(1)}% (${deltaLabel(prevPassRate != null ? +((thisPassRate - prevPassRate).toFixed(1)) : 0)})
+          Pass rate ${prevPassRate != null ? prevPassRate.toFixed(1) : 'N/A'}% → ${thisPassRate.toFixed(1)}% (${deltaLabel(prevPassRate != null ? +((thisPassRate - prevPassRate).toFixed(1)) : 0)})
         </span></div>` : `<div class="info-row"><span class="info-label">vs previous run</span><span class="info-value muted">No earlier run of this suite recorded.</span></div>`;
 
       const logsNote = `
@@ -792,13 +792,13 @@
           <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
             <span class="badge badge-${isFail ? 'fail' : t.status}">${isFail ? 'FAIL' : t.status.toUpperCase()}</span>
             <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
-            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : '—'}</span>
+            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
             ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
           </div>
           ${isFail ? `
           <div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>
           <div class="fail-extra" id="fail-extra-${id}">
-            ${infoRow('Duration', t.duration ? (t.duration/1000).toFixed(1)+'s' : '—')}
+            ${infoRow('Duration', t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A')}
             ${console ? `<div class="info-row"><span class="info-label">Console</span><span class="info-value" style="font-family:monospace;font-size:11px;white-space:pre-wrap">${esc(console)}</span></div>` : infoRow('Console', 'Nothing captured for this test')}
           </div>` : ''}
         </div>`;
@@ -809,7 +809,7 @@
           <div class="page-header-row">
             <div>
               <h1 class="page-title">Run ${esc(run.runId || (isLatest ? 'latest' : param))}</h1>
-              <p class="page-subtitle">${esc(run.suite || 'Unknown suite')} · ${esc(run.environment || '—')}</p>
+              <p class="page-subtitle">${esc(run.suite || 'Unknown suite')} · ${esc(run.environment || 'N/A')}</p>
             </div>
             ${run.runUrl ? `<a class="btn btn-secondary" href="${run.runUrl}" target="_blank" rel="noopener">Open on GitHub ↗</a>` : ''}
           </div>
@@ -911,7 +911,7 @@
             </div>
             <div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>
             <div class="fail-extra" id="fail-extra-${id}">
-              ${infoRow('Duration', t.duration ? (t.duration / 1000).toFixed(1) + 's' : '—')}
+              ${infoRow('Duration', t.duration ? (t.duration / 1000).toFixed(1) + 's' : 'N/A')}
               ${infoRow('Retries', t.retry ?? 0)}
               ${infoRow('Error type', classifyError(t.errorMessage))}
               ${infoRow('Environment', latestRun.environment)}
@@ -991,7 +991,7 @@
               <div class="mini-run-row">
                 <span class="status-pill ${r.failed > 0 ? 'status-fail' : 'status-pass'}">${r.failed > 0 ? 'Failed' : 'Passed'}</span>
                 <span class="mini-run-suite">${esc(r.suite)}</span>
-                <span class="mini-run-meta">${esc(r.environment)} · ${r.timestamp ? new Date(r.timestamp).toLocaleString() : '—'}</span>
+                <span class="mini-run-meta">${esc(r.environment)} · ${r.timestamp ? new Date(r.timestamp).toLocaleString() : 'N/A'}</span>
                 <a href="#run/${r._idx}" class="link">Open →</a>
               </div>`).join('')}
           </section>
@@ -1000,7 +1000,7 @@
             <div class="card-title">Bookmarked Failures <span class="count-badge">${allFails.length}</span></div>
             ${allFails.length === 0 ? `<div class="empty-note">No bookmarked failures yet — star a failure on the Failures page.</div>` : `
               <table class="data-table"><thead><tr><th>Test</th><th>Error</th></tr></thead><tbody>
-                ${allFails.map(t => `<tr><td class="test-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</td><td class="error-msg">${esc(t.errorMessage || '—')}</td></tr>`).join('')}
+                ${allFails.map(t => `<tr><td class="test-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</td><td class="error-msg">${esc(t.errorMessage || 'N/A')}</td></tr>`).join('')}
               </tbody></table>`}
           </section>
 
@@ -1060,9 +1060,9 @@
               <tbody>
                 ${tests.map(t => {
                   const grepTag = '@' + (t.name || '').split('|')[0].trim();
-                  const locale  = (t.tags || []).find(tag => ['us','gb','de','fr','jp','au','ca','mx','br','in','es','it','kr','nl','se'].includes(tag)) || '—';
-                  const suite   = (t.name || '').match(/^([a-z]+(?:-[a-z]+)?)-/)?.[1] || '—';
-                  const status  = t.status || '—';
+                  const locale  = (t.tags || []).find(tag => ['us','gb','de','fr','jp','au','ca','mx','br','in','es','it','kr','nl','se'].includes(tag)) || 'N/A';
+                  const suite   = (t.name || '').match(/^([a-z]+(?:-[a-z]+)?)-/)?.[1] || 'N/A';
+                  const status  = t.status || 'N/A';
                   const color   = status === 'passed' ? '#16a34a' : status === 'failed' ? '#dc2626' : '#9ca3af';
                   return `
                     <tr data-name="${esc(t.name)}" data-locale="${locale}" data-suite="${suite}" data-status="${status}">
@@ -1070,7 +1070,7 @@
                       <td class="test-name">${esc(t.name || t.title)}</td>
                       <td>${locale.toUpperCase()}</td>
                       <td style="color:${color};font-weight:500">${status}</td>
-                      <td>${t.duration ? (t.duration / 1000).toFixed(1) + 's' : '—'}</td>
+                      <td>${t.duration ? (t.duration / 1000).toFixed(1) + 's' : 'N/A'}</td>
                     </tr>`;
                 }).join('')}
               </tbody>
@@ -1141,7 +1141,7 @@
           <div class="fail-card-title" style="font-family:monospace;font-size:11.5px" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</div>
           <div class="fail-card-foot">
             <span style="font-weight:700;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
-            <span class="muted" title="Trend requires per-test history across runs, not yet tracked">trend: —</span>
+            <span class="muted" title="Trend requires per-test history across runs, not yet tracked">trend: N/A</span>
             <span class="badge badge-${t.status}">${t.status}</span>
           </div>
         </div>`).join('') : `<div class="empty-note">No timing data yet.</div>`;
@@ -1403,9 +1403,9 @@
           ['Suite', a.suite, b.suite],
           ['Environment', a.environment, b.environment],
           ['Pass Rate', passRate(a) + '%', passRate(b) + '%'],
-          ['Passed', a.passed ?? '—', b.passed ?? '—'],
-          ['Failed', a.failed ?? '—', b.failed ?? '—'],
-          ['Timestamp', a.timestamp ? new Date(a.timestamp).toLocaleString() : '—', b.timestamp ? new Date(b.timestamp).toLocaleString() : '—'],
+          ['Passed', a.passed ?? 'N/A', b.passed ?? 'N/A'],
+          ['Failed', a.failed ?? 'N/A', b.failed ?? 'N/A'],
+          ['Timestamp', a.timestamp ? new Date(a.timestamp).toLocaleString() : 'N/A', b.timestamp ? new Date(b.timestamp).toLocaleString() : 'N/A'],
         ];
         el.innerHTML = `
           <table class="data-table">
@@ -1453,7 +1453,7 @@
             ${recentWithLogs.map(r => `
               <div class="mini-run-row">
                 <span class="mini-run-suite">${esc(r.suite || 'unknown')}</span>
-                <span class="mini-run-meta">${r.timestamp ? new Date(r.timestamp).toLocaleString() : '—'}</span>
+                <span class="mini-run-meta">${r.timestamp ? new Date(r.timestamp).toLocaleString() : 'N/A'}</span>
                 ${r.runUrl ? `<a href="${r.runUrl}" target="_blank" class="link">Open Logs ↗</a>` : '<span class="muted">No link recorded</span>'}
               </div>`).join('')}
           </section>
@@ -1580,17 +1580,17 @@
     // ── Helpers ─────────────────────────────────────────────────────────────
     function kpiCard(label, value, color) {
       const style = color ? `style="color:${color}"` : '';
-      return `<div class="kpi-card"><span class="kpi-value" ${style}>${value ?? '—'}</span><span class="kpi-label">${label}</span></div>`;
+      return `<div class="kpi-card"><span class="kpi-value" ${style}>${value ?? 'N/A'}</span><span class="kpi-label">${label}</span></div>`;
     }
     function infoRow(label, value) {
-      return `<div class="info-row"><span class="info-label">${label}</span><span class="info-value">${value != null ? esc(String(value)) : '—'}</span></div>`;
+      return `<div class="info-row"><span class="info-label">${label}</span><span class="info-value">${value != null ? esc(String(value)) : 'N/A'}</span></div>`;
     }
     function firstErrorLine(msg) {
       if (!msg) return 'No error message captured.';
       return String(msg).split('\n')[0].trim();
     }
     function formatDuration(ms) {
-      if (!ms || ms <= 0) return '—';
+      if (!ms || ms <= 0) return 'N/A';
       const totalSec = Math.round(ms / 1000);
       const m = Math.floor(totalSec / 60);
       const s = totalSec % 60;
