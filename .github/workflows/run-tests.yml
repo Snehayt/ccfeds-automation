@@ -112,7 +112,7 @@ on:
 
   # ── Daily scheduled run — 9 AM IST (Mon–Fri) ──────────────────────────────
   schedule:
-    - cron: '33 2 * * *'
+    - cron: '40 2 * * *'
 
 # ── Job 1: Resolve suite config, test path, projects, URL ─────────────────────
 jobs:
@@ -163,6 +163,12 @@ jobs:
           DEVICE="${{ github.event.inputs.device      || github.event.client_payload.device       || 'desktop' }}"
           ENV="${{ github.event.inputs.environment    || github.event.client_payload.environment  || 'prod' }}"
           GREP="${{ github.event.inputs.grep          || github.event.client_payload.grep         || '' }}"
+          # Scheduled (cron) runs get no inputs at all — without a default
+          # grep here, they'd run the entire feds-unav suite (~1700 tests
+          # across every locale) instead of the intended smoke slice.
+          if [ "${{ github.event_name }}" = "schedule" ] && [ -z "$GREP" ]; then
+            GREP="@unav-us"
+          fi
           LOCALE="${{ github.event.inputs.locale      || github.event.client_payload.locale       || '' }}"
           PAGE="${{ github.event.inputs.page          || github.event.client_payload.page         || '' }}"
           RETRIES="${{ github.event.inputs.retries    || github.event.client_payload.retries      || '0' }}"
