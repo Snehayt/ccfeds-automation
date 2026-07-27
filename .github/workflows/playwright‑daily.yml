@@ -1,8 +1,9 @@
 name: 📅 Daily Playwright Tests
 
 on:
-  schedule:
-    - cron: '30 0 * * *'  # Every day at 06:00 IST (00:30 UTC)
+  # Schedule disabled — superseded by run-tests.yml's scheduled run.
+  # schedule:
+  #   - cron: '30 0 * * *'  # Every day at 06:00 IST (00:30 UTC)
   workflow_dispatch:
 
 jobs:
