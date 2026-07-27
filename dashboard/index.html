@@ -518,7 +518,7 @@
 
       const slowRows = slowest.map(t => `
         <div class="mini-run-row">
-          <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500">${esc((t.name || '').slice(0, 42))}</span>
+          <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</span>
           <span class="mini-run-meta"></span>
           <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
         </div>
@@ -560,7 +560,7 @@
         <div class="fail-row">
           <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
             <span class="badge badge-${isFail ? 'fail' : 'passed'}">${isFail ? 'FAIL' : 'PASS'}</span>
-            <span class="fail-name" title="${esc(t.name)}">${esc(t.name || t.title)}</span>
+            <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
             <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : '—'}</span>
             ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
           </div>
@@ -655,9 +655,12 @@
       const rows = history.map((run, i) => {
         const total = run.total ?? 0;
         const passed = run.passed ?? 0;
-        const statusPill = run.failed > 0
-          ? `<span class="status-pill status-fail">${passed}/${total} passed</span>`
-          : `<span class="status-pill status-pass">${passed}/${total} passed</span>`;
+        const nothingRan = passed === 0 && (run.failed ?? 0) === 0;
+        const statusPill = nothingRan
+          ? `<span class="status-pill status-warn">${passed}/${total} passed</span>`
+          : run.failed > 0
+            ? `<span class="status-pill status-fail">${passed}/${total} passed</span>`
+            : `<span class="status-pill status-pass">${passed}/${total} passed</span>`;
         const runKey = run.runId || String(i);
         const isBookmarked = bookmarkedRuns.includes(runKey);
 
@@ -789,7 +792,7 @@
         <div class="fail-row">
           <div class="fail-hdr" onclick="toggleFail('${id}')">
             <span class="badge badge-fail">FAIL</span>
-            <span class="fail-name" title="${esc(t.name)}">${esc(t.name || t.title)}</span>
+            <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
             <span class="fail-chev" id="chev-${id}">▼</span>
           </div>
           <div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>
@@ -901,7 +904,7 @@
           <div class="fail-row">
             <div class="fail-hdr" onclick="toggleFail('${id}')">
               <span class="badge badge-fail">FAIL</span>
-              <span class="fail-name" title="${esc(t.name)}">${esc(t.name || t.title)}</span>
+              <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
               ${t.retry > 0 ? `<span class="badge badge-flaky">retried ${t.retry}x</span>` : ''}
               ${isKnown ? `<span class="badge" style="background:#e0e7ff;color:#4338ca">known issue</span>` : ''}
               <span class="tag-pill" onclick="event.stopPropagation(); toggleBookmark('${esc(t.name)}', this)" title="Bookmark this failure">${isBookmarked ? '★' : '☆'}</span>
@@ -998,7 +1001,7 @@
             <div class="card-title">Bookmarked Failures <span class="count-badge">${allFails.length}</span></div>
             ${allFails.length === 0 ? `<div class="empty-note">No bookmarked failures yet — star a failure on the Failures page.</div>` : `
               <table class="data-table"><thead><tr><th>Test</th><th>Error</th></tr></thead><tbody>
-                ${allFails.map(t => `<tr><td class="test-name">${esc(t.name)}</td><td class="error-msg">${esc(t.errorMessage || '—')}</td></tr>`).join('')}
+                ${allFails.map(t => `<tr><td class="test-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</td><td class="error-msg">${esc(t.errorMessage || '—')}</td></tr>`).join('')}
               </tbody></table>`}
           </section>
 
@@ -1136,7 +1139,7 @@
 
       const slowCards = slowTests.length ? slowTests.map(t => `
         <div class="slow-card">
-          <div class="fail-card-title" style="font-family:monospace;font-size:11.5px">${esc((t.name || '').slice(0, 60))}</div>
+          <div class="fail-card-title" style="font-family:monospace;font-size:11.5px" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</div>
           <div class="fail-card-foot">
             <span style="font-weight:700;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
             <span class="muted" title="Trend requires per-test history across runs, not yet tracked">trend: —</span>
@@ -1211,7 +1214,7 @@
             <thead><tr><th>Test</th><th style="text-align:center;">Retries</th><th>Final Status</th><th>Instability</th></tr></thead>
             <tbody>${flakyTests.slice(0, 15).map(r => `
               <tr>
-                <td style="font-family:monospace;font-size:12px;">${esc(r.name)}</td>
+                <td style="font-family:monospace;font-size:12px;" title="${esc(r.name)}">${esc(shortTestLabel(r.name))}</td>
                 <td style="text-align:center;color:#d97706;font-weight:700;">${r.retry}</td>
                 <td><span class="badge badge-${r.status}">${r.status}</span></td>
                 <td><div style="display:flex;align-items:center;gap:6px;"><div class="flaky-bar-bg"><div class="flaky-bar-fill" style="width:${Math.min(100, r.retry * 33)}%"></div></div><span style="font-size:11px;color:#6b7280;">${r.retry}x</span></div></td>
@@ -1442,7 +1445,7 @@
               <table class="data-table">
                 <thead><tr><th>Test</th><th>Status</th><th>Console</th></tr></thead>
                 <tbody>${withConsole.map(r => `
-                  <tr><td class="test-name">${esc(r.name)}</td><td><span class="badge badge-${r.status}">${esc(r.status)}</span></td>
+                  <tr><td class="test-name" title="${esc(r.name)}">${esc(shortTestLabel(r.name))}</td><td><span class="badge badge-${r.status}">${esc(r.status)}</span></td>
                   <td><a href="#run/latest" class="link">View →</a></td></tr>`).join('')}</tbody>
               </table>`}
           </section>
@@ -1597,6 +1600,18 @@
     function esc(str) {
       if (str == null) return '';
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    // Test names repeat the suite/locale prefix on every row (e.g.
+    // "unav-us-cc-business-teams | United States | cc-business-teams,"),
+    // which is redundant once the suite/locale is already shown elsewhere
+    // on the page — and forces awkward mid-word truncation. Show just the
+    // distinguishing last segment instead; the full name is still in the
+    // title attribute wherever this is used.
+    function shortTestLabel(name) {
+      if (!name) return '';
+      const parts = String(name).split('|').map(s => s.trim());
+      const last = parts[parts.length - 1] || name;
+      return last.replace(/,\s*$/, '') || name;
     }
 
     // ── Sidebar click handlers ───────────────────────────────────────────────
