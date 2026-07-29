@@ -1,5 +1,5 @@
 async function rootRoutes(fastify) {
-  fastify.get("/", async () => {
+  fastify.get("/api/health", async () => {
     return {
       application: "Automation Intelligence Platform",
       version: "2.0.0",
