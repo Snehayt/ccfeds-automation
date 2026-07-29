@@ -1,0 +1,5 @@
+node_modules
+
+data/runs/
+data/run-history.json
+data/dashboard-summary.json
