@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,7 +293,7 @@
 <body>
   <div class="app-layout">
     <nav class="sidebar">
-      <div class="sidebar-brand">QA Automation Platform</div>
+      <div class="sidebar-brand">Automation Platform</div>
       <div class="sidebar-search">
         <input id="global-search" type="text" placeholder="Search runs, branch, user…" />
       </div>
@@ -342,42 +343,42 @@
     let latestRun = null;
     let history   = [];
 
-    // ── Repo context (derived from the GitHub Pages URL — no backend calls) ──
-    function getRepoContext() {
-      const host = window.location.hostname; // e.g. snehayt.github.io
-      const path = window.location.pathname.split('/').filter(Boolean);
-      const owner = host.endsWith('.github.io') ? host.split('.')[0] : 'snehayt';
-      const repo  = path[0] || 'ccfeds-automation';
-      return { owner, repo };
-    }
-    const REPO = getRepoContext();
-    const ACTIONS_URL   = `https://github.com/${REPO.owner}/${REPO.repo}/actions/workflows/run-tests.yml`;
-    const DASHBOARD_URL = `https://${REPO.owner}.github.io/${REPO.repo}/`;
-    // Real schedule already defined in run-tests.yml — shown as-is, not fabricated.
-    const KNOWN_CRON = { expr: '0 3 * * *', label: '8:30 AM IST, every day' };
+    // ── API wiring ───────────────────────────────────────────────────────────
+    const API_BASE = window.API_BASE || (location.hostname.includes('github.io') ? 'http://localhost:3000' : '');
 
-    async function fetchJSON(paths) {
-      for (const p of paths) {
-        try {
-          const res = await fetch(p);
-          if (!res.ok) continue;
-          const text = await res.text();
-          if (text.trim()) return JSON.parse(text);
-        } catch (_) {}
-      }
-      return null;
+    function uniq(values) {
+      return [...new Set(values.filter(Boolean))];
+    }
+
+    async function apiGet(path) {
+      const res = await fetch(`${API_BASE}${path}`);
+      if (!res.ok) throw new Error(`GET ${path} failed (${res.status})`);
+      if (res.status === 204) return null;
+      return res.json();
+    }
+
+    async function apiPost(path, body) {
+      const res = await fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body || {}),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error || `POST ${path} failed (${res.status})`);
+      return data;
     }
 
     async function loadData() {
-      const t = Date.now();
-      const [run, hist] = await Promise.all([
-        fetchJSON([`./nala-results.json?t=${t}`,  `../nala-results.json?t=${t}`]),
-        fetchJSON([`./run-history.json?t=${t}`,   `../run-history.json?t=${t}`]),
-      ]);
-      if (run)  latestRun = run;
-      if (hist) history   = Array.isArray(hist) ? hist : [];
-      render();
-    }
+  const [latest, hist] = await Promise.all([
+    apiGet('/api/runs/latest').catch(() => null),
+    apiGet('/api/runs').catch(() => []),
+  ]);
+
+  latestRun = latest || null;
+  history = Array.isArray(hist) ? hist : [];
+  render();
+};
+
 
     // ── Router ─────────────────────────────────────────────────────────────
     function getRoute() {
@@ -434,19 +435,57 @@
     }
 
     function runSuitesBtn(cls = 'btn-primary') {
-      return `<a class="btn ${cls}" href="${ACTIONS_URL}" target="_blank" rel="noopener">▶ Run Suites</a>`;
-    }
+  return `<button class="btn ${cls}" type="button" id="run-suites-btn">▶ Run Suites</button>`;
+}
 
-    function soonBtn(label) {
-      return `<span class="btn btn-secondary soon" title="Not available yet">${esc(label)}</span>`;
+async function triggerRun() {
+  const suite = document.getElementById('home-suite-select')?.value || latestRun?.suite || history[0]?.suite || 'unav';
+  const environment = document.getElementById('home-env-select')?.value || 'prod';
+  const browser = document.getElementById('home-browser-select')?.value || 'chrome';
+  const device = document.getElementById('home-device-select')?.value || 'desktop';
+  const locale = document.getElementById('home-locale-select')?.value || 'us';
+
+  const created = await apiPost('/api/runs', {
+    suite,
+    suiteId: suite,
+    suiteName: suite,
+    environment,
+    browser,
+    device,
+    locale,
+    triggeredBy: 'local',
+  });
+
+  await apiPost(`/api/runs/${created.runId}/start`, {
+    executionId: created.executionId || null,
+  });
+
+  await loadData();
+  window.location.hash = `#run/${created.runId}`;
+}
+
+function wireHome() {
+  document.getElementById('home-suite-select')?.addEventListener('change', (e) => {
+    homeSelectedSuite = e.target.value || null;
+    render();
+  });
+
+  document.getElementById('run-suites-btn')?.addEventListener('click', async () => {
+    const btn = document.getElementById('run-suites-btn');
+    btn.disabled = true;
+    try {
+      await triggerRun();
+    } catch (err) {
+      alert(err.message || 'Failed to start run');
+    } finally {
+      btn.disabled = false;
     }
+  });
+
+  maybeLoadHomeResults();
+}
 
     // ── Home Page ───────────────────────────────────────────────────────────
-    // The homepage is scoped to one suite at a time. It defaults to whichever
-    // suite the globally-latest completed run belongs to, but a run triggered
-    // by someone else, for a different suite, won't silently take over what
-    // you're looking at — you pick the suite explicitly, and it's remembered
-    // per suite from run-history.json (+ the full per-run JSON when cached).
     let homeSelectedSuite = null;
 
     function wireHome() {
@@ -454,135 +493,68 @@
         homeSelectedSuite = e.target.value || null;
         render();
       });
-      maybeLoadHomeResults();
+
+      document.getElementById('run-suites-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('run-suites-btn');
+        btn.disabled = true;
+        try {
+          await triggerRun();
+        } catch (err) {
+          alert(err.message || 'Failed to start run');
+        } finally {
+          btn.disabled = false;
+        }
+      });
     }
 
     function getActiveHomeSummary() {
-      if (!latestRun) return null;
-      const activeSuite = homeSelectedSuite || latestRun.suite;
-      if (activeSuite === latestRun.suite) return latestRun;
-      return history.find(h => h.suite === activeSuite) || latestRun;
+      if (!latestRun && history.length === 0) return null;
+      const activeSuite = homeSelectedSuite || latestRun?.suite || history[0]?.suite;
+      if (!activeSuite) return latestRun || history[0] || null;
+      return history.find(h => h.suite === activeSuite) || latestRun || history[0] || null;
     }
 
-    async function maybeLoadHomeResults() {
-      const summary = getActiveHomeSummary();
-      if (!summary || summary === latestRun || getFullResults(summary) || !summary.resultsUrl) return;
-      const t = Date.now();
-      const data = await fetchJSON([`./${summary.resultsUrl}?t=${t}`, `../${summary.resultsUrl}?t=${t}`]);
-      if (data && Array.isArray(data.results)) {
-        resultsCache[summary.resultsUrl] = data.results;
-        if (getRoute().page === 'home' && getActiveHomeSummary() === summary) render();
-      }
+    function maybeLoadHomeResults() {
+      return;
     }
 
     function renderHome() {
-      if (!latestRun) {
+      const current = getActiveHomeSummary();
+      const suitesAvail = uniq([latestRun?.suite, ...(history.map(h => h.suite)), current?.suite]);
+      const envAvail = uniq(['prod', 'stage', 'aem-live', ...(history.map(h => h.environment))]);
+      const browserAvail = uniq(['chrome', 'firefox', 'webkit', ...(history.map(h => h.browser))]);
+      const deviceAvail = uniq(['desktop', 'mobile', ...(history.map(h => h.device))]);
+      const localeAvail = uniq(['us', 'gb', 'de', 'fr', 'jp', 'kr', 'in', ...(history.map(h => h.locale))]);
+
+      if (!current) {
         return `<div class="page">
-          <h1 class="page-title">Dashboard</h1>
-          <div class="quick-actions section">${runSuitesBtn()}</div>
-          <div class="page-state">No run data yet. Click <b>Run Suites</b> above to trigger the first run from GitHub Actions.</div>
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-title">Automation Dashboard</h1>
+              <p class="page-subtitle">Centralized visibility and execution history for automation.</p>
+            </div>
+            ${runSuitesBtn()}
+          </div>
+          <div class="page-state">No run data yet. Click <b>Run Suites</b> to trigger the first run from the API.</div>
         </div>`;
       }
 
-      const suitesAvail = [...new Set([latestRun.suite, ...history.map(h => h.suite)].filter(Boolean))];
-      const run = getActiveHomeSummary();
-      const isGlobalLatest = run === latestRun;
+      const results = Array.isArray(current.results) ? current.results : [];
+      const passed = current.passed ?? results.filter(r => r.status === 'passed').length ?? 0;
+      const failed = current.failed ?? results.filter(r => r.status === 'failed').length ?? 0;
+      const skipped = current.skipped ?? results.filter(r => r.status === 'skipped').length ?? 0;
+      const total = current.total ?? results.length ?? 0;
+      const totalMs = results.reduce((sum, r) => sum + (r.duration || 0), 0);
 
-      const { suite, environment, browser, triggeredBy, runUrl } = run;
-      const passed = run.passed ?? 0, failed = run.failed ?? 0, skipped = run.skipped ?? 0, total = run.total ?? 0;
-
-      const activeResults = isGlobalLatest ? (run.results || []) : (getFullResults(run) || []);
-      const resultsReady  = isGlobalLatest || Array.isArray(run.results) || !!getFullResults(run);
-      const loadingResults = !resultsReady && !!run.resultsUrl;
-
-      const passRate    = total > 0 ? ((passed / total) * 100).toFixed(1) : '0';
+      const passRate = total > 0 ? ((passed / total) * 100).toFixed(1) : '0';
       const passRateColor = total === 0 ? '#6b7280' : passRate >= 85 ? '#16a34a' : passRate >= 60 ? '#d97706' : '#dc2626';
-      const failures    = resultsReady ? activeResults.filter(r => r.status === 'failed') : [];
-      const totalMs     = resultsReady ? activeResults.reduce((sum, r) => sum + (r.duration || 0), 0) : null;
-      const slowest     = resultsReady ? [...activeResults].filter(r => r.duration > 0).sort((a,b) => b.duration - a.duration).slice(0, 3) : [];
-      const runStatus   = failed > 0
-        ? `<span class="status-pill status-fail">${failed} failed</span>`
-        : `<span class="status-pill status-pass">Passed</span>`;
-
-      // ── Pass-rate delta vs the previous run of the same suite — folded
-      // into the Run Status card as one line, instead of its own box.
-      const sameSuiteHistory = history.filter(h => h.suite === suite);
-      const runIsSameAsFirstHistoryEntry = sameSuiteHistory[0] && sameSuiteHistory[0].runId === run.runId;
-      const prevRun = runIsSameAsFirstHistoryEntry ? sameSuiteHistory[1] : sameSuiteHistory[0];
-      const prevPassRate = prevRun && prevRun.total ? (prevRun.passed / prevRun.total) * 100 : null;
-      const trendTxt = prevPassRate == null
-        ? 'No earlier run of this suite yet'
-        : `${deltaLabel(+((total > 0 ? (passed/total)*100 : 0) - prevPassRate).toFixed(1))} pass rate vs previous ${esc(suite)} run`;
-
-      const slowRows = slowest.map(t => `
-        <div class="mini-run-row">
-          <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</span>
-          <span class="mini-run-meta"></span>
-          <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
-        </div>
-      `).join('');
-
-      const runStatusSection = `
-        <section class="section card">
-          <div class="card-header">
-            <span class="card-title">Run Status</span>
-            ${runStatus}
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;color:#6b7280;font-size:12.5px;margin-bottom:16px">
-            <span class="status-pill status-muted">No active execution</span>
-            <span>— check the <a href="${ACTIONS_URL}" target="_blank" class="link">Actions run list</a> for anything currently in flight.</span>
-          </div>
-          <div class="info-grid">
-            ${infoRow('Suite',        suite)}
-            ${infoRow('Environment',  environment)}
-            ${infoRow('Browser',      browser)}
-            ${infoRow('Duration',     loadingResults ? 'Loading…' : formatDuration(totalMs))}
-            ${infoRow('Triggered By', triggeredBy)}
-            ${infoRow('Trend',        trendTxt)}
-          </div>
-          <div style="margin-top:14px"><a href="#run/${isGlobalLatest ? 'latest' : history.indexOf(run)}" class="link">Open Run →</a></div>
-
-          ${slowest.length > 0 ? `
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6">
-            <div class="card-header" style="margin-bottom:6px"><span class="card-title" style="font-size:13px">Slowest Tests</span></div>
-            ${slowRows}
-          </div>` : ''}
-        </section>
-      `;
-
-      const recentResults = resultsReady ? activeResults.slice(0, 6) : [];
-      const resultRows = recentResults.map((t, i) => {
-        const id = `home-${i}`;
-        const isFail = t.status === 'failed';
-        return `
-        <div class="fail-row">
-          <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
-            <span class="badge badge-${isFail ? 'fail' : 'passed'}">${isFail ? 'FAIL' : 'PASS'}</span>
-            <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
-            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
-            ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
-          </div>
-          ${isFail ? `<div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>` : ''}
-        </div>`;
-      }).join('');
-
-      const failuresSection = `
-        <section class="section card">
-          <div class="card-header">
-            <span class="card-title">Recent Results</span>
-            <a href="#failures" class="link" style="font-size:12px">View all failures →</a>
-          </div>
-          ${loadingResults ? `<div class="empty-note">Loading test results…</div>`
-            : recentResults.length > 0 ? resultRows
-            : `<div class="empty-note">No test results for this run.</div>`}
-        </section>
-      `;
+      const slowest = [...results].filter(r => r.duration > 0).sort((a, b) => b.duration - a.duration).slice(0, 3);
 
       return `
         <div class="page">
           <div class="page-header-row">
             <div>
-              <h1 class="page-title">Dashboard</h1>
+              <h1 class="page-title">Automation Dashboard</h1>
               <p class="page-subtitle">Centralized visibility and execution history for automation.</p>
             </div>
             ${runSuitesBtn()}
@@ -591,29 +563,84 @@
           <div class="filter-bar" style="margin-bottom:8px">
             <label>Suite</label>
             <select id="home-suite-select">
-              ${suitesAvail.map(s => `<option value="${esc(s)}" ${s === suite ? 'selected' : ''}>${esc(s)}${s === latestRun.suite ? ' (latest overall)' : ''}</option>`).join('')}
+              ${suitesAvail.map(s => `<option value="${esc(s)}" ${s === current.suite ? 'selected' : ''}>${esc(s)}${s === latestRun?.suite ? ' (latest overall)' : ''}</option>`).join('')}
             </select>
+            <label>Env</label>
+            <select id="home-env-select">${envAvail.map(v => `<option value="${esc(v)}" ${v === current.environment ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>
+            <label>Browser</label>
+            <select id="home-browser-select">${browserAvail.map(v => `<option value="${esc(v)}" ${v === current.browser ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>
+            <label>Device</label>
+            <select id="home-device-select">${deviceAvail.map(v => `<option value="${esc(v)}" ${v === current.device ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>
+            <label>Locale</label>
+            <select id="home-locale-select">${localeAvail.map(v => `<option value="${esc(v)}" ${v === current.locale ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>
           </div>
 
           <div class="quick-actions section">
             ${quickActionBtn('calendar', 'Schedules', '#schedules', false, 'qa-blue')}
             ${quickActionBtn('chart', 'Analytics', '#analytics', false, 'qa-purple')}
-            ${quickActionBtn('report', 'Latest Run', runUrl, true, 'qa-teal')}
+            ${quickActionBtn('report', 'Latest Run', `#run/${current.runId || 'latest'}`, false, 'qa-teal')}
             ${quickActionBtn('bars', 'Compare Runs', '#compare', false, 'qa-orange')}
           </div>
 
           <section class="section kpi-grid">
-            ${kpiCard('Pass Rate',   passRate + '%', passRateColor)}
-            ${kpiCard('Duration',    loadingResults ? '…' : formatDuration(totalMs))}
+            ${kpiCard('Pass Rate', passRate + '%', passRateColor)}
+            ${kpiCard('Duration', formatDuration(totalMs))}
             ${kpiCard('Tests Executed', total)}
-            ${kpiCard('Passed',      passed,  '#16a34a')}
-            ${kpiCard('Failed',      failed,  failed > 0 ? '#dc2626' : '#16a34a')}
-            ${kpiCard('Skipped',     skipped, '#6b7280')}
+            ${kpiCard('Passed', passed, '#16a34a')}
+            ${kpiCard('Failed', failed, '#dc2626')}
+            ${kpiCard('Skipped', skipped, '#6b7280')}
           </section>
 
           <div class="grid-2">
-            ${runStatusSection}
-            ${failuresSection}
+            <section class="section card">
+              <div class="card-header">
+                <span class="card-title">Current Operations</span>
+                <span class="status-pill ${failed > 0 ? 'status-fail' : 'status-pass'}">${failed > 0 ? `${failed} failed` : 'Passed'}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;color:#6b7280;font-size:12.5px;margin-bottom:16px">
+                <span class="status-pill status-muted">No active execution</span>
+                <span>— check the <a href="#runs" class="link">run list</a> for anything currently in flight.</span>
+              </div>
+              <div class="info-grid">
+                ${infoRow('Suite', current.suite)}
+                ${infoRow('Environment', current.environment)}
+                ${infoRow('Browser', current.browser)}
+                ${infoRow('Duration', formatDuration(totalMs))}
+                ${infoRow('Triggered By', current.triggeredBy)}
+                ${infoRow('Trend', 'Latest run scoped to the selected suite')}
+              </div>
+              <div style="margin-top:14px"><a href="#run/${current.runId || 'latest'}" class="link">Open Run →</a></div>
+              ${slowest.length > 0 ? `
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6">
+                  <div class="card-header" style="margin-bottom:6px"><span class="card-title" style="font-size:13px">Slowest Tests</span></div>
+                  ${slowest.map(t => `
+                    <div class="mini-run-row">
+                      <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500">${esc(shortTestLabel(t.name))}</span>
+                      <span class="mini-run-meta"></span>
+                      <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration / 1000).toFixed(1)}s</span>
+                    </div>
+                  `).join('')}
+                </div>` : ''
+              }
+            </section>
+
+            <section class="section card">
+              <div class="card-header">
+                <span class="card-title">Recent Failures</span>
+                <a href="#failures" class="link" style="font-size:12px">View all failures →</a>
+              </div>
+              ${results.length > 0 ? results.slice(0, 6).map((t, i) => `
+                <div class="fail-row">
+                  <div class="fail-hdr" ${t.status === 'failed' ? `onclick="toggleFail('home-${i}')" style="cursor:pointer"` : 'style="cursor:default"'}>
+                    <span class="badge badge-${t.status === 'failed' ? 'fail' : 'passed'}">${t.status === 'failed' ? 'FAIL' : 'PASS'}</span>
+                    <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
+                    <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
+                    ${t.status === 'failed' ? `<span class="fail-chev" id="chev-home-${i}">▼</span>` : ''}
+                  </div>
+                  ${t.status === 'failed' ? `<div class="fail-body" id="fail-body-home-${i}">${esc(t.errorMessage || 'No error message captured.')}</div>` : ''}
+                </div>
+              `).join('') : `<div class="empty-note">No test results for this run.</div>`}
+            </section>
           </div>
         </div>
       `;
@@ -677,8 +704,9 @@
             <td style="color:${run.failed > 0 ? '#dc2626' : 'inherit'}">${run.failed ?? 0}</td>
             <td>${run.timestamp ? new Date(run.timestamp).toLocaleString() : 'N/A'}</td>
             <td>
-              <a href="#run/${i}" class="link">Open</a>
-              <a href="#compare?a=${i}" class="link" style="margin-left:8px">Compare</a>
+              <a href="#run/${i}" class="link">View</a>
+              <a href="#run/${i}#logs" class="link" style="margin-left:8px">Logs</a>
+              <a href="#run/${i}#artifacts" class="link" style="margin-left:8px">Artifacts</a>
               <span class="tag-pill" style="margin-left:8px" onclick="toggleRunBookmark('${esc(runKey)}', this)">${isBookmarked ? '★' : '☆'}</span>
             </td>
           </tr>`;
@@ -724,22 +752,30 @@
     }
 
     // ── Run Details Page ────────────────────────────────────────────────────
-    const resultsCache = {}; // resultsUrl -> full results[] fetched on demand
+    const resultsCache = {}; // runId -> full run payload fetched on demand
 
     function getFullResults(run) {
       if (Array.isArray(run.results)) return run.results;
-      if (run.resultsUrl && resultsCache[run.resultsUrl]) return resultsCache[run.resultsUrl];
+      if (run.resultsCache && Array.isArray(run.resultsCache)) return run.resultsCache;
       return null;
     }
 
     async function loadFullResultsIfNeeded(param) {
       const isLatest = param === 'latest' || param == null;
       const run = isLatest ? latestRun : history[Number(param)];
-      if (!run || getFullResults(run) || !run.resultsUrl) return;
-      const t = Date.now();
-      const data = await fetchJSON([`./${run.resultsUrl}?t=${t}`, `../${run.resultsUrl}?t=${t}`]);
-      if (data && Array.isArray(data.results)) {
-        resultsCache[run.resultsUrl] = data.results;
+      if (!run) return;
+
+      const runId = run.runId || param;
+      if (!runId) return;
+
+      const full = await apiGet(`/api/runs/${runId}`).catch(() => null);
+      if (full && Array.isArray(full.results)) {
+        resultsCache[runId] = full;
+        if (isLatest) latestRun = full;
+        else {
+          const idx = history.findIndex(h => h.runId === runId);
+          if (idx >= 0) history[idx] = full;
+        }
         const cur = getRoute();
         if (cur.page === 'run' && String(cur.param) === String(param)) render();
       }
@@ -779,7 +815,7 @@
         <div class="soon-card">
           ${loadingResults ? 'Loading full result log…<br/>' : ''}
           Per-test console output (stdout/stderr) is shown inline below for failed tests, where captured.
-          For the full job logs, including warnings, open the run on GitHub Actions.
+          For the full job logs, including warnings, open the run on Automation Runner.
           ${run.runUrl ? `<div style="margin-top:10px"><a class="btn btn-secondary" href="${run.runUrl}" target="_blank" rel="noopener">View Full Workflow Logs ↗</a></div>` : ''}
         </div>`;
 
@@ -811,7 +847,7 @@
               <h1 class="page-title">Run ${esc(run.runId || (isLatest ? 'latest' : param))}</h1>
               <p class="page-subtitle">${esc(run.suite || 'Unknown suite')} · ${esc(run.environment || 'N/A')}</p>
             </div>
-            ${run.runUrl ? `<a class="btn btn-secondary" href="${run.runUrl}" target="_blank" rel="noopener">Open on GitHub ↗</a>` : ''}
+            ${run.runUrl ? `<a class="btn btn-secondary" href="${run.runUrl}" target="_blank" rel="noopener">Open execution ↗</a>` : ''}
           </div>
 
           ${contextBar(run, { full: true })}
@@ -924,7 +960,7 @@
               ${(() => { const c = [t.stdout, t.stderr].flat().filter(Boolean).join('\n'); return c
                 ? `<div class="info-row"><span class="info-label">Console</span><span class="info-value" style="font-family:monospace;font-size:11px;white-space:pre-wrap">${esc(c)}</span></div>`
                 : infoRow('Console', 'Nothing captured for this test'); })()}
-              ${latestRun.runUrl ? `<div class="info-row"><span class="info-label">Full logs</span><span class="info-value"><a href="${latestRun.runUrl}" target="_blank" class="link">View workflow logs on GitHub</a></span></div>` : ''}
+              ${latestRun.runUrl ? `<div class="info-row"><span class="info-label">Full logs</span><span class="info-value"><a href="${latestRun.runUrl}" target="_blank" class="link">View execution logs</a></span></div>` : ''}
             </div>
           </div>`;
         }).join('')}
@@ -1020,7 +1056,7 @@
       if (allResults.length === 0) {
         return `<div class="page">
           <h1 class="page-title">Tests</h1>
-          <div class="page-state">No test data yet. Run a suite locally or via GitHub Actions first.</div>
+          <div class="page-state">No test data yet. Run a suite locally or via Automation Runner first.</div>
         </div>`;
       }
 
@@ -1437,7 +1473,7 @@
       return `
         <div class="page">
           <h1 class="page-title">Logs</h1>
-          <p class="page-subtitle">Console output and workflow logs for the last completed run (${esc(latestRun.suite || '')}).</p>
+          <p class="page-subtitle">Console output and execution logs for the last completed run (${esc(latestRun.suite || '')}).</p>
           <section class="section card">
             <div class="card-header"><span class="card-title">Console Output Captured</span><span class="count-badge">${withConsole.length}</span></div>
             ${withConsole.length === 0 ? `<div class="empty-note">No test in this run captured stdout/stderr.</div>` : `
@@ -1467,7 +1503,7 @@
       return `
         <div class="page">
           <h1 class="page-title">Schedules</h1>
-          <p class="page-subtitle">Automated executions configured in the GitHub Actions workflow.</p>
+          <p class="page-subtitle">Automated executions configured in the Automation Runner workflow.</p>
 
           <section class="section card">
             <div class="card-title">Current Schedule</div>
@@ -1481,7 +1517,7 @@
           <section class="section card">
             <div class="card-title">Build a Schedule</div>
             <p style="font-size:12.5px;color:#6b7280;margin:-8px 0 16px">
-              Pick a time below to get the exact cron line to paste into the workflow.
+              Pick a time below to get the exact cron line to use with the runner.
             </p>
             <div class="filter-bar">
               <label>Frequency</label>
@@ -1522,7 +1558,7 @@
         const weekdayField = freq === 'daily' ? '*' : freq === 'weekly' ? (dayEl?.value ?? '1') : '1-5';
         const freqLabel = freq === 'daily' ? 'Every day' : freq === 'weekly' ? dayLabelMap[dayEl?.value ?? '1'] + 's' : 'Weekdays (Mon–Fri)';
 
-        // IST (UTC+5:30) -> UTC, since GitHub Actions cron always runs in UTC.
+        // IST (UTC+5:30) -> UTC, since Automation Runner cron always runs in UTC.
         let totalMinUtc = hour * 60 - 330;
         if (totalMinUtc < 0) totalMinUtc += 1440;
         const hourUtc = Math.floor(totalMinUtc / 60) % 24;
@@ -1538,10 +1574,10 @@
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
             <span class="tag-pill" onclick="copyText(this, '  - cron: \\'${cronExpr}\\'')">- cron: '${cronExpr}'<span class="copy-icon">⎘</span></span>
-            <span class="muted" style="font-size:11.5px">paste under <code>schedule:</code> in run-tests.yml</span>
+            <span class="muted" style="font-size:11.5px">use the same schedule line in the runner config</span>
           </div>
           <div class="soon-card">
-            Available today: the cron timing above. Choosing which suite/environment a schedule targets is <b>available shortly</b>.
+            Available today: the cron timing above. Choosing which suite/environment a schedule targets is now handled by the API and runner.
           </div>
         `;
       }
