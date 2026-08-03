@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QA Automation Platform</title>
+  <title>QE Automation Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
@@ -333,6 +333,11 @@
         Schedules
         <span class="nav-soon">Soon</span>
       </a>
+      <a class="nav-item" data-page="onboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+        Onboard Suite
+        <span class="nav-soon" style="background:#7c3aed;color:#fff">AI</span>
+      </a>
     </nav>
     <main class="app-main" id="main"></main>
   </div>
@@ -411,6 +416,7 @@
       else if (page === 'artifacts')  main.innerHTML = renderArtifacts();
       else if (page === 'bookmarks')  main.innerHTML = renderBookmarks();
       else if (page === 'schedules')  { main.innerHTML = renderSchedules(); wireSchedules(); }
+      else if (page === 'onboard')    { main.innerHTML = renderOnboard(); wireOnboard(); }
       else                            main.innerHTML = renderHome();
     }
 
@@ -583,7 +589,7 @@
           <div class="page-header-row">
             <div>
               <h1 class="page-title">Dashboard</h1>
-              <p class="page-subtitle">Centralized visibility and execution history for automation.</p>
+              <p class="page-subtitle">Shared automation intelligence platform — any team can onboard their own regression suite.</p>
             </div>
             ${runSuitesBtn()}
           </div>
@@ -593,6 +599,8 @@
             <select id="home-suite-select">
               ${suitesAvail.map(s => `<option value="${esc(s)}" ${s === suite ? 'selected' : ''}>${esc(s)}${s === latestRun.suite ? ' (latest overall)' : ''}</option>`).join('')}
             </select>
+            <span class="ctx-badge">${suitesAvail.length} suite${suitesAvail.length !== 1 ? 's' : ''} onboarded</span>
+            <a class="btn btn-theme qa-purple" href="#onboard" style="margin-left:auto">✨ Onboard a Suite</a>
           </div>
 
           <div class="quick-actions section">
@@ -884,6 +892,7 @@
         return `<div class="page">${header}<div class="page-state" style="color:#16a34a">&#10003; No failures in the latest run.</div></div>`;
       }
 
+      const aiInsightsHtml = renderAiInsightsCard(failures);
       const groups = {};
       failures.forEach(t => {
         const key = (t.name || t.title || '').match(/^([a-z]+(?:-[a-z]+)?)-/)?.[1] || 'other';
@@ -930,7 +939,7 @@
         }).join('')}
       `).join('');
 
-      return `<div class="page">${header}<section class="section card">${groupHtml}</section></div>`;
+      return `<div class="page">${header}${aiInsightsHtml}<section class="section card">${groupHtml}</section></div>`;
     }
 
     window.toggleFail = function(id) {
@@ -947,6 +956,47 @@
       if (m.includes('tohavetext') || m.includes('tobe') || m.includes('expected')) return 'Assertion mismatch';
       if (m.includes('network') || m.includes('net::')) return 'Network error';
       return 'Other';
+    }
+
+    // ── AI Failure Insights ──────────────────────────────────────────────────
+    // Rule-based today (deterministic, transparent, no external calls) —
+    // same shape a real LLM classifier would slot into later: same inputs
+    // (error messages), same output (category + plain-English summary).
+    function aiAnalyzeFailures(failures) {
+      if (!failures || failures.length === 0) return null;
+      const categorized = failures.map(f => ({ ...f, category: classifyError(f.errorMessage) }));
+      const counts = {};
+      categorized.forEach(f => { counts[f.category] = (counts[f.category] || 0) + 1; });
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      const [topCategory, topCount] = sorted[0];
+      const dominant = topCount / failures.length >= 0.5 && failures.length > 1;
+      const hint = {
+        'Timeout': 'often points to a slow/unresponsive environment rather than a broken feature',
+        'Network error': 'often points to an environment/connectivity issue rather than a real regression',
+        'Element not found/visible': 'often means a selector or page layout changed',
+        'Assertion mismatch': 'usually means the actual behavior changed vs what the test expects',
+        'Other': 'no clear pattern matched — needs manual triage',
+      }[topCategory] || '';
+      const summary = dominant
+        ? `${topCount} of ${failures.length} failure${failures.length !== 1 ? 's are' : ' is'} "${topCategory}" — ${hint}. Likely one shared root cause rather than ${failures.length} independent bugs.`
+        : `Failures span ${sorted.length} different categories (${sorted.map(([c]) => c).join(', ')}) — likely independent issues, each worth its own look.`;
+      return { summary, dominant, topCategory, breakdown: sorted };
+    }
+
+    function renderAiInsightsCard(failures) {
+      const insight = aiAnalyzeFailures(failures);
+      if (!insight) return '';
+      return `
+        <section class="section card">
+          <div class="card-header">
+            <span class="card-title">🤖 AI Insights</span>
+            <span class="card-meta">rule-based triage today</span>
+          </div>
+          <p style="font-size:13.5px;color:#111827;line-height:1.6;margin-bottom:12px">${esc(insight.summary)}</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            ${insight.breakdown.map(([cat, count]) => `<span class="badge" style="background:#ede9fe;color:#6d28d9">${esc(cat)}: ${count}</span>`).join('')}
+          </div>
+        </section>`;
     }
 
     // ── Bookmarks (localStorage) ────────────────────────────────────────────
@@ -1460,6 +1510,127 @@
         </div>
       `;
     }
+
+    // ── AI Suite Onboarding Copilot ──────────────────────────────────────────
+    // Today: deterministic generation from your inputs (fast, transparent, no
+    // external calls). The same shape is designed to be swapped later for a
+    // real LLM call (e.g. paste your whole test file and let it infer the
+    // locale map / pages instead of typing them) behind a lightweight proxy —
+    // the form and output UI don't need to change when that happens.
+    const LOCALE_NAME = {
+      us: 'United States', gb: 'United Kingdom', de: 'Germany', fr: 'France', jp: 'Japan',
+      kr: 'Korea', in: 'India', es: 'Spain', it: 'Italy', au: 'Australia', ca: 'Canada',
+      mx: 'Mexico', br: 'Brazil', nl: 'Netherlands', se: 'Sweden', cn: 'China', tw: 'Taiwan',
+      pl: 'Poland', tr: 'Turkey', th: 'Thailand', sg: 'Singapore', id: 'Indonesia',
+    };
+
+    function slugify(str) {
+      return String(str || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    function generateSuiteConfig({ teamName, suiteKey, family, testPath, description, locales, pages }) {
+      const key = suiteKey || slugify(teamName) || 'my-suite';
+      const localeCodes = locales.split(',').map(s => slugify(s)).filter(Boolean);
+      const pageList = pages.split(',').map(s => slugify(s)).filter(Boolean);
+      const configFile = { feds: 'configs/feds.config.js', cc: 'configs/cc.config.js', express: 'configs/express-lingo.config.js' }[family] || 'configs/feds.config.js';
+
+      const localeMapLines = localeCodes.length
+        ? localeCodes.map(c => `    ${c}: '@${key}-${c}',`).join('\n')
+        : '    // add locale codes → @suite-locale grep tags here';
+
+      const snippet = `'${key}': {
+  config: ${JSON.stringify(configFile)}, testPath: ${JSON.stringify(testPath || `tests/${family}/${key}.test.js`)}, family: '${family}',
+  description: ${JSON.stringify(description || `${teamName} regression suite`)},
+  localeMap: {
+${localeMapLines}
+  },${pageList.length ? `\n  pages: [${pageList.map(p => `'${p}'`).join(', ')}],` : ''}
+},`;
+
+      const unknownLocales = localeCodes.filter(c => !LOCALE_NAME[c]);
+      return { key, snippet, localeCodes, pageList, unknownLocales };
+    }
+
+    function renderOnboard() {
+      return `
+        <div class="page">
+          <div class="page-header-row">
+            <div>
+              <h1 class="page-title">🤖 AI Suite Onboarding Copilot</h1>
+              <p class="page-subtitle">Any team can bring their own regression suite onto this shared dashboard. Describe it below and get a ready-to-paste config — no need to hand-write the suite entry or ask someone to do it for you.</p>
+            </div>
+          </div>
+
+          <section class="section card">
+            <div class="card-title">Describe Your Suite</div>
+            <div class="filter-bar">
+              <label>Team / Suite Name</label>
+              <input id="ob-team" type="text" placeholder="e.g. Checkout Team" style="flex:1;min-width:180px" />
+              <label>Family</label>
+              <select id="ob-family"><option value="feds">feds</option><option value="cc">cc</option><option value="express">express</option></select>
+            </div>
+            <div class="filter-bar">
+              <label>Test file path</label>
+              <input id="ob-path" type="text" placeholder="tests/feds/checkout.test.js" style="flex:1;min-width:220px" />
+            </div>
+            <div class="filter-bar">
+              <label>Description</label>
+              <input id="ob-desc" type="text" placeholder="What does this suite cover?" style="flex:1;min-width:220px" />
+            </div>
+            <div class="filter-bar">
+              <label>Locales</label>
+              <input id="ob-locales" type="text" placeholder="us, gb, de, jp" style="flex:1;min-width:220px" />
+            </div>
+            <div class="filter-bar">
+              <label>Pages / Features</label>
+              <input id="ob-pages" type="text" placeholder="checkout, cart, payment" style="flex:1;min-width:220px" />
+            </div>
+            <button class="btn btn-primary" onclick="drawOnboardOutput()">✨ Generate Suite Config</button>
+          </section>
+
+          <section class="section" id="ob-output"></section>
+        </div>
+      `;
+    }
+
+    window.drawOnboardOutput = function() {
+      const teamName = document.getElementById('ob-team')?.value || '';
+      const family = document.getElementById('ob-family')?.value || 'feds';
+      const testPath = document.getElementById('ob-path')?.value || '';
+      const description = document.getElementById('ob-desc')?.value || '';
+      const locales = document.getElementById('ob-locales')?.value || '';
+      const pages = document.getElementById('ob-pages')?.value || '';
+      const el = document.getElementById('ob-output');
+      if (!el) return;
+
+      if (!teamName.trim()) {
+        el.innerHTML = `<div class="empty-note">Enter a team/suite name above, then click Generate.</div>`;
+        return;
+      }
+
+      const result = generateSuiteConfig({ teamName, suiteKey: slugify(teamName), family, testPath, description, locales, pages });
+
+      el.innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Generated Config</span>
+            <span class="tag-pill" onclick="copyText(this, ${JSON.stringify(result.snippet)})">Copy<span class="copy-icon">⎘</span></span>
+          </div>
+          <pre style="background:#0f172a;color:#e2e8f0;padding:16px 18px;border-radius:8px;font-size:12px;overflow-x:auto;line-height:1.6">${esc(result.snippet)}</pre>
+          ${result.unknownLocales.length ? `<div class="soon-card" style="margin-top:12px">Locale code${result.unknownLocales.length > 1 ? 's' : ''} <b>${result.unknownLocales.map(esc).join(', ')}</b> aren't in the known list — double-check the grep tag matches how they actually appear in your test titles.</div>` : ''}
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-title">Next Steps</div>
+          <div class="info-grid">
+            ${infoRow('1. Paste config', `Add the block above into configs/suites.js`)}
+            ${infoRow('2. Register the suite', `Add '${result.key}' to the suite dropdown in .github/workflows/run-tests.yml`)}
+            ${infoRow('3. Open a PR', `Once merged, '${result.key}' shows up in Run Suites and this dashboard automatically`)}
+            ${infoRow('4. Optional: schedule it', `Use the Schedules page to pick a recurring time for this suite`)}
+          </div>
+        </div>
+      `;
+    };
+
+    function wireOnboard() {}
 
     // ── Schedules Page (Coming Soon, but shows the real cron) ───────────────
     function renderSchedules() {
