@@ -461,6 +461,30 @@
         render();
       });
       maybeLoadHomeResults();
+      drawHealthSparkline();
+    }
+
+    function drawHealthSparkline() {
+      if (typeof echarts === 'undefined') return;
+      const el = document.getElementById('healthSparkline');
+      const run = getActiveHomeSummary();
+      if (!el || !run) return;
+      const suiteHistory = history.filter(h => h.suite === run.suite).slice(0, 10).reverse();
+      if (suiteHistory.length < 2) {
+        el.innerHTML = '<div class="empty-note" style="height:60px;display:flex;align-items:center;justify-content:center;font-size:11px">Not enough history for a trend yet</div>';
+        return;
+      }
+      const chart = echarts.init(el);
+      chart.setOption({
+        grid: { left: 0, right: 0, top: 4, bottom: 4 },
+        xAxis: { type: 'category', show: false, data: suiteHistory.map((_, i) => i) },
+        yAxis: { type: 'value', show: false, min: 0, max: 100 },
+        tooltip: { trigger: 'axis', formatter: p => `Score: ${p[0].value}` },
+        series: [{
+          type: 'line', data: suiteHistory.map(h => h.qualityScore ?? 0), smooth: true, symbol: 'none',
+          lineStyle: { width: 2, color: '#7c3aed' }, areaStyle: { opacity: 0.15, color: '#7c3aed' },
+        }],
+      });
     }
 
     function getActiveHomeSummary() {
@@ -520,67 +544,158 @@
         ? 'No earlier run of this suite yet'
         : `${deltaLabel(+((total > 0 ? (passed/total)*100 : 0) - prevPassRate).toFixed(1))} pass rate vs previous ${esc(suite)} run`;
 
-      const slowRows = slowest.map(t => `
-        <div class="mini-run-row">
-          <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</span>
-          <span class="mini-run-meta"></span>
-          <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
-        </div>
-      `).join('');
+      // ── Automation Health — aggregate score + trend, scoped to the
+      // selected suite so it's honest (not mixing unrelated suites).
+      const scoreColor = (run.qualityScore ?? 0) >= 85 ? '#16a34a' : (run.qualityScore ?? 0) >= 70 ? '#d97706' : '#dc2626';
+      const suiteScoreHistory = [...sameSuiteHistory].reverse().slice(-10);
+      const healthDeltaTxt = prevRun ? deltaLabel((run.qualityScore ?? 0) - (prevRun.qualityScore ?? 0)) : null;
 
-      const runStatusSection = `
+      const automationHealthSection = `
         <section class="section card">
           <div class="card-header">
-            <span class="card-title">Run Status</span>
+            <span class="card-title">Automation Health<span class="info-tip" title="Weighted score: 60% pass rate + 40% (1 − flaky rate), computed per run for this suite only — never mixed with other suites.">?</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:18px">
+            <div class="score-ring" style="--score-color:${scoreColor};width:84px;height:84px">
+              <span class="score-value" style="color:${scoreColor};font-size:20px">${run.qualityScore ?? 'N/A'}</span>
+              <span class="score-label">/100</span>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:12.5px;color:#6b7280">Quality Score${healthDeltaTxt ? ` · ${healthDeltaTxt} vs previous run` : ''}</div>
+              <div class="chart-container" id="healthSparkline" style="height:60px;margin-top:8px"></div>
+            </div>
+          </div>
+        </section>
+      `;
+
+      // ── Current Operations ───────────────────────────────────────────────
+      const currentOpsSection = `
+        <section class="section card">
+          <div class="card-header"><span class="card-title">Current Operations</span></div>
+          <div style="display:flex;align-items:center;gap:8px;color:#6b7280;font-size:12.5px;margin-bottom:14px">
+            <span class="status-pill status-muted">No active execution</span>
+          </div>
+          <a class="btn btn-secondary" href="${ACTIONS_URL}" target="_blank" rel="noopener">Check Actions run list</a>
+        </section>
+      `;
+
+      // ── Release Readiness — descriptive, scoped to this suite/run only ──
+      const passRateNum = total > 0 ? (passed / total) * 100 : 0;
+      const flakyCount = resultsReady ? activeResults.filter(r => r.status === 'flaky' || r.retry > 0).length : 0;
+      const flakyRateNum = total > 0 ? (flakyCount / total) * 100 : 0;
+      const readinessChecks = [
+        { label: 'No critical failures', ok: failed === 0 },
+        { label: 'Pass rate ≥ 85%', ok: passRateNum >= 85 },
+        { label: 'Flaky rate < 5%', ok: flakyRateNum < 5 },
+      ];
+      const readinessBlockers = readinessChecks.filter(c => !c.ok);
+      const readinessCls = readinessBlockers.length === 0 ? 'release-ready' : 'release-blocked';
+      const readinessTxt = readinessBlockers.length === 0 ? 'READY' : 'BLOCKED';
+
+      const releaseReadinessSection = `
+        <section class="section card">
+          <div class="card-header"><span class="card-title">Release Readiness</span></div>
+          <span class="release-chip ${readinessCls}" style="display:inline-flex;margin-bottom:12px">${readinessTxt}</span>
+          <div style="font-size:12.5px;color:#6b7280">
+            ${readinessBlockers.length === 0
+              ? `All release gates passing for ${esc(suite)}.`
+              : `${readinessBlockers.length} blocker${readinessBlockers.length !== 1 ? 's' : ''}: ${readinessBlockers.map(c => esc(c.label)).join(', ')}.`}
+          </div>
+          <div style="margin-top:10px"><a href="#failures" class="link" style="font-size:12.5px">View failures →</a></div>
+        </section>
+      `;
+
+      // ── Last Completed Run ───────────────────────────────────────────────
+      const lastCompletedSection = `
+        <section class="section card">
+          <div class="card-header">
+            <span class="card-title">Last Completed Run</span>
             ${runStatus}
           </div>
-          <div style="display:flex;align-items:center;gap:8px;color:#6b7280;font-size:12.5px;margin-bottom:16px">
-            <span class="status-pill status-muted">No active execution</span>
-            <span>— check the <a href="${ACTIONS_URL}" target="_blank" class="link">Actions run list</a> for anything currently in flight.</span>
-          </div>
           <div class="info-grid">
+            ${infoRow('Run ID', run.runId || (isGlobalLatest ? 'latest' : 'N/A'))}
             ${infoRow('Suite',        suite)}
             ${infoRow('Environment',  environment)}
             ${infoRow('Browser',      browser)}
             ${infoRow('Duration',     loadingResults ? 'Loading…' : formatDuration(totalMs))}
             ${infoRow('Triggered By', triggeredBy)}
-            ${infoRow('Trend',        trendTxt)}
           </div>
-          <div style="margin-top:14px"><a href="#run/${isGlobalLatest ? 'latest' : history.indexOf(run)}" class="link">Open Run →</a></div>
-
-          ${slowest.length > 0 ? `
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6">
-            <div class="card-header" style="margin-bottom:6px"><span class="card-title" style="font-size:13px">Slowest Tests</span></div>
-            ${slowRows}
-          </div>` : ''}
+          <div style="margin-top:14px"><a href="#run/${isGlobalLatest ? 'latest' : history.indexOf(run)}" class="link">View run details →</a></div>
         </section>
       `;
 
-      const recentResults = resultsReady ? activeResults.slice(0, 6) : [];
-      const resultRows = recentResults.map((t, i) => {
-        const id = `home-${i}`;
-        const isFail = t.status === 'failed';
-        return `
-        <div class="fail-row">
-          <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
-            <span class="badge badge-${isFail ? 'fail' : 'passed'}">${isFail ? 'FAIL' : 'PASS'}</span>
-            <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
-            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
-            ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
-          </div>
-          ${isFail ? `<div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>` : ''}
-        </div>`;
-      }).join('');
-
-      const failuresSection = `
+      // ── Recent Runs — across ALL suites, not just the one selected above.
+      // This is the "total picture" view; the suite selector above only
+      // scopes Automation Health / Release Readiness / Last Completed Run.
+      const recentRunsAll = history.slice(0, 5);
+      const recentRunsSection = `
         <section class="section card">
-          <div class="card-header">
-            <span class="card-title">Recent Results</span>
-            <a href="#failures" class="link" style="font-size:12px">View all failures →</a>
-          </div>
-          ${loadingResults ? `<div class="empty-note">Loading test results…</div>`
-            : recentResults.length > 0 ? resultRows
-            : `<div class="empty-note">No test results for this run.</div>`}
+          <div class="card-header"><span class="card-title">Recent Runs</span><a href="#runs" class="link" style="font-size:12px">View all →</a></div>
+          ${recentRunsAll.length === 0 ? `<div class="empty-note">No runs recorded yet.</div>` : recentRunsAll.map((r, i) => `
+            <div class="mini-run-row">
+              <span class="status-pill ${r.failed > 0 ? 'status-fail' : 'status-pass'}" style="min-width:56px;text-align:center">${r.failed > 0 ? 'Failed' : 'Passed'}</span>
+              <span class="mini-run-suite" style="min-width:90px">${esc(r.suite || 'unknown')}</span>
+              <span class="mini-run-meta">${esc(r.environment || 'N/A')} · ${r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : 'N/A'}</span>
+              <a href="#run/${i}" class="link" style="font-size:12px">Open →</a>
+            </div>
+          `).join('')}
+        </section>
+      `;
+
+      // ── Recent Failures (this suite's latest run) ────────────────────────
+      const recentFailuresList = failures.slice(0, 5);
+      const recentFailuresSection = `
+        <section class="section card">
+          <div class="card-header"><span class="card-title">Recent Failures</span><a href="#failures" class="link" style="font-size:12px">View all →</a></div>
+          ${loadingResults ? `<div class="empty-note">Loading…</div>`
+            : recentFailuresList.length === 0 ? `<div class="empty-note">No failures in this run.</div>`
+            : recentFailuresList.map((t, i) => {
+                const id = `home-fail-${i}`;
+                return `
+                <div class="fail-row">
+                  <div class="fail-hdr" onclick="toggleFail('${id}')" style="cursor:pointer">
+                    <span class="badge badge-fail">FAIL</span>
+                    <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
+                    <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
+                    <span class="fail-chev" id="chev-${id}">▼</span>
+                  </div>
+                  <div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>
+                </div>`;
+              }).join('')}
+        </section>
+      `;
+
+      // ── Slowest Tests (this suite's latest run) ──────────────────────────
+      const slowestSection = `
+        <section class="section card">
+          <div class="card-header"><span class="card-title">Slowest Tests</span><span class="card-meta">this run</span></div>
+          ${slowest.length === 0 ? `<div class="empty-note">No timing data yet.</div>` : slowest.map(t => `
+            <div class="mini-run-row">
+              <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</span>
+              <span class="mini-run-meta"></span>
+              <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
+            </div>
+          `).join('')}
+        </section>
+      `;
+
+      // ── Activity Feed — real, derived from run-history (no fabricated
+      // events like "bookmark added" since we don't timestamp those).
+      const activityItems = history.slice(0, 6).map(r => ({
+        label: `${esc(r.triggeredBy || 'Someone')} ran ${esc(r.suite || 'a suite')}`,
+        detail: `${r.failed > 0 ? `${r.failed} failed` : 'All passed'} · ${esc(r.environment || 'N/A')}`,
+        timestamp: r.timestamp,
+      }));
+      const activityFeedSection = `
+        <section class="section card">
+          <div class="card-header"><span class="card-title">Activity Feed</span><a href="#runs" class="link" style="font-size:12px">View all activity →</a></div>
+          ${activityItems.length === 0 ? `<div class="empty-note">No activity recorded yet.</div>` : activityItems.map(a => `
+            <div class="mini-run-row">
+              <span class="mini-run-suite" style="min-width:220px">${a.label}</span>
+              <span class="mini-run-meta">${a.detail}</span>
+              <span class="muted" style="font-size:11.5px">${a.timestamp ? new Date(a.timestamp).toLocaleString() : 'N/A'}</span>
+            </div>
+          `).join('')}
         </section>
       `;
 
@@ -604,10 +719,10 @@
           </div>
 
           <div class="quick-actions section">
-            ${quickActionBtn('calendar', 'Schedules', '#schedules', false, 'qa-blue')}
-            ${quickActionBtn('chart', 'Analytics', '#analytics', false, 'qa-purple')}
-            ${quickActionBtn('report', 'Latest Run', runUrl, true, 'qa-teal')}
-            ${quickActionBtn('bars', 'Compare Runs', '#compare', false, 'qa-orange')}
+            ${quickActionBtn('sparkle', 'Onboard a Suite (AI)', '#onboard', false, 'qa-purple')}
+            ${quickActionBtn('brain', 'AI Failure Triage', '#failures', false, 'qa-blue')}
+            ${quickActionBtn('flask', 'AI Test Generator', null, false, 'qa-teal', 'Coming soon — generates test code from a description or existing manual test cases')}
+            ${quickActionBtn('heal', 'Self-Healing Tests', null, false, 'qa-orange', 'Coming soon — auto-fixes tests broken by selector/layout drift')}
           </div>
 
           <section class="section kpi-grid">
@@ -619,10 +734,22 @@
             ${kpiCard('Skipped',     skipped, '#6b7280')}
           </section>
 
-          <div class="grid-2">
-            ${runStatusSection}
-            ${failuresSection}
+          <div class="grid-2 section">
+            ${automationHealthSection}
+            ${currentOpsSection}
           </div>
+          <div class="grid-2 section">
+            ${releaseReadinessSection}
+            ${lastCompletedSection}
+          </div>
+
+          <div class="grid-3 section">
+            ${recentRunsSection}
+            ${recentFailuresSection}
+            ${slowestSection}
+          </div>
+
+          ${activityFeedSection}
         </div>
       `;
     }
@@ -633,10 +760,14 @@
       report: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/>',
       bars: '<path d="M8 3v18M16 3v18M3 9h5M16 9h5M3 15h5M16 15h5"/>',
       chart: '<path d="M3 3v18h18"/><path d="M7 16l4-5 3 3 5-7"/>',
+      sparkle: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/>',
+      brain: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18M8 8c1-2 3-2 4 0M16 8c-1-2-3-2-4 0M8 16c1 2 3 2 4 0M16 16c-1 2-3 2-4 0"/>',
+      flask: '<path d="M9 2h6M10 2v6l-6 11a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-6-11V2"/>',
+      heal: '<path d="M19 14l-4.5 4.5a3 3 0 0 1-4.24 0l-.71-.71a3 3 0 0 1 0-4.24L14 9M9 9L4.5 4.5"/><path d="M13 5l1.5-1.5M18 10l1.5-1.5"/>',
     };
-    function quickActionBtn(icon, label, href, external, colorCls = '') {
+    function quickActionBtn(icon, label, href, external, colorCls = '', soonTitle = 'No run URL available for this run') {
       const svg = `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${QUICK_ICONS[icon] || ''}</svg>`;
-      if (!href) return `<span class="btn btn-theme ${colorCls} soon" title="No run URL available for this run">${svg}${esc(label)}</span>`;
+      if (!href) return `<span class="btn btn-theme ${colorCls} soon" title="${esc(soonTitle)}">${svg}${esc(label)}</span>`;
       return `<a class="btn btn-theme ${colorCls}" href="${href}"${external ? ' target="_blank" rel="noopener"' : ''}>${svg}${esc(label)}</a>`;
     }
 
