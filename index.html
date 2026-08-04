@@ -111,6 +111,9 @@
     .btn.on-dark { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #fff; }
     .btn.on-dark:hover { background: rgba(255,255,255,0.2); }
     .btn-theme { padding: 14px 26px; font-size: 14.5px; }
+    .btn-ai { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+    .btn-ai svg { color: #fff; }
+    .btn-ai:hover { background: #6d28d9; border-color: #6d28d9; }
     .btn-theme svg { flex-shrink: 0; }
     .qa-blue    { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
     .qa-blue svg    { color: #60a5fa; }
@@ -417,6 +420,8 @@
       else if (page === 'bookmarks')  main.innerHTML = renderBookmarks();
       else if (page === 'schedules')  { main.innerHTML = renderSchedules(); wireSchedules(); }
       else if (page === 'onboard')    { main.innerHTML = renderOnboard(); wireOnboard(); }
+      else if (page === 'test-generator') main.innerHTML = renderTestGenerator();
+      else if (page === 'self-healing')   main.innerHTML = renderSelfHealing();
       else                            main.innerHTML = renderHome();
     }
 
@@ -715,14 +720,14 @@
               ${suitesAvail.map(s => `<option value="${esc(s)}" ${s === suite ? 'selected' : ''}>${esc(s)}${s === latestRun.suite ? ' (latest overall)' : ''}</option>`).join('')}
             </select>
             <span class="ctx-badge">${suitesAvail.length} suite${suitesAvail.length !== 1 ? 's' : ''} onboarded</span>
-            <a class="btn btn-theme qa-purple" href="#onboard" style="margin-left:auto">✨ Onboard a Suite</a>
+            <span style="margin-left:auto">${quickActionBtn('sparkle', 'Onboard a Suite', '#onboard', false, 'btn-ai')}</span>
           </div>
 
           <div class="quick-actions section">
             ${quickActionBtn('sparkle', 'Onboard a Suite (AI)', '#onboard', false, 'qa-purple')}
             ${quickActionBtn('brain', 'AI Failure Triage', '#failures', false, 'qa-blue')}
-            ${quickActionBtn('flask', 'AI Test Generator', null, false, 'qa-teal', 'Coming soon — generates test code from a description or existing manual test cases')}
-            ${quickActionBtn('heal', 'Self-Healing Tests', null, false, 'qa-orange', 'Coming soon — auto-fixes tests broken by selector/layout drift')}
+            ${quickActionBtn('flask', 'AI Test Generator', '#test-generator', false, 'qa-teal')}
+            ${quickActionBtn('heal', 'Self-Healing Tests', '#self-healing', false, 'qa-orange')}
           </div>
 
           <section class="section kpi-grid">
@@ -1762,6 +1767,54 @@ ${localeMapLines}
     };
 
     function wireOnboard() {}
+
+    // ── AI Test Generator (roadmap page, same pattern as Schedules) ─────────
+    function renderTestGenerator() {
+      return `
+        <div class="page">
+          <h1 class="page-title">⚗️ AI Test Generator</h1>
+          <p class="page-subtitle">Turns a manual test case or a plain-language description of a flow into a working Playwright test, matching this repo's Nala conventions.</p>
+
+          <section class="section card">
+            <div class="card-title">How it will work</div>
+            <div class="info-grid">
+              ${infoRow('Input', 'Paste an existing manual test case (e.g. the CSVs already in test-cases/) or describe a user flow in plain English')}
+              ${infoRow('Processing', 'Claude API call (server-side, inside a GitHub Actions step — never in the browser) generates a Playwright spec + suite config entry')}
+              ${infoRow('Output', 'A draft test file + configs/suites.js entry shown in the dashboard for review — same as the Onboarding Copilot today, a human copies it and opens the PR themselves, no automatic repo writes')}
+              ${infoRow('Requires', "Assumes the target flow is testable via this repo's existing page conventions — full framework translation for a completely different POM is a separate, bigger problem")}
+            </div>
+          </section>
+
+          <section class="section soon-card">
+            Not wired up yet — this needs an Anthropic API key added as a repo secret and a new workflow to call it. The Onboarding Copilot (config-only) is the working slice of this same idea today.
+          </section>
+        </div>
+      `;
+    }
+
+    // ── Self-Healing Tests (roadmap page, same pattern as Schedules) ────────
+    function renderSelfHealing() {
+      return `
+        <div class="page">
+          <h1 class="page-title">🩹 Self-Healing Tests</h1>
+          <p class="page-subtitle">When a test fails because a selector or page layout changed — not because the feature actually broke — AI proposes the fix instead of a human debugging it from scratch.</p>
+
+          <section class="section card">
+            <div class="card-title">How it will work</div>
+            <div class="info-grid">
+              ${infoRow('Trigger', 'A failure classified as "Element not found/visible" by the existing AI Failure Insights logic')}
+              ${infoRow('Analysis', 'Compare the current page structure at failure time against what the test expected')}
+              ${infoRow('Output', 'A suggested selector update shown in the dashboard — a human reviews and applies it themselves; AI never gets automatic write access to the repo')}
+              ${infoRow('Why this category first', "It's already the most common, most mechanical failure type in the data we have — the highest-value place to start")}
+            </div>
+          </section>
+
+          <section class="section soon-card">
+            Not wired up yet — needs DOM capture at failure time (not currently recorded) plus the same AI call pattern as the Test Generator. The failure categorization it depends on is already live today in AI Failure Insights.
+          </section>
+        </div>
+      `;
+    }
 
     // ── Schedules Page (Coming Soon, but shows the real cron) ───────────────
     function renderSchedules() {
