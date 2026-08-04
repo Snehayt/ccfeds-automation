@@ -420,8 +420,8 @@
       else if (page === 'bookmarks')  main.innerHTML = renderBookmarks();
       else if (page === 'schedules')  { main.innerHTML = renderSchedules(); wireSchedules(); }
       else if (page === 'onboard')    { main.innerHTML = renderOnboard(); wireOnboard(); }
-      else if (page === 'test-generator') main.innerHTML = renderTestGenerator();
-      else if (page === 'self-healing')   main.innerHTML = renderSelfHealing();
+      else if (page === 'test-generator') { main.innerHTML = renderTestGenerator(); wireTestGenerator(); }
+      else if (page === 'self-healing')   { main.innerHTML = renderSelfHealing(); wireSelfHealing(); }
       else                            main.innerHTML = renderHome();
     }
 
@@ -1663,6 +1663,17 @@
       return String(str || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     }
 
+    // Parses this repo's real test-name convention, e.g.
+    // "unav-us-cc-plans | United States | cc-plans," ->
+    // { shortSuite: 'unav', locale: 'us', pageSlug: 'cc-plans' }
+    function parseTestName(name) {
+      if (!name) return null;
+      const firstPart = String(name).split('|')[0].trim();
+      const tokens = firstPart.split('-');
+      if (tokens.length < 3) return null;
+      return { shortSuite: tokens[0], locale: tokens[1], pageSlug: tokens.slice(2).join('-') };
+    }
+
     function generateSuiteConfig({ teamName, suiteKey, family, testPath, description, locales, pages }) {
       const key = suiteKey || slugify(teamName) || 'my-suite';
       const localeCodes = locales.split(',').map(s => slugify(s)).filter(Boolean);
@@ -1775,14 +1786,6 @@ ${localeMapLines}
           <p class="page-subtitle">For a suite that's already onboarded, when a new page or feature is added, generate a test case that fits the suite's existing pattern — not a blank-slate generation problem.</p>
 
           <section class="section card">
-            <div class="card-title">Why this is different from "generate any test from scratch"</div>
-            <p style="font-size:13px;color:#374151;line-height:1.7">
-              An already-onboarded suite (e.g. <code>feds-unav</code>) already has a real test file in this repo with dozens of near-identical test blocks — one per page/locale, all following the exact same structure.
-              That's a much safer starting point than asking AI to invent conventions for code it's never seen: it's pattern-matching against real, existing examples in the same file, not translating an unknown framework.
-            </p>
-          </section>
-
-          <section class="section card">
             <div class="card-title">How it will work</div>
             <div class="info-grid">
               ${infoRow('Trigger', "A new page/feature is added to a suite that's already onboarded — the common case, not a brand-new team with zero test code")}
@@ -1793,12 +1796,57 @@ ${localeMapLines}
             </div>
           </section>
 
+          <section class="section card">
+            <div class="card-title">Try the concept</div>
+            <p style="font-size:12.5px;color:#6b7280;margin-bottom:14px">
+              Uses the real naming pattern from tests already in the latest loaded run — not AI-generated, but a genuine preview of what the generator's output would look like, grounded in this suite's actual convention.
+            </p>
+            <div class="filter-bar">
+              <label>New page/feature</label>
+              <input id="tg-page" type="text" placeholder="e.g. acrobat-teams" style="flex:1;min-width:180px" />
+              <label>Locale</label>
+              <input id="tg-locale" type="text" placeholder="us" value="us" style="max-width:100px" />
+            </div>
+            <button class="btn btn-primary" onclick="drawTestGeneratorPreview()">Preview Test Entry</button>
+            <div id="tg-output" style="margin-top:14px"></div>
+          </section>
+
           <section class="section soon-card">
-            Not wired up yet. The Onboarding Copilot (suite-level config generation) is the working slice of this same idea today — this extends the same approach one level down, to individual test cases within an already-onboarded suite.
+            The preview above is real templating from real data — what's not wired up yet is committing it anywhere. The Onboarding Copilot (suite-level config generation) is the working slice of this same idea today; this extends it one level down, to individual test cases within an already-onboarded suite.
           </section>
         </div>
       `;
     }
+
+    function wireTestGenerator() {}
+
+    window.drawTestGeneratorPreview = function() {
+      const page = slugify(document.getElementById('tg-page')?.value || '');
+      const locale = slugify(document.getElementById('tg-locale')?.value || 'us');
+      const outEl = document.getElementById('tg-output');
+      if (!outEl) return;
+
+      if (!page) { outEl.innerHTML = `<div class="empty-note">Enter a page/feature name above first.</div>`; return; }
+
+      const sample = (latestRun?.results || []).map(r => parseTestName(r.name)).find(Boolean);
+      if (!sample) {
+        outEl.innerHTML = `<div class="empty-note">No loaded run has a recognizable test-name pattern to reference yet.</div>`;
+        return;
+      }
+
+      const countryName = LOCALE_NAME[locale] || locale.toUpperCase();
+      const newTitle = `${sample.shortSuite}-${locale}-${page} | ${countryName} | ${page},`;
+      const grepTag = `@${sample.shortSuite}-${locale}-${page}`;
+      const pagesLine = `'${page}'`;
+
+      outEl.innerHTML = `
+        <div style="background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12px;overflow-x:auto;line-height:1.8">
+          <div class="muted" style="color:#94a3b8;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Preview — based on ${esc(latestRun.suite || 'this suite')}'s real naming pattern</div>
+          Test title: ${esc(newTitle)}<br/>
+          Grep tag: ${esc(grepTag)}<br/>
+          Add to configs/suites.js pages array: ${esc(pagesLine)}
+        </div>`;
+    };
 
     // ── Self-Healing Tests (roadmap page, same pattern as Schedules) ────────
     function renderSelfHealing() {
@@ -1806,14 +1854,6 @@ ${localeMapLines}
         <div class="page">
           <h1 class="page-title">🩹 Self-Healing Tests</h1>
           <p class="page-subtitle">When one test in an onboarded suite fails on a selector/layout change while its near-identical siblings still pass, compare it against those siblings to spot the fix — instead of needing new DOM-capture infrastructure that doesn't exist yet.</p>
-
-          <section class="section card">
-            <div class="card-title">Why this is different from "capture the DOM and ask AI to diff it"</div>
-            <p style="font-size:13px;color:#374151;line-height:1.7">
-              Suites like <code>feds-unav</code> run the same test structure across many locales and pages. If the test for one page fails with "Element not found" while the identical test structure for other locales/pages of the same feature still passes,
-              that's a strong signal the fix is visible in those still-passing siblings — no need to capture and reason about live page state, which isn't something this pipeline records today.
-            </p>
-          </section>
 
           <section class="section card">
             <div class="card-title">How it will work</div>
@@ -1826,10 +1866,71 @@ ${localeMapLines}
             </div>
           </section>
 
+          <section class="section card">
+            <div class="card-title">Try the concept</div>
+            <p style="font-size:12.5px;color:#6b7280;margin-bottom:14px">
+              Pick a real failure from the latest run. This finds its actual currently-passing siblings from the same run — real data, no fabrication. Suggesting the exact selector fix is the part still to be built.
+            </p>
+            <div class="filter-bar">
+              <label>Failing test</label>
+              <select id="sh-test" style="flex:1;min-width:260px"></select>
+            </div>
+            <div id="sh-output" style="margin-top:10px"></div>
+          </section>
+
           <section class="section soon-card">
-            Not wired up yet — needs the sibling-comparison logic itself to be built. It depends on failure categorization, which is already live today in AI Failure Insights, and doesn't require any new data capture beyond what a run already produces.
+            The sibling comparison above uses real data from the loaded run. What's not built yet is the part that reads the diff and proposes an actual selector fix — that's the piece that needs new logic (or an AI call) written.
           </section>
         </div>
+      `;
+    }
+
+    function wireSelfHealing() {
+      const sel = document.getElementById('sh-test');
+      if (!sel) return;
+      const failures = (latestRun?.results || []).filter(r => r.status === 'failed');
+      if (failures.length === 0) {
+        sel.innerHTML = `<option value="">No failures in the latest run</option>`;
+        sel.disabled = true;
+        return;
+      }
+      sel.innerHTML = failures.map((t, i) => `<option value="${i}">${esc(shortTestLabel(t.name))}</option>`).join('');
+      sel.addEventListener('change', drawSiblingComparison);
+      drawSiblingComparison();
+    }
+
+    function drawSiblingComparison() {
+      const sel = document.getElementById('sh-test');
+      const outEl = document.getElementById('sh-output');
+      if (!sel || !outEl) return;
+      const failures = (latestRun?.results || []).filter(r => r.status === 'failed');
+      const failing = failures[Number(sel.value)];
+      if (!failing) { outEl.innerHTML = ''; return; }
+
+      const parsed = parseTestName(failing.name);
+      if (!parsed) {
+        outEl.innerHTML = `<div class="empty-note">This test's name doesn't match the recognizable page/locale pattern.</div>`;
+        return;
+      }
+
+      const siblings = (latestRun.results || []).filter(r => {
+        if (r.name === failing.name || r.status !== 'passed') return false;
+        const p = parseTestName(r.name);
+        return p && p.pageSlug === parsed.pageSlug && p.shortSuite === parsed.shortSuite;
+      });
+
+      outEl.innerHTML = `
+        <div class="info-grid" style="margin-bottom:10px">
+          ${infoRow('Failing', shortTestLabel(failing.name))}
+          ${infoRow('Error', firstErrorLine(failing.errorMessage))}
+          ${infoRow('Page/feature', parsed.pageSlug)}
+        </div>
+        <div class="card-title" style="font-size:13px">Currently-passing siblings (same page, different locale)</div>
+        ${siblings.length === 0
+          ? `<div class="empty-note">No passing sibling found in this run for "${esc(parsed.pageSlug)}" — likely means every locale of this feature is failing, not just one, which itself is a useful signal (probably a real regression, not a locale-specific fluke).</div>`
+          : `<table class="data-table"><thead><tr><th>Locale</th><th>Test</th><th>Status</th></tr></thead><tbody>
+              ${siblings.map(s => { const p = parseTestName(s.name); return `<tr><td>${esc(p?.locale || 'N/A')}</td><td class="test-name">${esc(shortTestLabel(s.name))}</td><td><span class="badge badge-passed">passed</span></td></tr>`; }).join('')}
+            </tbody></table>`}
       `;
     }
 
