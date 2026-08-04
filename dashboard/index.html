@@ -1772,20 +1772,29 @@ ${localeMapLines}
       return `
         <div class="page">
           <h1 class="page-title">⚗️ AI Test Generator</h1>
-          <p class="page-subtitle">Turns a manual test case or a plain-language description of a flow into a working Playwright test, matching this repo's Nala conventions.</p>
+          <p class="page-subtitle">For a suite that's already onboarded, when a new page or feature is added, generate a test case that fits the suite's existing pattern — not a blank-slate generation problem.</p>
+
+          <section class="section card">
+            <div class="card-title">Why this is different from "generate any test from scratch"</div>
+            <p style="font-size:13px;color:#374151;line-height:1.7">
+              An already-onboarded suite (e.g. <code>feds-unav</code>) already has a real test file in this repo with dozens of near-identical test blocks — one per page/locale, all following the exact same structure.
+              That's a much safer starting point than asking AI to invent conventions for code it's never seen: it's pattern-matching against real, existing examples in the same file, not translating an unknown framework.
+            </p>
+          </section>
 
           <section class="section card">
             <div class="card-title">How it will work</div>
             <div class="info-grid">
-              ${infoRow('Input', 'Paste an existing manual test case (e.g. the CSVs already in test-cases/) or describe a user flow in plain English')}
-              ${infoRow('Processing', 'Claude API call (server-side, inside a GitHub Actions step — never in the browser) generates a Playwright spec + suite config entry')}
-              ${infoRow('Output', 'A draft test file + configs/suites.js entry shown in the dashboard for review — same as the Onboarding Copilot today, a human copies it and opens the PR themselves, no automatic repo writes')}
-              ${infoRow('Requires', "Assumes the target flow is testable via this repo's existing page conventions — full framework translation for a completely different POM is a separate, bigger problem")}
+              ${infoRow('Trigger', "A new page/feature is added to a suite that's already onboarded — the common case, not a brand-new team with zero test code")}
+              ${infoRow('Input', 'Which suite, and the name of the new page/feature (e.g. "add photoshop-teams to feds-unav") — everything else is already known from the suite\'s existing config')}
+              ${infoRow('Reference', "The suite's existing test file — its real, current test blocks are the pattern to match")}
+              ${infoRow('Processing', 'Because these blocks are so repetitive, simple rule-based templating may fully handle the common case; an LLM call is only needed for suites whose tests vary more per page')}
+              ${infoRow('Output', "One new test block + one new line in configs/suites.js's pages array, shown in the dashboard for review — a human copies it and commits it themselves, no automatic repo writes")}
             </div>
           </section>
 
           <section class="section soon-card">
-            Not wired up yet — this needs an Anthropic API key added as a repo secret and a new workflow to call it. The Onboarding Copilot (config-only) is the working slice of this same idea today.
+            Not wired up yet. The Onboarding Copilot (suite-level config generation) is the working slice of this same idea today — this extends the same approach one level down, to individual test cases within an already-onboarded suite.
           </section>
         </div>
       `;
@@ -1796,20 +1805,29 @@ ${localeMapLines}
       return `
         <div class="page">
           <h1 class="page-title">🩹 Self-Healing Tests</h1>
-          <p class="page-subtitle">When a test fails because a selector or page layout changed — not because the feature actually broke — AI proposes the fix instead of a human debugging it from scratch.</p>
+          <p class="page-subtitle">When one test in an onboarded suite fails on a selector/layout change while its near-identical siblings still pass, compare it against those siblings to spot the fix — instead of needing new DOM-capture infrastructure that doesn't exist yet.</p>
+
+          <section class="section card">
+            <div class="card-title">Why this is different from "capture the DOM and ask AI to diff it"</div>
+            <p style="font-size:13px;color:#374151;line-height:1.7">
+              Suites like <code>feds-unav</code> run the same test structure across many locales and pages. If the test for one page fails with "Element not found" while the identical test structure for other locales/pages of the same feature still passes,
+              that's a strong signal the fix is visible in those still-passing siblings — no need to capture and reason about live page state, which isn't something this pipeline records today.
+            </p>
+          </section>
 
           <section class="section card">
             <div class="card-title">How it will work</div>
             <div class="info-grid">
-              ${infoRow('Trigger', 'A failure classified as "Element not found/visible" by the existing AI Failure Insights logic')}
-              ${infoRow('Analysis', 'Compare the current page structure at failure time against what the test expected')}
-              ${infoRow('Output', 'A suggested selector update shown in the dashboard — a human reviews and applies it themselves; AI never gets automatic write access to the repo')}
+              ${infoRow('Trigger', 'A failure classified as "Element not found/visible" by the existing AI Failure Insights logic — already live today')}
+              ${infoRow('Reference', "Other currently-passing tests in the same suite/run that exercise the same page or feature for a different locale — real, working examples already sitting in the run's own data")}
+              ${infoRow('Analysis', "Compare the failing test's selector/expectation against those passing siblings to spot what likely drifted")}
+              ${infoRow('Output', 'A suggested selector update shown in the dashboard for review — a human applies it themselves; AI never gets automatic write access to the repo')}
               ${infoRow('Why this category first', "It's already the most common, most mechanical failure type in the data we have — the highest-value place to start")}
             </div>
           </section>
 
           <section class="section soon-card">
-            Not wired up yet — needs DOM capture at failure time (not currently recorded) plus the same AI call pattern as the Test Generator. The failure categorization it depends on is already live today in AI Failure Insights.
+            Not wired up yet — needs the sibling-comparison logic itself to be built. It depends on failure categorization, which is already live today in AI Failure Insights, and doesn't require any new data capture beyond what a run already produces.
           </section>
         </div>
       `;
