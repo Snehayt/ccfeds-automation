@@ -720,7 +720,7 @@
               ${suitesAvail.map(s => `<option value="${esc(s)}" ${s === suite ? 'selected' : ''}>${esc(s)}${s === latestRun.suite ? ' (latest overall)' : ''}</option>`).join('')}
             </select>
             <span class="ctx-badge">${suitesAvail.length} suite${suitesAvail.length !== 1 ? 's' : ''} onboarded</span>
-            <span style="margin-left:auto">${quickActionBtn('sparkle', 'Onboard a Suite', '#onboard', false, 'btn-ai')}</span>
+            <span style="margin-left:auto">${quickActionBtn('sparkle', 'Onboard a Suite', '#onboard', false, 'qa-purple')}</span>
           </div>
 
           <div class="quick-actions section">
