@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QE Automation Platform</title>
+  <title>QA Automation Platform</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
@@ -111,9 +111,6 @@
     .btn.on-dark { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #fff; }
     .btn.on-dark:hover { background: rgba(255,255,255,0.2); }
     .btn-theme { padding: 14px 26px; font-size: 14.5px; }
-    .btn-ai { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-    .btn-ai svg { color: #fff; }
-    .btn-ai:hover { background: #6d28d9; border-color: #6d28d9; }
     .btn-theme svg { flex-shrink: 0; }
     .qa-blue    { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
     .qa-blue svg    { color: #60a5fa; }
@@ -336,11 +333,6 @@
         Schedules
         <span class="nav-soon">Soon</span>
       </a>
-      <a class="nav-item" data-page="onboard">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
-        Onboard Suite
-        <span class="nav-soon" style="background:#7c3aed;color:#fff">AI</span>
-      </a>
     </nav>
     <main class="app-main" id="main"></main>
   </div>
@@ -419,9 +411,6 @@
       else if (page === 'artifacts')  main.innerHTML = renderArtifacts();
       else if (page === 'bookmarks')  main.innerHTML = renderBookmarks();
       else if (page === 'schedules')  { main.innerHTML = renderSchedules(); wireSchedules(); }
-      else if (page === 'onboard')    { main.innerHTML = renderOnboard(); wireOnboard(); }
-      else if (page === 'test-generator') { main.innerHTML = renderTestGenerator(); wireTestGenerator(); }
-      else if (page === 'self-healing')   { main.innerHTML = renderSelfHealing(); wireSelfHealing(); }
       else                            main.innerHTML = renderHome();
     }
 
@@ -466,30 +455,6 @@
         render();
       });
       maybeLoadHomeResults();
-      drawHealthSparkline();
-    }
-
-    function drawHealthSparkline() {
-      if (typeof echarts === 'undefined') return;
-      const el = document.getElementById('healthSparkline');
-      const run = getActiveHomeSummary();
-      if (!el || !run) return;
-      const suiteHistory = history.filter(h => h.suite === run.suite).slice(0, 10).reverse();
-      if (suiteHistory.length < 2) {
-        el.innerHTML = '<div class="empty-note" style="height:60px;display:flex;align-items:center;justify-content:center;font-size:11px">Not enough history for a trend yet</div>';
-        return;
-      }
-      const chart = echarts.init(el);
-      chart.setOption({
-        grid: { left: 0, right: 0, top: 4, bottom: 4 },
-        xAxis: { type: 'category', show: false, data: suiteHistory.map((_, i) => i) },
-        yAxis: { type: 'value', show: false, min: 0, max: 100 },
-        tooltip: { trigger: 'axis', formatter: p => `Score: ${p[0].value}` },
-        series: [{
-          type: 'line', data: suiteHistory.map(h => h.qualityScore ?? 0), smooth: true, symbol: 'none',
-          lineStyle: { width: 2, color: '#7c3aed' }, areaStyle: { opacity: 0.15, color: '#7c3aed' },
-        }],
-      });
     }
 
     function getActiveHomeSummary() {
@@ -549,158 +514,67 @@
         ? 'No earlier run of this suite yet'
         : `${deltaLabel(+((total > 0 ? (passed/total)*100 : 0) - prevPassRate).toFixed(1))} pass rate vs previous ${esc(suite)} run`;
 
-      // ── Automation Health — aggregate score + trend, scoped to the
-      // selected suite so it's honest (not mixing unrelated suites).
-      const scoreColor = (run.qualityScore ?? 0) >= 85 ? '#16a34a' : (run.qualityScore ?? 0) >= 70 ? '#d97706' : '#dc2626';
-      const suiteScoreHistory = [...sameSuiteHistory].reverse().slice(-10);
-      const healthDeltaTxt = prevRun ? deltaLabel((run.qualityScore ?? 0) - (prevRun.qualityScore ?? 0)) : null;
+      const slowRows = slowest.map(t => `
+        <div class="mini-run-row">
+          <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</span>
+          <span class="mini-run-meta"></span>
+          <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
+        </div>
+      `).join('');
 
-      const automationHealthSection = `
+      const runStatusSection = `
         <section class="section card">
           <div class="card-header">
-            <span class="card-title">Automation Health<span class="info-tip" title="Weighted score: 60% pass rate + 40% (1 − flaky rate), computed per run for this suite only — never mixed with other suites.">?</span></span>
-          </div>
-          <div style="display:flex;align-items:center;gap:18px">
-            <div class="score-ring" style="--score-color:${scoreColor};width:84px;height:84px">
-              <span class="score-value" style="color:${scoreColor};font-size:20px">${run.qualityScore ?? 'N/A'}</span>
-              <span class="score-label">/100</span>
-            </div>
-            <div style="flex:1">
-              <div style="font-size:12.5px;color:#6b7280">Quality Score${healthDeltaTxt ? ` · ${healthDeltaTxt} vs previous run` : ''}</div>
-              <div class="chart-container" id="healthSparkline" style="height:60px;margin-top:8px"></div>
-            </div>
-          </div>
-        </section>
-      `;
-
-      // ── Current Operations ───────────────────────────────────────────────
-      const currentOpsSection = `
-        <section class="section card">
-          <div class="card-header"><span class="card-title">Current Operations</span></div>
-          <div style="display:flex;align-items:center;gap:8px;color:#6b7280;font-size:12.5px;margin-bottom:14px">
-            <span class="status-pill status-muted">No active execution</span>
-          </div>
-          <a class="btn btn-secondary" href="${ACTIONS_URL}" target="_blank" rel="noopener">Check Actions run list</a>
-        </section>
-      `;
-
-      // ── Release Readiness — descriptive, scoped to this suite/run only ──
-      const passRateNum = total > 0 ? (passed / total) * 100 : 0;
-      const flakyCount = resultsReady ? activeResults.filter(r => r.status === 'flaky' || r.retry > 0).length : 0;
-      const flakyRateNum = total > 0 ? (flakyCount / total) * 100 : 0;
-      const readinessChecks = [
-        { label: 'No critical failures', ok: failed === 0 },
-        { label: 'Pass rate ≥ 85%', ok: passRateNum >= 85 },
-        { label: 'Flaky rate < 5%', ok: flakyRateNum < 5 },
-      ];
-      const readinessBlockers = readinessChecks.filter(c => !c.ok);
-      const readinessCls = readinessBlockers.length === 0 ? 'release-ready' : 'release-blocked';
-      const readinessTxt = readinessBlockers.length === 0 ? 'READY' : 'BLOCKED';
-
-      const releaseReadinessSection = `
-        <section class="section card">
-          <div class="card-header"><span class="card-title">Release Readiness</span></div>
-          <span class="release-chip ${readinessCls}" style="display:inline-flex;margin-bottom:12px">${readinessTxt}</span>
-          <div style="font-size:12.5px;color:#6b7280">
-            ${readinessBlockers.length === 0
-              ? `All release gates passing for ${esc(suite)}.`
-              : `${readinessBlockers.length} blocker${readinessBlockers.length !== 1 ? 's' : ''}: ${readinessBlockers.map(c => esc(c.label)).join(', ')}.`}
-          </div>
-          <div style="margin-top:10px"><a href="#failures" class="link" style="font-size:12.5px">View failures →</a></div>
-        </section>
-      `;
-
-      // ── Last Completed Run ───────────────────────────────────────────────
-      const lastCompletedSection = `
-        <section class="section card">
-          <div class="card-header">
-            <span class="card-title">Last Completed Run</span>
+            <span class="card-title">Run Status</span>
             ${runStatus}
           </div>
+          <div style="display:flex;align-items:center;gap:8px;color:#6b7280;font-size:12.5px;margin-bottom:16px">
+            <span class="status-pill status-muted">No active execution</span>
+            <span>— check the <a href="${ACTIONS_URL}" target="_blank" class="link">Actions run list</a> for anything currently in flight.</span>
+          </div>
           <div class="info-grid">
-            ${infoRow('Run ID', run.runId || (isGlobalLatest ? 'latest' : 'N/A'))}
             ${infoRow('Suite',        suite)}
             ${infoRow('Environment',  environment)}
             ${infoRow('Browser',      browser)}
             ${infoRow('Duration',     loadingResults ? 'Loading…' : formatDuration(totalMs))}
             ${infoRow('Triggered By', triggeredBy)}
+            ${infoRow('Trend',        trendTxt)}
           </div>
-          <div style="margin-top:14px"><a href="#run/${isGlobalLatest ? 'latest' : history.indexOf(run)}" class="link">View run details →</a></div>
+          <div style="margin-top:14px"><a href="#run/${isGlobalLatest ? 'latest' : history.indexOf(run)}" class="link">Open Run →</a></div>
+
+          ${slowest.length > 0 ? `
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f3f4f6">
+            <div class="card-header" style="margin-bottom:6px"><span class="card-title" style="font-size:13px">Slowest Tests</span></div>
+            ${slowRows}
+          </div>` : ''}
         </section>
       `;
 
-      // ── Recent Runs — across ALL suites, not just the one selected above.
-      // This is the "total picture" view; the suite selector above only
-      // scopes Automation Health / Release Readiness / Last Completed Run.
-      const recentRunsAll = history.slice(0, 5);
-      const recentRunsSection = `
-        <section class="section card">
-          <div class="card-header"><span class="card-title">Recent Runs</span><a href="#runs" class="link" style="font-size:12px">View all →</a></div>
-          ${recentRunsAll.length === 0 ? `<div class="empty-note">No runs recorded yet.</div>` : recentRunsAll.map((r, i) => `
-            <div class="mini-run-row">
-              <span class="status-pill ${r.failed > 0 ? 'status-fail' : 'status-pass'}" style="min-width:56px;text-align:center">${r.failed > 0 ? 'Failed' : 'Passed'}</span>
-              <span class="mini-run-suite" style="min-width:90px">${esc(r.suite || 'unknown')}</span>
-              <span class="mini-run-meta">${esc(r.environment || 'N/A')} · ${r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : 'N/A'}</span>
-              <a href="#run/${i}" class="link" style="font-size:12px">Open →</a>
-            </div>
-          `).join('')}
-        </section>
-      `;
+      const recentResults = resultsReady ? activeResults.slice(0, 6) : [];
+      const resultRows = recentResults.map((t, i) => {
+        const id = `home-${i}`;
+        const isFail = t.status === 'failed';
+        return `
+        <div class="fail-row">
+          <div class="fail-hdr" ${isFail ? `onclick="toggleFail('${id}')" style="cursor:pointer"` : 'style="cursor:default"'}>
+            <span class="badge badge-${isFail ? 'fail' : 'passed'}">${isFail ? 'FAIL' : 'PASS'}</span>
+            <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
+            <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
+            ${isFail ? `<span class="fail-chev" id="chev-${id}">▼</span>` : ''}
+          </div>
+          ${isFail ? `<div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>` : ''}
+        </div>`;
+      }).join('');
 
-      // ── Recent Failures (this suite's latest run) ────────────────────────
-      const recentFailuresList = failures.slice(0, 5);
-      const recentFailuresSection = `
+      const failuresSection = `
         <section class="section card">
-          <div class="card-header"><span class="card-title">Recent Failures</span><a href="#failures" class="link" style="font-size:12px">View all →</a></div>
-          ${loadingResults ? `<div class="empty-note">Loading…</div>`
-            : recentFailuresList.length === 0 ? `<div class="empty-note">No failures in this run.</div>`
-            : recentFailuresList.map((t, i) => {
-                const id = `home-fail-${i}`;
-                return `
-                <div class="fail-row">
-                  <div class="fail-hdr" onclick="toggleFail('${id}')" style="cursor:pointer">
-                    <span class="badge badge-fail">FAIL</span>
-                    <span class="fail-name" title="${esc(t.name)}">${esc(shortTestLabel(t.name || t.title))}</span>
-                    <span class="muted" style="margin-left:auto">${t.duration ? (t.duration/1000).toFixed(1)+'s' : 'N/A'}</span>
-                    <span class="fail-chev" id="chev-${id}">▼</span>
-                  </div>
-                  <div class="fail-body" id="fail-body-${id}">${esc(t.errorMessage || 'No error message captured.')}</div>
-                </div>`;
-              }).join('')}
-        </section>
-      `;
-
-      // ── Slowest Tests (this suite's latest run) ──────────────────────────
-      const slowestSection = `
-        <section class="section card">
-          <div class="card-header"><span class="card-title">Slowest Tests</span><span class="card-meta">this run</span></div>
-          ${slowest.length === 0 ? `<div class="empty-note">No timing data yet.</div>` : slowest.map(t => `
-            <div class="mini-run-row">
-              <span class="mini-run-suite" style="font-family:monospace;font-size:12px;font-weight:500" title="${esc(t.name)}">${esc(shortTestLabel(t.name))}</span>
-              <span class="mini-run-meta"></span>
-              <span style="font-weight:600;color:${t.duration > 15000 ? '#dc2626' : t.duration > 8000 ? '#d97706' : '#374151'}">${(t.duration/1000).toFixed(1)}s</span>
-            </div>
-          `).join('')}
-        </section>
-      `;
-
-      // ── Activity Feed — real, derived from run-history (no fabricated
-      // events like "bookmark added" since we don't timestamp those).
-      const activityItems = history.slice(0, 6).map(r => ({
-        label: `${esc(r.triggeredBy || 'Someone')} ran ${esc(r.suite || 'a suite')}`,
-        detail: `${r.failed > 0 ? `${r.failed} failed` : 'All passed'} · ${esc(r.environment || 'N/A')}`,
-        timestamp: r.timestamp,
-      }));
-      const activityFeedSection = `
-        <section class="section card">
-          <div class="card-header"><span class="card-title">Activity Feed</span><a href="#runs" class="link" style="font-size:12px">View all activity →</a></div>
-          ${activityItems.length === 0 ? `<div class="empty-note">No activity recorded yet.</div>` : activityItems.map(a => `
-            <div class="mini-run-row">
-              <span class="mini-run-suite" style="min-width:220px">${a.label}</span>
-              <span class="mini-run-meta">${a.detail}</span>
-              <span class="muted" style="font-size:11.5px">${a.timestamp ? new Date(a.timestamp).toLocaleString() : 'N/A'}</span>
-            </div>
-          `).join('')}
+          <div class="card-header">
+            <span class="card-title">Recent Results</span>
+            <a href="#failures" class="link" style="font-size:12px">View all failures →</a>
+          </div>
+          ${loadingResults ? `<div class="empty-note">Loading test results…</div>`
+            : recentResults.length > 0 ? resultRows
+            : `<div class="empty-note">No test results for this run.</div>`}
         </section>
       `;
 
@@ -709,7 +583,7 @@
           <div class="page-header-row">
             <div>
               <h1 class="page-title">Dashboard</h1>
-              <p class="page-subtitle">Shared automation intelligence platform — any team can onboard their own regression suite.</p>
+              <p class="page-subtitle">Centralized visibility and execution history for automation.</p>
             </div>
             ${runSuitesBtn()}
           </div>
@@ -719,14 +593,13 @@
             <select id="home-suite-select">
               ${suitesAvail.map(s => `<option value="${esc(s)}" ${s === suite ? 'selected' : ''}>${esc(s)}${s === latestRun.suite ? ' (latest overall)' : ''}</option>`).join('')}
             </select>
-            <span class="ctx-badge">${suitesAvail.length} suite${suitesAvail.length !== 1 ? 's' : ''} onboarded</span>
           </div>
 
           <div class="quick-actions section">
-            ${quickActionBtn('sparkle', 'Onboard a Suite (AI)', '#onboard', false, 'qa-purple')}
-            ${quickActionBtn('brain', 'AI Failure Triage', '#failures', false, 'qa-blue')}
-            ${quickActionBtn('flask', 'AI Test Generator', '#test-generator', false, 'qa-teal')}
-            ${quickActionBtn('heal', 'Self-Healing Tests', '#self-healing', false, 'qa-orange')}
+            ${quickActionBtn('calendar', 'Schedules', '#schedules', false, 'qa-blue')}
+            ${quickActionBtn('chart', 'Analytics', '#analytics', false, 'qa-purple')}
+            ${quickActionBtn('report', 'Latest Run', runUrl, true, 'qa-teal')}
+            ${quickActionBtn('bars', 'Compare Runs', '#compare', false, 'qa-orange')}
           </div>
 
           <section class="section kpi-grid">
@@ -738,22 +611,10 @@
             ${kpiCard('Skipped',     skipped, '#6b7280')}
           </section>
 
-          <div class="grid-2 section">
-            ${automationHealthSection}
-            ${currentOpsSection}
+          <div class="grid-2">
+            ${runStatusSection}
+            ${failuresSection}
           </div>
-          <div class="grid-2 section">
-            ${releaseReadinessSection}
-            ${lastCompletedSection}
-          </div>
-
-          <div class="grid-3 section">
-            ${recentRunsSection}
-            ${recentFailuresSection}
-            ${slowestSection}
-          </div>
-
-          ${activityFeedSection}
         </div>
       `;
     }
@@ -764,14 +625,10 @@
       report: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/>',
       bars: '<path d="M8 3v18M16 3v18M3 9h5M16 9h5M3 15h5M16 15h5"/>',
       chart: '<path d="M3 3v18h18"/><path d="M7 16l4-5 3 3 5-7"/>',
-      sparkle: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/>',
-      brain: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18M8 8c1-2 3-2 4 0M16 8c-1-2-3-2-4 0M8 16c1 2 3 2 4 0M16 16c-1 2-3 2-4 0"/>',
-      flask: '<path d="M9 2h6M10 2v6l-6 11a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-6-11V2"/>',
-      heal: '<path d="M19 14l-4.5 4.5a3 3 0 0 1-4.24 0l-.71-.71a3 3 0 0 1 0-4.24L14 9M9 9L4.5 4.5"/><path d="M13 5l1.5-1.5M18 10l1.5-1.5"/>',
     };
-    function quickActionBtn(icon, label, href, external, colorCls = '', soonTitle = 'No run URL available for this run') {
+    function quickActionBtn(icon, label, href, external, colorCls = '') {
       const svg = `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${QUICK_ICONS[icon] || ''}</svg>`;
-      if (!href) return `<span class="btn btn-theme ${colorCls} soon" title="${esc(soonTitle)}">${svg}${esc(label)}</span>`;
+      if (!href) return `<span class="btn btn-theme ${colorCls} soon" title="No run URL available for this run">${svg}${esc(label)}</span>`;
       return `<a class="btn btn-theme ${colorCls}" href="${href}"${external ? ' target="_blank" rel="noopener"' : ''}>${svg}${esc(label)}</a>`;
     }
 
@@ -1027,7 +884,6 @@
         return `<div class="page">${header}<div class="page-state" style="color:#16a34a">&#10003; No failures in the latest run.</div></div>`;
       }
 
-      const aiInsightsHtml = renderAiInsightsCard(failures);
       const groups = {};
       failures.forEach(t => {
         const key = (t.name || t.title || '').match(/^([a-z]+(?:-[a-z]+)?)-/)?.[1] || 'other';
@@ -1074,7 +930,7 @@
         }).join('')}
       `).join('');
 
-      return `<div class="page">${header}${aiInsightsHtml}<section class="section card">${groupHtml}</section></div>`;
+      return `<div class="page">${header}<section class="section card">${groupHtml}</section></div>`;
     }
 
     window.toggleFail = function(id) {
@@ -1091,47 +947,6 @@
       if (m.includes('tohavetext') || m.includes('tobe') || m.includes('expected')) return 'Assertion mismatch';
       if (m.includes('network') || m.includes('net::')) return 'Network error';
       return 'Other';
-    }
-
-    // ── AI Failure Insights ──────────────────────────────────────────────────
-    // Rule-based today (deterministic, transparent, no external calls) —
-    // same shape a real LLM classifier would slot into later: same inputs
-    // (error messages), same output (category + plain-English summary).
-    function aiAnalyzeFailures(failures) {
-      if (!failures || failures.length === 0) return null;
-      const categorized = failures.map(f => ({ ...f, category: classifyError(f.errorMessage) }));
-      const counts = {};
-      categorized.forEach(f => { counts[f.category] = (counts[f.category] || 0) + 1; });
-      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-      const [topCategory, topCount] = sorted[0];
-      const dominant = topCount / failures.length >= 0.5 && failures.length > 1;
-      const hint = {
-        'Timeout': 'often points to a slow/unresponsive environment rather than a broken feature',
-        'Network error': 'often points to an environment/connectivity issue rather than a real regression',
-        'Element not found/visible': 'often means a selector or page layout changed',
-        'Assertion mismatch': 'usually means the actual behavior changed vs what the test expects',
-        'Other': 'no clear pattern matched — needs manual triage',
-      }[topCategory] || '';
-      const summary = dominant
-        ? `${topCount} of ${failures.length} failure${failures.length !== 1 ? 's are' : ' is'} "${topCategory}" — ${hint}. Likely one shared root cause rather than ${failures.length} independent bugs.`
-        : `Failures span ${sorted.length} different categories (${sorted.map(([c]) => c).join(', ')}) — likely independent issues, each worth its own look.`;
-      return { summary, dominant, topCategory, breakdown: sorted };
-    }
-
-    function renderAiInsightsCard(failures) {
-      const insight = aiAnalyzeFailures(failures);
-      if (!insight) return '';
-      return `
-        <section class="section card">
-          <div class="card-header">
-            <span class="card-title">🤖 AI Insights</span>
-            <span class="card-meta">rule-based triage today</span>
-          </div>
-          <p style="font-size:13.5px;color:#111827;line-height:1.6;margin-bottom:12px">${esc(insight.summary)}</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            ${insight.breakdown.map(([cat, count]) => `<span class="badge" style="background:#ede9fe;color:#6d28d9">${esc(cat)}: ${count}</span>`).join('')}
-          </div>
-        </section>`;
     }
 
     // ── Bookmarks (localStorage) ────────────────────────────────────────────
@@ -1643,294 +1458,6 @@
               </div>`).join('')}
           </section>
         </div>
-      `;
-    }
-
-    // ── AI Suite Onboarding Copilot ──────────────────────────────────────────
-    // Today: deterministic generation from your inputs (fast, transparent, no
-    // external calls). The same shape is designed to be swapped later for a
-    // real LLM call (e.g. paste your whole test file and let it infer the
-    // locale map / pages instead of typing them) behind a lightweight proxy —
-    // the form and output UI don't need to change when that happens.
-    const LOCALE_NAME = {
-      us: 'United States', gb: 'United Kingdom', de: 'Germany', fr: 'France', jp: 'Japan',
-      kr: 'Korea', in: 'India', es: 'Spain', it: 'Italy', au: 'Australia', ca: 'Canada',
-      mx: 'Mexico', br: 'Brazil', nl: 'Netherlands', se: 'Sweden', cn: 'China', tw: 'Taiwan',
-      pl: 'Poland', tr: 'Turkey', th: 'Thailand', sg: 'Singapore', id: 'Indonesia',
-    };
-
-    function slugify(str) {
-      return String(str || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    }
-
-    // Parses this repo's real test-name convention, e.g.
-    // "unav-us-cc-plans | United States | cc-plans," ->
-    // { shortSuite: 'unav', locale: 'us', pageSlug: 'cc-plans' }
-    function parseTestName(name) {
-      if (!name) return null;
-      const firstPart = String(name).split('|')[0].trim();
-      const tokens = firstPart.split('-');
-      if (tokens.length < 3) return null;
-      return { shortSuite: tokens[0], locale: tokens[1], pageSlug: tokens.slice(2).join('-') };
-    }
-
-    function generateSuiteConfig({ teamName, suiteKey, family, testPath, description, locales, pages }) {
-      const key = suiteKey || slugify(teamName) || 'my-suite';
-      const localeCodes = locales.split(',').map(s => slugify(s)).filter(Boolean);
-      const pageList = pages.split(',').map(s => slugify(s)).filter(Boolean);
-      const configFile = { feds: 'configs/feds.config.js', cc: 'configs/cc.config.js', express: 'configs/express-lingo.config.js' }[family] || 'configs/feds.config.js';
-
-      const localeMapLines = localeCodes.length
-        ? localeCodes.map(c => `    ${c}: '@${key}-${c}',`).join('\n')
-        : '    // add locale codes → @suite-locale grep tags here';
-
-      const snippet = `'${key}': {
-  config: ${JSON.stringify(configFile)}, testPath: ${JSON.stringify(testPath || `tests/${family}/${key}.test.js`)}, family: '${family}',
-  description: ${JSON.stringify(description || `${teamName} regression suite`)},
-  localeMap: {
-${localeMapLines}
-  },${pageList.length ? `\n  pages: [${pageList.map(p => `'${p}'`).join(', ')}],` : ''}
-},`;
-
-      const unknownLocales = localeCodes.filter(c => !LOCALE_NAME[c]);
-      return { key, snippet, localeCodes, pageList, unknownLocales };
-    }
-
-    function renderOnboard() {
-      return `
-        <div class="page">
-          <div class="page-header-row">
-            <div>
-              <h1 class="page-title">🤖 AI Suite Onboarding Copilot</h1>
-              <p class="page-subtitle">Any team can bring their own regression suite onto this shared dashboard. Describe it below and get a ready-to-paste config — no need to hand-write the suite entry or ask someone to do it for you.</p>
-            </div>
-          </div>
-
-          <section class="section card">
-            <div class="card-title">Describe Your Suite</div>
-            <div class="filter-bar">
-              <label>Team / Suite Name</label>
-              <input id="ob-team" type="text" placeholder="e.g. Checkout Team" style="flex:1;min-width:180px" />
-              <label>Family</label>
-              <select id="ob-family"><option value="feds">feds</option><option value="cc">cc</option><option value="express">express</option></select>
-            </div>
-            <div class="filter-bar">
-              <label>Test file path</label>
-              <input id="ob-path" type="text" placeholder="tests/feds/checkout.test.js" style="flex:1;min-width:220px" />
-            </div>
-            <div class="filter-bar">
-              <label>Description</label>
-              <input id="ob-desc" type="text" placeholder="What does this suite cover?" style="flex:1;min-width:220px" />
-            </div>
-            <div class="filter-bar">
-              <label>Locales</label>
-              <input id="ob-locales" type="text" placeholder="us, gb, de, jp" style="flex:1;min-width:220px" />
-            </div>
-            <div class="filter-bar">
-              <label>Pages / Features</label>
-              <input id="ob-pages" type="text" placeholder="checkout, cart, payment" style="flex:1;min-width:220px" />
-            </div>
-            <button class="btn btn-primary" onclick="drawOnboardOutput()">✨ Generate Suite Config</button>
-          </section>
-
-          <section class="section" id="ob-output"></section>
-        </div>
-      `;
-    }
-
-    window.drawOnboardOutput = function() {
-      const teamName = document.getElementById('ob-team')?.value || '';
-      const family = document.getElementById('ob-family')?.value || 'feds';
-      const testPath = document.getElementById('ob-path')?.value || '';
-      const description = document.getElementById('ob-desc')?.value || '';
-      const locales = document.getElementById('ob-locales')?.value || '';
-      const pages = document.getElementById('ob-pages')?.value || '';
-      const el = document.getElementById('ob-output');
-      if (!el) return;
-
-      if (!teamName.trim()) {
-        el.innerHTML = `<div class="empty-note">Enter a team/suite name above, then click Generate.</div>`;
-        return;
-      }
-
-      const result = generateSuiteConfig({ teamName, suiteKey: slugify(teamName), family, testPath, description, locales, pages });
-
-      el.innerHTML = `
-        <div class="card">
-          <div class="card-header">
-            <span class="card-title">Generated Config</span>
-            <span class="tag-pill" onclick="copyText(this, ${JSON.stringify(result.snippet)})">Copy<span class="copy-icon">⎘</span></span>
-          </div>
-          <pre style="background:#0f172a;color:#e2e8f0;padding:16px 18px;border-radius:8px;font-size:12px;overflow-x:auto;line-height:1.6">${esc(result.snippet)}</pre>
-          ${result.unknownLocales.length ? `<div class="soon-card" style="margin-top:12px">Locale code${result.unknownLocales.length > 1 ? 's' : ''} <b>${result.unknownLocales.map(esc).join(', ')}</b> aren't in the known list — double-check the grep tag matches how they actually appear in your test titles.</div>` : ''}
-        </div>
-        <div class="card" style="margin-top:16px">
-          <div class="card-title">Next Steps</div>
-          <div class="info-grid">
-            ${infoRow('1. Paste config', `Add the block above into configs/suites.js`)}
-            ${infoRow('2. Register the suite', `Add '${result.key}' to the suite dropdown in .github/workflows/run-tests.yml`)}
-            ${infoRow('3. Open a PR', `Once merged, '${result.key}' shows up in Run Suites and this dashboard automatically`)}
-            ${infoRow('4. Optional: schedule it', `Use the Schedules page to pick a recurring time for this suite`)}
-          </div>
-        </div>
-      `;
-    };
-
-    function wireOnboard() {}
-
-    // ── AI Test Generator (roadmap page, same pattern as Schedules) ─────────
-    function renderTestGenerator() {
-      return `
-        <div class="page">
-          <h1 class="page-title">⚗️ AI Test Generator</h1>
-          <p class="page-subtitle">For a suite that's already onboarded, when a new page or feature is added, generate a test case that fits the suite's existing pattern — not a blank-slate generation problem.</p>
-
-          <section class="section card">
-            <div class="card-title">How it will work</div>
-            <div class="info-grid">
-              ${infoRow('Trigger', "A new page/feature is added to a suite that's already onboarded — the common case, not a brand-new team with zero test code")}
-              ${infoRow('Input', 'Which suite, and the name of the new page/feature (e.g. "add photoshop-teams to feds-unav") — everything else is already known from the suite\'s existing config')}
-              ${infoRow('Reference', "The suite's existing test file — its real, current test blocks are the pattern to match")}
-              ${infoRow('Processing', 'Because these blocks are so repetitive, simple rule-based templating may fully handle the common case; an LLM call is only needed for suites whose tests vary more per page')}
-              ${infoRow('Output', "One new test block + one new line in configs/suites.js's pages array, shown in the dashboard for review — a human copies it and commits it themselves, no automatic repo writes")}
-            </div>
-          </section>
-
-          <section class="section card">
-            <div class="card-title">Try the concept</div>
-            <p style="font-size:12.5px;color:#6b7280;margin-bottom:14px">
-              Uses the real naming pattern from tests already in the latest loaded run — not AI-generated, but a genuine preview of what the generator's output would look like, grounded in this suite's actual convention.
-            </p>
-            <div class="filter-bar">
-              <label>New page/feature</label>
-              <input id="tg-page" type="text" placeholder="e.g. acrobat-teams" style="flex:1;min-width:180px" />
-              <label>Locale</label>
-              <input id="tg-locale" type="text" placeholder="us" value="us" style="max-width:100px" />
-            </div>
-            <button class="btn btn-primary" onclick="drawTestGeneratorPreview()">Preview Test Entry</button>
-            <div id="tg-output" style="margin-top:14px"></div>
-          </section>
-
-          <section class="section soon-card">
-            The preview above is real templating from real data — what's not wired up yet is committing it anywhere. The Onboarding Copilot (suite-level config generation) is the working slice of this same idea today; this extends it one level down, to individual test cases within an already-onboarded suite.
-          </section>
-        </div>
-      `;
-    }
-
-    function wireTestGenerator() {}
-
-    window.drawTestGeneratorPreview = function() {
-      const page = slugify(document.getElementById('tg-page')?.value || '');
-      const locale = slugify(document.getElementById('tg-locale')?.value || 'us');
-      const outEl = document.getElementById('tg-output');
-      if (!outEl) return;
-
-      if (!page) { outEl.innerHTML = `<div class="empty-note">Enter a page/feature name above first.</div>`; return; }
-
-      const sample = (latestRun?.results || []).map(r => parseTestName(r.name)).find(Boolean);
-      if (!sample) {
-        outEl.innerHTML = `<div class="empty-note">No loaded run has a recognizable test-name pattern to reference yet.</div>`;
-        return;
-      }
-
-      const countryName = LOCALE_NAME[locale] || locale.toUpperCase();
-      const newTitle = `${sample.shortSuite}-${locale}-${page} | ${countryName} | ${page},`;
-      const grepTag = `@${sample.shortSuite}-${locale}-${page}`;
-      const pagesLine = `'${page}'`;
-
-      outEl.innerHTML = `
-        <div style="background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:8px;font-size:12px;overflow-x:auto;line-height:1.8">
-          <div class="muted" style="color:#94a3b8;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Preview — based on ${esc(latestRun.suite || 'this suite')}'s real naming pattern</div>
-          Test title: ${esc(newTitle)}<br/>
-          Grep tag: ${esc(grepTag)}<br/>
-          Add to configs/suites.js pages array: ${esc(pagesLine)}
-        </div>`;
-    };
-
-    // ── Self-Healing Tests (roadmap page, same pattern as Schedules) ────────
-    function renderSelfHealing() {
-      return `
-        <div class="page">
-          <h1 class="page-title">🩹 Self-Healing Tests</h1>
-          <p class="page-subtitle">When one test in an onboarded suite fails on a selector/layout change while its near-identical siblings still pass, compare it against those siblings to spot the fix — instead of needing new DOM-capture infrastructure that doesn't exist yet.</p>
-
-          <section class="section card">
-            <div class="card-title">How it will work</div>
-            <div class="info-grid">
-              ${infoRow('Trigger', 'A failure classified as "Element not found/visible" by the existing AI Failure Insights logic — already live today')}
-              ${infoRow('Reference', "Other currently-passing tests in the same suite/run that exercise the same page or feature for a different locale — real, working examples already sitting in the run's own data")}
-              ${infoRow('Analysis', "Compare the failing test's selector/expectation against those passing siblings to spot what likely drifted")}
-              ${infoRow('Output', 'A suggested selector update shown in the dashboard for review — a human applies it themselves; AI never gets automatic write access to the repo')}
-              ${infoRow('Why this category first', "It's already the most common, most mechanical failure type in the data we have — the highest-value place to start")}
-            </div>
-          </section>
-
-          <section class="section card">
-            <div class="card-title">Try the concept</div>
-            <p style="font-size:12.5px;color:#6b7280;margin-bottom:14px">
-              Pick a real failure from the latest run. This finds its actual currently-passing siblings from the same run — real data, no fabrication. Suggesting the exact selector fix is the part still to be built.
-            </p>
-            <div class="filter-bar">
-              <label>Failing test</label>
-              <select id="sh-test" style="flex:1;min-width:260px"></select>
-            </div>
-            <div id="sh-output" style="margin-top:10px"></div>
-          </section>
-
-          <section class="section soon-card">
-            The sibling comparison above uses real data from the loaded run. What's not built yet is the part that reads the diff and proposes an actual selector fix — that's the piece that needs new logic (or an AI call) written.
-          </section>
-        </div>
-      `;
-    }
-
-    function wireSelfHealing() {
-      const sel = document.getElementById('sh-test');
-      if (!sel) return;
-      const failures = (latestRun?.results || []).filter(r => r.status === 'failed');
-      if (failures.length === 0) {
-        sel.innerHTML = `<option value="">No failures in the latest run</option>`;
-        sel.disabled = true;
-        return;
-      }
-      sel.innerHTML = failures.map((t, i) => `<option value="${i}">${esc(shortTestLabel(t.name))}</option>`).join('');
-      sel.addEventListener('change', drawSiblingComparison);
-      drawSiblingComparison();
-    }
-
-    function drawSiblingComparison() {
-      const sel = document.getElementById('sh-test');
-      const outEl = document.getElementById('sh-output');
-      if (!sel || !outEl) return;
-      const failures = (latestRun?.results || []).filter(r => r.status === 'failed');
-      const failing = failures[Number(sel.value)];
-      if (!failing) { outEl.innerHTML = ''; return; }
-
-      const parsed = parseTestName(failing.name);
-      if (!parsed) {
-        outEl.innerHTML = `<div class="empty-note">This test's name doesn't match the recognizable page/locale pattern.</div>`;
-        return;
-      }
-
-      const siblings = (latestRun.results || []).filter(r => {
-        if (r.name === failing.name || r.status !== 'passed') return false;
-        const p = parseTestName(r.name);
-        return p && p.pageSlug === parsed.pageSlug && p.shortSuite === parsed.shortSuite;
-      });
-
-      outEl.innerHTML = `
-        <div class="info-grid" style="margin-bottom:10px">
-          ${infoRow('Failing', shortTestLabel(failing.name))}
-          ${infoRow('Error', firstErrorLine(failing.errorMessage))}
-          ${infoRow('Page/feature', parsed.pageSlug)}
-        </div>
-        <div class="card-title" style="font-size:13px">Currently-passing siblings (same page, different locale)</div>
-        ${siblings.length === 0
-          ? `<div class="empty-note">No passing sibling found in this run for "${esc(parsed.pageSlug)}" — likely means every locale of this feature is failing, not just one, which itself is a useful signal (probably a real regression, not a locale-specific fluke).</div>`
-          : `<table class="data-table"><thead><tr><th>Locale</th><th>Test</th><th>Status</th></tr></thead><tbody>
-              ${siblings.map(s => { const p = parseTestName(s.name); return `<tr><td>${esc(p?.locale || 'N/A')}</td><td class="test-name">${esc(shortTestLabel(s.name))}</td><td><span class="badge badge-passed">passed</span></td></tr>`; }).join('')}
-            </tbody></table>`}
       `;
     }
 
