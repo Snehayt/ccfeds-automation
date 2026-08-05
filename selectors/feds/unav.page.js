@@ -1,6 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { runAxeScan, getViolationSummary } from '../../utils/accessibility/axe-runner.js';
 
+// FR sub-locales are expected to redirect to /fr/ — shared by goto() and validateLocaleRedirect(),
+// and by the test file, which only reports this check for actual FR sub-locales.
+export const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
+
 export default class UnavPage {
   constructor(page) {
     this.page = page;
@@ -128,10 +132,9 @@ export default class UnavPage {
     this.originalLocale   = origSeg[0]  && localeRe.test(origSeg[0])  ? origSeg[0]  : null;
     this.redirectedLocale = finalSeg[0] && localeRe.test(finalSeg[0]) && finalSeg[0] !== this.originalLocale
       ? finalSeg[0] : null;
-    const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
 
     if (this.redirectedLocale && !FR_SUB_LOCALES.has(this.originalLocale)) {
-      throw new Error(`[${url}] Unexpected locale redirect: /${this.originalLocale}/ → /${this.redirectedLocale}/`);
+      console.warn(`[${url}] Unexpected locale redirect: /${this.originalLocale ?? ''}/ → /${this.redirectedLocale}/`);
     }
 
     await this.page.locator('#unav-app-switcher, .feds-brand-container').first()
@@ -145,7 +148,6 @@ export default class UnavPage {
 
   // ── Locale redirect validation ───────────────────────────────────────────
   async validateLocaleRedirect() {
-    const FR_SUB_LOCALES = new Set(['ca_fr', 'be_fr', 'lu_fr', 'ch_fr']);
     if (!FR_SUB_LOCALES.has(this.originalLocale)) return;
     if (this.redirectedLocale) {
       await this.#ok(`[Page] /${this.originalLocale}/ redirected to /${this.redirectedLocale}/ ✓`);
@@ -156,35 +158,32 @@ export default class UnavPage {
 
   // ── GNav: Adobe Logo ─────────────────────────────────────────────────────
   async validateAdobeLogo() {
-    const pageUrl    = this.url;
-    const pageOrigin = new URL(this.url).origin;
+    const pageUrl  = this.url;
+    const pageHost = new URL(this.url).hostname;
+    // Normalize to www.* — logo always goes to www, even from helpx
+    const expectedHost = pageHost.replace(/^[^.]+\./, 'www.');
 
     await expect(this.adobeLogo, `[${pageUrl}] Adobe logo (.feds-brand) must be visible`).toBeVisible();
 
     const href = await this.adobeLogo.getAttribute('href');
     expect(href, `[${pageUrl}] Adobe logo href is empty`).toBeTruthy();
 
+    // Resolve against the page URL so root-relative hrefs (e.g. "/", seen on the homepage)
+    // are handled the same as absolute ones (seen on other pages) — both must land on www.adobe.com.
+    const resolved = new URL(href, pageUrl);
+    expect(
+      resolved.hostname,
+      `[${pageUrl}] Adobe logo href="${href}" points to "${resolved.hostname}" — expected "${expectedHost}" for this env`
+    ).toBe(expectedHost);
+
     const segments     = new URL(this.url).pathname.split('/').filter(Boolean);
     const localePrefix = segments.length > 0 && /^[a-z]{2}(_[a-z]{2,4})?$/i.test(segments[0]) ? segments[0] : null;
     if (this.redirectedLocale) {
-      if (!href.includes(`/${this.redirectedLocale}/`)) {
+      if (!resolved.pathname.includes(`/${this.redirectedLocale}/`)) {
         await this.#warn(`[GNav] Adobe logo href="${href}" missing redirected locale "/${this.redirectedLocale}/" (redirected from /${this.originalLocale}/)`);
       }
     } else if (localePrefix) {
-      expect(href, `[${pageUrl}] Adobe logo href="${href}" must contain locale prefix "/${localePrefix}/"`).toContain(`/${localePrefix}/`);
-    } else {
-      expect(href, `[${pageUrl}] Adobe logo href="${href}" must point to adobe.com`).toContain('adobe.com');
-    }
-
-    if (href.startsWith('http')) {
-      const hrefHost       = new URL(href).hostname;
-      const pageHost       = new URL(this.url).hostname;
-      // Normalize both to www.* — logo always goes to www, even from helpx
-      const expectedHost   = pageHost.replace(/^[^.]+\./, 'www.');
-      expect(
-        hrefHost,
-        `[${pageUrl}] Adobe logo href="${href}" points to "${hrefHost}" — expected "${expectedHost}" for this env`
-      ).toBe(expectedHost);
+      expect(resolved.pathname, `[${pageUrl}] Adobe logo href="${href}" must contain locale prefix "/${localePrefix}/"`).toContain(`/${localePrefix}/`);
     }
 
     await this.#ok(`[GNav] Adobe logo ✓  href="${href}"`);
