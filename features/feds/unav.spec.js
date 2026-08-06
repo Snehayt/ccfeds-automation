@@ -24,7 +24,6 @@ export const unavPages = [
   { path: '/education.html',                                                      name: 'education',         clientId: 'acom-education' },
   { path: '/community',                                                           name: 'community',         clientId: 'community-acom-client' },
   { path: '/learn',                                                               name: 'learn',             clientId: 'CCHomeWeb1' },
-  { path: '/genuine/dm-ses-lp.html?gid=IC_9RC4HL99FR&gtoken=f9874a45-9925-406a-8ca3-d9d824aab728', name: 'genuine', clientId: 'adobedotcom-cc' },
   //Helpx — different subdomain; stage: helpx.stage.adobe.com, prod: helpx.adobe.com
   { path: '/support.html',                                                        name: 'helpx',             clientId: 'AdobeSupport1', subdomain: 'helpx' },
 ];
