@@ -4,19 +4,26 @@ const { devices } = require('@playwright/test');
 /**
  * Generalized lingo/geo-banner suite config — runs against ANY ACOM URL (Express, UPP, CC/DC
  * marketing pages, plain product pages) or BACOM, across stage / prod / an aem.live branch,
- * with or without `milolibs`. See ../lingo-en-skills.md for the full domain model this suite
- * implements.
+ * with or without `milolibs`.
+ * One command template — swap TEST_ENV/PAGES/MILOLIBS as needed, add `-g "<tag>"` to run just
+ * one group (@banner, @modal, @no-action, @root-redirect, @pricing-priority):
  *
- * Target environment:
- *   Stage (default): BASE_URL=https://www.stage.adobe.com
- *   Prod:             BASE_URL=https://www.adobe.com
- *   aem.live branch:  BASE_URL=https://main--milo--adobecom.aem.live
- *   BACOM auto-follows BASE_URL tier (stage -> business.stage.adobe.com, prod -> business.adobe.com).
- *   BACOM aem.live override: BACOM_BASE_URL=https://main--da-bacom--adobecom.aem.live
+ *   $env:TEST_ENV = "stage"; $env:PAGES = "all"          # e.g. "prod"/"all", "live"/"all", "stage"/"acrobat"
+ *   npx playwright test --config=configs/lingo-en.config.js tests/lingo-en/lingo.test.js --project=lingo-en-live-chrome
  *
- *   Extra params (milolibs, fedsbranch, etc.) work with any BASE_URL:
- *     BASE_URL=https://www.stage.adobe.com/?milolibs=acom-c2lingo
- *   Or pass separately: URL_EXTRA_PARAMS=milolibs=acom-c2lingo (takes precedence)
+ * Do NOT add `--reporter=...` on the command line — it REPLACES (not merges with) the `reporter`
+ * array above, which would silently drop the html/json reporters. Use `-g "<tag>"` for filtering,
+ * not `--reporter`.
+ *
+ * BASE_URL/PAGE_PATHS/URL_EXTRA_PARAMS remain the low-level escape hatch for one-off/custom URLs
+ * not in the PAGE_URLS table (e.g. BASE_URL=https://www.stage.adobe.com/?milolibs=acom-c2lingo).
+ * BACOM auto-follows the BASE_URL tier; override with BACOM_BASE_URL for an aem.live branch.
+ *
+ * Saving output to a log file (only needed when redirecting to a file — PowerShell's default
+ * console encoding can otherwise corrupt non-English text once redirected):
+ *
+ *   [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+ *   ...(the command)... 2>&1 | Tee-Object -FilePath "test-run-logs/lingo-en-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
  */
 
 if (process.env.BASE_URL) {
@@ -57,9 +64,7 @@ const config = {
   workers: process.env.CI ? 2 : 6,
   reporter: process.env.CI
     ? [['github'], ['../utils/reporters/json-reporter.js']]
-    : process.env.HTML_REPORT
-      ? [['html', { outputFolder: 'test-html-results', open: 'on-failure' }], ['list'], ['../utils/reporters/json-reporter.js']]
-      : [['list'], ['../utils/reporters/json-reporter.js']],
+    : [['html', { outputFolder: 'test-html-results', open: 'always' }], ['list'], ['../utils/reporters/json-reporter.js']],
   use: {
     actionTimeout: 60000,
     trace: 'on-first-retry',
