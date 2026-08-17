@@ -1,7 +1,1 @@
 node_modules
-test-results
-test-run-logs
-playwright-report
-configs/test-html-results
-.playwright-mcp
-*.log
