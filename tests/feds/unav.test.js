@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { features, UNAV_DEFAULT_PARAMS } from '../../features/feds/unav.spec.js';
-import UnavPage from '../../selectors/feds/unav.page.js';
+import UnavPage, { FR_SUB_LOCALES } from '../../selectors/feds/unav.page.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Environment
@@ -65,9 +65,12 @@ async function runChecks(page, url, clientId, lang, expectedVersion, noAppSwitch
   });
 
   // ── Locale redirect (hard fail — FR sub-locales must redirect to /fr/) ───
-  await test.step('Locale | FR sub-locale redirects to /fr/', async () => {
-    await unav.validateLocaleRedirect();
-  });
+  // Only reported for actual FR sub-locale pages — nothing to check on any other locale.
+  if (FR_SUB_LOCALES.has(unav.originalLocale)) {
+    await test.step('Locale | FR sub-locale redirects to /fr/', async () => {
+      await unav.validateLocaleRedirect();
+    });
+  }
 
   // ── UNav script + version (hard fail — if UNav didn't load or wrong version, stop here) ──
   await test.step('Network | UniversalNav JS + CSS loaded (version check)', async () => {
