@@ -13,7 +13,7 @@
       "modalDescription": "Based on your location, we recommend the website for {country}, where you'll find regional offers and pricing.",
       "regionPriorities": "lu:3",
       "langName": "English",
-      "nativeName": "English (US)",
+      "nativeName": "English US",
       "group": "",
       "defaultMarket": "us"
     },
@@ -62,7 +62,7 @@
     {
       "prefix": "tr",
       "lang": "tr",
-      "supportedRegions": "de, tr",
+      "supportedRegions": "tr",
       "text": "Bu sayfayı Türkçe görüntüleyin.",
       "continueText": "Devam et",
       "modalTitle": "Bu Adobe sitesi bulunduğunuz konumla eşleşmiyor.",
@@ -209,7 +209,7 @@
       "modalDescription": "Based on your location, we recommend the website for {country}, where you'll find regional offers and pricing.",
       "regionPriorities": "",
       "langName": "English (AU)",
-      "nativeName": "English (AU)",
+      "nativeName": "English Australia",
       "group": "",
       "defaultMarket": "au"
     },
@@ -223,7 +223,7 @@
       "modalDescription": "Based on your location, we recommend the website for {country}, where you'll find regional offers and pricing.",
       "regionPriorities": "",
       "langName": "English (IN)",
-      "nativeName": "English (IN)",
+      "nativeName": "English India",
       "group": "",
       "defaultMarket": "in"
     },
@@ -237,7 +237,7 @@
       "modalDescription": "Based on your location, we recommend the website for {country}, where you'll find regional offers and pricing.",
       "regionPriorities": "",
       "langName": "English (UK)",
-      "nativeName": "English (UK)",
+      "nativeName": "English UK",
       "group": "",
       "defaultMarket": "gb"
     },
@@ -447,7 +447,7 @@
       "modalDescription": "Com base na sua localização, recomendamos o site da {country}, onde encontrará ofertas e preços regionais.",
       "regionPriorities": "",
       "langName": "Portuguese (BR)",
-      "nativeName": "Português (BR)",
+      "nativeName": "Português BR",
       "group": "",
       "defaultMarket": "br"
     },

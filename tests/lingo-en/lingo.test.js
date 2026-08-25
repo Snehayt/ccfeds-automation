@@ -100,6 +100,11 @@ const PAGE_URLS = {
     prod: '/creativecloud.html',
     live: 'https://main--da-cc--adobecom.aem.live/creativecloud',
   },
+  plans: {
+    stage: '/creativecloud/plans.html',
+    prod: '/creativecloud/plans.html',
+    live: 'https://main--da-cc--adobecom.aem.live/creativecloud/plans',
+  },
   acrobat: {
     stage: '/acrobat.html',
     prod: '/acrobat.html',
@@ -383,19 +388,28 @@ for (const pagePath of PAGE_PATHS) {
 
         await geo.navigateAndCaptureSupportedMarkets(pageUrl);
         await geo.assertBanner({ recommendedRowPrefix: f.recommendedRowPrefix });
+        // The Banner's Continue link has no `country` param — confirmed live, unlike the Modal.
+        const expectedHref = geo.buildExpectedOptionHref(f.recommendedRowPrefix, pagePath, false);
+        const hrefBeforeClick = await geo.languageBannerLink.first().getAttribute('href');
+        console.info(`[LingoEn] Write-Path Continue — Expected href before click: '${expectedHref}' | Actual: '${hrefBeforeClick}'`);
+        expect(
+          hrefBeforeClick,
+          `[${f.name}] banner Continue link href should be '${expectedHref}' before clicking, actual '${hrefBeforeClick}'`,
+        ).toBe(expectedHref);
+
         await geo.clickBannerContinue();
 
         const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
         const finalUrl = page.url();
-        console.info(`[LingoEn] Write-Path Continue — Expected cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL to contain: '/${f.recommendedRowPrefix}/' | Actual URL: '${finalUrl}'`);
+        console.info(`[LingoEn] Write-Path Continue — Expected cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL: '${expectedHref}' | Actual URL: '${finalUrl}'`);
         expect(
           writtenValue,
           `Clicking Continue on the [${f.name}] banner should write cookie='${f.recommendedRowPrefix}', got '${writtenValue}'`,
         ).toBe(f.recommendedRowPrefix);
         expect(
           finalUrl,
-          `Clicking Continue on the [${f.name}] banner should redirect to a URL containing '/${f.recommendedRowPrefix}/', got '${finalUrl}'`,
-        ).toContain(`/${f.recommendedRowPrefix}/`);
+          `Clicking Continue on the [${f.name}] banner should redirect to '${expectedHref}', actual '${finalUrl}'`,
+        ).toBe(expectedHref);
       });
 
       test(`${f.name}-close-writes-us-cookie-page-${slug}`, { tag: ['@lingo-en', '@write-path', `@page-${slug}`] }, async ({ page, context }) => {
@@ -438,19 +452,39 @@ for (const pagePath of PAGE_PATHS) {
 
         await geo.navigateAndCaptureSupportedMarkets(pageUrl);
         await geo.waitForGeoModalReady();
-        await geo.clickModalContinue();
+
+        // Mirrors clickModalContinue's branching, so href can be checked before the final click.
+        const ariaExpanded = await geo.geoRoutingModalButton.getAttribute('aria-expanded').catch(() => null);
+        let targetLink = geo.geoRoutingModalButton;
+        if (ariaExpanded !== null) {
+          await geo.geoRoutingModalButton.click();
+          targetLink = geo.geoRoutingModal.locator('a:not([href="#"])').first();
+          await targetLink.waitFor({ state: 'visible', timeout: 5000 });
+        }
+
+        const expectedHref = geo.buildExpectedOptionHref(f.recommendedRowPrefix, pagePath);
+        const hrefBeforeClick = await targetLink.getAttribute('href');
+        console.info(`[LingoEn] Modal Write-Path — Expected href before click: '${expectedHref}' | Actual: '${hrefBeforeClick}'`);
+        expect(
+          hrefBeforeClick,
+          `[${f.name}] Modal recommendation href should be '${expectedHref}' before clicking, actual '${hrefBeforeClick}'`,
+        ).toBe(expectedHref);
+
+        const urlBeforeClick = page.url();
+        await targetLink.click();
+        await page.waitForURL((url) => url.toString() !== urlBeforeClick, { timeout: 10000 }).catch(() => {});
 
         const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
         const finalUrl = page.url();
-        console.info(`[LingoEn] Modal Write-Path — Expected cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL to contain: '/${f.recommendedRowPrefix}/' | Actual URL: '${finalUrl}'`);
+        console.info(`[LingoEn] Modal Write-Path — Expected cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL: '${expectedHref}' | Actual URL: '${finalUrl}'`);
         expect(
           writtenValue,
           `Clicking the [${f.name}] Modal recommendation should write cookie='${f.recommendedRowPrefix}', got '${writtenValue}'`,
         ).toBe(f.recommendedRowPrefix);
         expect(
           finalUrl,
-          `Clicking the [${f.name}] Modal recommendation should redirect to a URL containing '/${f.recommendedRowPrefix}/', got '${finalUrl}'`,
-        ).toContain(`/${f.recommendedRowPrefix}/`);
+          `Clicking the [${f.name}] Modal recommendation should redirect to '${expectedHref}', actual '${finalUrl}'`,
+        ).toBe(expectedHref);
       });
     }
   });
@@ -458,14 +492,16 @@ for (const pagePath of PAGE_PATHS) {
 
 // ─── Root redirects ──
 
-test.describe('LingoEn | Root Redirects', () => {
+for (const pagePath of PAGE_PATHS) {
+test.describe(`LingoEn | Root Redirects | ${pagePath}`, () => {
   for (const f of lingoEnRootRedirectFeatures) {
     test(f.name, { tag: f.tags.split(' ').filter(Boolean) }, async ({ page }) => {
       const base = process.env.BASE_URL || 'https://www.stage.adobe.com';
-      const url = new URL(f.path, base).toString();
+      const target = new URL(pagePath, base);
+      const url = new URL(f.path.replace(/\/$/, '') + target.pathname, target.origin).toString();
       const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
       const finalUrl = page.url();
-      const rootUrl = new URL('/', base).toString();
+      const rootUrl = target.toString();
       console.info(`[LingoEn] Redirect — From: ${url} | Expected: '${rootUrl}' | Actual: '${finalUrl}' (status ${response?.status()})`);
       expect(
         finalUrl,
@@ -474,6 +510,7 @@ test.describe('LingoEn | Root Redirects', () => {
     });
   }
 });
+}
 
 // ─── Pricing priority chain (port of Express's N9/N10/N11) ─────────────────────────────────
 // The same `country`-param mechanism Express uses for currency priority also applies outside

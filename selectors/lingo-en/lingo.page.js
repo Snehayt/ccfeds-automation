@@ -487,8 +487,17 @@ export class LingoEnBannerPage {
    * currencies, worth flagging on its own regardless of which one matches the expected symbol.
    */
   async getPricingSymbols() {
-    await this.priceCurrencySymbols.first().waitFor({ state: 'attached', timeout: 15000 }).catch(() => {});
-    const totalCount = await this.priceCurrencySymbols.count();
+    // Price cards load in over a few seconds — require 5 matching reads before trusting it's done.
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
+    let totalCount = await this.priceCurrencySymbols.count();
+    let sameCountInARow = 0;
+    for (let check = 0; check < 25; check += 1) {
+      await this.page.waitForTimeout(1000);
+      const count = await this.priceCurrencySymbols.count();
+      sameCountInARow = count === totalCount ? sameCountInARow + 1 : 0;
+      totalCount = count;
+      if (sameCountInARow >= 5 && totalCount > 0) break;
+    }
     const symbols = [];
     for (let i = 0; i < totalCount; i++) {
       const text = (await this.priceCurrencySymbols.nth(i).innerText().catch(() => '')).trim();
@@ -687,16 +696,16 @@ export class LingoEnBannerPage {
     return `#tab-1-${slug}`;
   }
 
-  /**
-   * Build the expected href pattern for a tie-break dropdown option. Confirmed live (both `ch`
-   * and `in` tie-breaks): `/{rowPrefix}/?akamaiLocale={geoIp}&country={geoIp}` for a root-base
-   * row (`pagePath` = '/'); non-root base pages follow the same `/{rowPrefix}{pagePath}` shape
-   * used elsewhere in this suite (see the Modal 404 pre-check in lingo.test.js).
-   */
-  static buildOptionHrefPattern(rowPrefix, geoIp, pagePath = '/') {
+  /** Exact expected href, derived from the current page's own URL (call before navigating away). */
+  buildExpectedOptionHref(rowPrefix, pagePath = '/', includeCountry = true) {
     const suffix = pagePath === '/' ? '/' : pagePath;
-    const path = `/${rowPrefix}${suffix}`;
-    return new RegExp(`${path.replace(/[/]/g, '\\/')}\\?akamaiLocale=${geoIp}&country=${geoIp}$`);
+    const u = new URL(this.page.url());
+    u.pathname = `/${rowPrefix}${suffix}`;
+    if (includeCountry) {
+      const geoIp = u.searchParams.get('akamaiLocale');
+      if (geoIp) u.searchParams.set('country', geoIp);
+    }
+    return u.toString();
   }
 
   /**
@@ -821,12 +830,12 @@ export class LingoEnBannerPage {
         // user gets by hovering the link) against the confirmed live pattern for every option,
         // not just the top pick.
         const optionHref = await option.getAttribute('href').catch(() => null);
-        if (geoIp && optData.rowPrefix) {
-          const expectedPattern = LingoEnBannerPage.buildOptionHrefPattern(optData.rowPrefix, geoIp, pagePath);
+        if (optData.rowPrefix) {
+          const expectedHref = this.buildExpectedOptionHref(optData.rowPrefix, pagePath);
           await expect(
             option,
-            `Dropdown option '${optionText}' href mismatch — expected to match ${expectedPattern} | got '${optionHref}'`,
-          ).toHaveAttribute('href', expectedPattern);
+            `Dropdown option '${optionText}' href mismatch — expected '${expectedHref}' | actual '${optionHref}'`,
+          ).toHaveAttribute('href', expectedHref);
         }
 
         if (i === 0 && optData.rowPrefix === recommendedRowPrefix) {
