@@ -40,8 +40,12 @@ export class AnalyticsInterceptor {
       const isCollectUrl = (url) => /\/collect(\?|$)/.test(url) && url.includes('configId=');
       const parseInteractionName = (body) => {
         try {
-          const xdm = JSON.parse(body || '{}').events?.[0]?.xdm ?? {};
-          return xdm.web?.webInteraction?.name ?? '';
+          const evt = JSON.parse(body || '{}').events?.[0] ?? {};
+          // Most collect calls carry the interaction name under `xdm` (AEP schema field).
+          // georoutingv2.js/language-banner.js's `_satellite.track('event', { xdm: {}, data:
+          // {...} })` call (milo#6459) instead puts it under the sibling `data` field — check
+          // both so this interceptor doesn't silently miss that shape.
+          return evt.xdm?.web?.webInteraction?.name ?? evt.data?.web?.webInteraction?.name ?? '';
         } catch { return ''; }
       };
 
