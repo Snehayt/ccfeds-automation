@@ -31,7 +31,20 @@ export default class DoodlebugPromptImageGen {
   // Uses networkidle because Unity injects the widget via JS after DOMContentLoaded.
   async waitForWidgetReady(timeout = 30000) {
     await this.page.waitForLoadState('networkidle', { timeout });
+    await this.dismissLocationMismatchDialog();
     await this.promptInput.waitFor({ state: 'visible', timeout: 15000 });
+  }
+
+  // Closes the geo "This Adobe site does not match your location" dialog when it appears.
+  // While open, the browser marks the rest of the page inert, which makes every other
+  // element (including the prompt textarea) report as not editable/not interactable.
+  async dismissLocationMismatchDialog() {
+    const dialog = this.page.getByRole('dialog', { name: /does(?:n't| not) match your location/i });
+    const isShown = await dialog.isVisible({ timeout: 3000 }).catch(() => false);
+    if (isShown) {
+      await dialog.getByRole('button', { name: 'Close' }).click();
+      await dialog.waitFor({ state: 'hidden', timeout: 5000 });
+    }
   }
 
   async getPromptValue() {

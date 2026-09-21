@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/photoshop-unity.spec.js';
 import CCPhotoshopUnity from '../../selectors/cc/photoshop-unity.page.js';
 
@@ -20,7 +20,7 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
       await page.goto(`${baseURL}${features[0].path}`);
       await page.waitForLoadState('domcontentloaded');
       await expect(page).toHaveURL(`${baseURL}${features[0].path}`);
-      await expect(ccPhotoshopUnity.uploadButton).toBeTruthy();
+      await expect(ccPhotoshopUnity.uploadButton).toBeVisible();
       await expect(ccPhotoshopUnity.dropZone).toBeVisible();
       await expect(ccPhotoshopUnity.dragAndDropText).toBeVisible();
       await expect(ccPhotoshopUnity.videoElement).toBeVisible();
@@ -41,6 +41,7 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
     await test.step('Check upload photo functionality', async () => {
       await expect(ccPhotoshopUnity.uploadButton).toBeVisible({ timeout: 5000 });
       await expect(ccPhotoshopUnity.uploadButton).toBeEnabled({ timeout: 5000 });
+      await ccPhotoshopUnity.throttleUploadNetwork();
 
       // Try to trigger filechooser, fallback to setInputFiles if needed
       try {
@@ -55,8 +56,10 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
       }
     });
     await test.step('Check Progress Bar and Preview Heading Text', async () => {
-      await page.waitForTimeout(1000);
-      expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeTruthy();
+      // No fixed pre-wait here: the splash-loader can come and go within ~1-3s
+      // on a fast connection, so polling starts immediately to catch it rather
+      // than burning part of the detection window up front.
+      await expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeVisible();
       await expect(ccPhotoshopUnity.videoElement).toBeVisible();
       await expect(ccPhotoshopUnity.progressHolder).toBeVisible();
     });
@@ -86,11 +89,18 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
       }
     });
     await test.step('Check Navigation to Prelude page and Check Remove Background button', async () => {
-      await page.waitForTimeout(1000);
-      await expect(ccPhotoshopUnity.progressHolder).toBeVisible();
-      await page.waitForURL(features[2].url, { timeout: 10000 });
-      await expect(page).toHaveURL(`${features[2].url}`);
-      expect(ccPhotoshopUnity.removeBackgroundButton).toBeTruthy();
+      // Not asserting on progressHolder here: it's a transient loading state
+      // that can come and go within ~1s, and this workflow completes too fast
+      // and inconsistently to reliably observe it without network throttling
+      // (which risks stalling the upload entirely on this endpoint — see
+      // @CC-PhotoshopUnity-FileUpload for the throttled version of this check).
+      // The redirect target carries a long dynamic S3 signed-URL query string,
+      // so match on the stable prefix instead of the full URL.
+      await page.waitForURL((url) => url.toString().startsWith(features[2].url), { timeout: 10000 });
+      expect(page.url()).toContain(features[2].url);
+      // The destination is a separate app (Photoshop web editor) that needs
+      // its own load time beyond the default assertion timeout.
+      await expect(ccPhotoshopUnity.removeBackgroundButton).toBeVisible({ timeout: 15000 });
     });
   });
 
@@ -150,6 +160,7 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
     await test.step('Check upload photo functionality', async () => {
       await expect(ccPhotoshopUnity.uploadButton).toBeVisible({ timeout: 5000 });
       await expect(ccPhotoshopUnity.uploadButton).toBeEnabled({ timeout: 5000 });
+      await ccPhotoshopUnity.throttleUploadNetwork();
 
       // Try to trigger filechooser, fallback to setInputFiles if needed
       try {
@@ -164,8 +175,10 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
       }
     });
     await test.step('Check Progress Bar and Preview Heading Text', async () => {
-      await page.waitForTimeout(1000);
-      expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeTruthy();
+      // No fixed pre-wait here: the splash-loader can come and go within ~1-3s
+      // on a fast connection, so polling starts immediately to catch it rather
+      // than burning part of the detection window up front.
+      await expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeVisible();
       await expect(ccPhotoshopUnity.videoElement).toBeVisible();
       await expect(ccPhotoshopUnity.progressHolder).toBeVisible();
       await page.waitForURL((url) => url.toString().includes(features[5].url), { timeout: 10000 });
@@ -183,6 +196,7 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
     await expect(ccPhotoshopUnity.uploadButton).toBeVisible();
     await expect(ccPhotoshopUnity.uploadButton).toBeEnabled();
     await test.step('Check upload photo functionality', async () => {
+      await ccPhotoshopUnity.throttleUploadNetwork();
       const [fileChooser] = await Promise.all([
         page.waitForEvent('filechooser'),
         ccPhotoshopUnity.dropZone.click(),
@@ -190,8 +204,10 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
       await fileChooser.setFiles(features[6].data.file);
     });
     await test.step('Check Progress Bar and Preview Heading Text', async () => {
-      await page.waitForTimeout(1000);
-      expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeTruthy();
+      // No fixed pre-wait here: the splash-loader can come and go within ~1-3s
+      // on a fast connection, so polling starts immediately to catch it rather
+      // than burning part of the detection window up front.
+      await expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeVisible();
       await expect(ccPhotoshopUnity.videoElement).toBeVisible();
       await expect(ccPhotoshopUnity.progressHolder).toBeVisible();
     });
@@ -209,6 +225,7 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
     await expect(ccPhotoshopUnity.uploadButton).toBeEnabled();
     await ccPhotoshopUnity.dropZone.scrollIntoViewIfNeeded();
     await test.step('Check upload photo functionality', async () => {
+      await ccPhotoshopUnity.throttleUploadNetwork();
       const [fileChooser] = await Promise.all([
         page.waitForEvent('filechooser'),
         ccPhotoshopUnity.dropZone.click(),
@@ -216,8 +233,10 @@ test.describe('Verify Photoshop Unity Widget functionality on Stage', () => {
       await fileChooser.setFiles(features[7].data.file);
     });
     await test.step('Check Progress Bar and Preview Heading Text', async () => {
-      await page.waitForTimeout(1000);
-      expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeTruthy();
+      // No fixed pre-wait here: the splash-loader can come and go within ~1-3s
+      // on a fast connection, so polling starts immediately to catch it rather
+      // than burning part of the detection window up front.
+      await expect(ccPhotoshopUnity.photoshopPreviewHeading).toBeVisible();
       await expect(ccPhotoshopUnity.videoElement).toBeVisible();
       await expect(ccPhotoshopUnity.progressHolder).toBeVisible();
     });

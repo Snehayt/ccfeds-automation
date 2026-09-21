@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/pricingmodel.spec.js';
 import Pricemodel from '../../selectors/cc/pricingmodel.page.js';
 
@@ -17,18 +17,17 @@ test.describe('verify merch card UI and its features', () => {
     });
     await test.step('Verify pricing model loads , UI tabs and close funtionw works', async () => {
       await page.waitForLoadState();
-      expect(await pricemodel.startFreeTrialCTA).toBeTruthy();
+      await expect(pricemodel.startFreeTrialCTA).toBeVisible();
       await pricemodel.startFreeTrialCTA.click();
       await page.waitForTimeout(4000);
-      expect(await pricemodel.ModelWindow).toBeTruthy();
-      expect(await pricemodel.ModelWindow.isVisible()).toBeTruthy();
-      expect(await pricemodel.modelHeading).toBeTruthy();
-      expect(await pricemodel.tablist).toBeTruthy();
-      expect(await pricemodel.individualTab).toBeTruthy();
-      expect(await pricemodel.businessTab).toBeTruthy();
-      expect(await pricemodel.educationTab).toBeTruthy();
-      expect(await pricemodel.sslTransactionIndicator).toBeTruthy();
-      expect(await pricemodel.modelClose).toBeTruthy();
+      await expect(pricemodel.ModelWindow).toBeVisible();
+      await expect(pricemodel.modelHeading).toBeVisible();
+      await expect(pricemodel.tablist).toBeVisible();
+      await expect(pricemodel.individualTab).toBeVisible();
+      await expect(pricemodel.businessTab).toBeVisible();
+      await expect(pricemodel.educationTab).toBeVisible();
+      await expect(pricemodel.sslTransactionIndicator).toBeVisible();
+      await expect(pricemodel.modelClose).toBeVisible();
       await pricemodel.modelClose.click();
       await page.waitForTimeout(2000);
       expect(await pricemodel.ModelWindow.isVisible()).toBeFalsy();
@@ -44,16 +43,15 @@ test.describe('verify merch card UI and its features', () => {
     });
     await test.step('Verify pricing model loads in CTA click', async () => {
       await page.waitForLoadState();
-      expect(await pricemodel.startFreeTrialCTA).toBeTruthy();
+      await expect(pricemodel.startFreeTrialCTA).toBeVisible();
       await pricemodel.startFreeTrialCTA.click();
       await page.waitForTimeout(5000);
-      expect(await pricemodel.ModelWindow).toBeTruthy();
-      expect(await pricemodel.ModelWindow.isVisible()).toBeTruthy();
-      expect(await pricemodel.modelHeading).toBeTruthy();
-      expect(await pricemodel.tablist).toBeTruthy();
-      expect(await pricemodel.individualTab).toBeTruthy();
-      expect(await pricemodel.businessTab).toBeTruthy();
-      expect(await pricemodel.educationTab).toBeTruthy();
+      await expect(pricemodel.ModelWindow).toBeVisible();
+      await expect(pricemodel.modelHeading).toBeVisible();
+      await expect(pricemodel.tablist).toBeVisible();
+      await expect(pricemodel.individualTab).toBeVisible();
+      await expect(pricemodel.businessTab).toBeVisible();
+      await expect(pricemodel.educationTab).toBeVisible();
     });
   });
 });
