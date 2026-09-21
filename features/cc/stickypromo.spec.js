@@ -4,19 +4,19 @@ module.exports = {
         {
           tcid: '0',
           name: '@stickypromo-page',
-          path: '/drafts/Automation-PW/stickypromo?georouting=off',
+          path: '/drafts/Automation-PW/stickypromo?languageBanner=off',
           tags: '@cc @cc-stickypromo @cc-stickypromodisplay',
         },
         {
           tcid: '1',
           name: '@stickypromo-over-scroll',
-          path: '/drafts/Automation-PW/stickypromo?georouting=off',
+          path: '/drafts/Automation-PW/stickypromo?languageBanner=off',
           tags: '@cc @cc-stickypromo @cc-stickypromoscroll',
         },
         {
           tcid: '2',
           name: '@stickypromo-priceCTA',
-          path: '/drafts/Automation-PW/stickypromo?georouting=off',
+          path: '/drafts/Automation-PW/stickypromo?languageBanner=off',
           tags: '@cc @cc-stickypromo @cc-stickypriceCTA',
           data: {
             trialurl : 'https://www.adobe.com/products/photoshop.html#mini-plans-web-cta-photoshop-card',

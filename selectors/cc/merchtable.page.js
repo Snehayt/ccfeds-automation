@@ -23,8 +23,8 @@ export default class merchtable {
      this.listOfAppsInRows1 = page.locator('.col-merch-content').nth(0);
      this.appPhotoshop = this.listOfAppsInRows1.locator('//p[text()="Photoshop"]').nth(0);
      this.listOfAppsInRows2 = page.locator('.col-merch-content').nth(4);
-     this.appFresco = this.listOfAppsInRows1.locator('//p[text()="fresco"]').nth(1);
+     this.appFresco = this.listOfAppsInRows2.locator('//p[text()="fresco"]').nth(0);
      this.listOfAppsInRows3 = page.locator('.col-merch-content').nth(8);
-     this.appPhotoshopExpress = this.listOfAppsInRows1.locator('//p[text()="Photoshop Express"]').nth(2);
+     this.appPhotoshopExpress = this.listOfAppsInRows3.locator('//p[text()="Photoshop Express"]').nth(0);
   }
   };

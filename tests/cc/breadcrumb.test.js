@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/breadcrumb.spec.js';
 import Breadcrumb from '../../selectors/cc/breadcrumb.page.js';
 
@@ -18,11 +18,11 @@ test.describe('verify breadcrumb showing up with authored levels and each link n
     });
     await test.step('breadcrumb showup in page with links', async () => {
       await page.waitForLoadState();
-      expect(await breadcrumb.breadCrumbSection).toBeTruthy();
-      expect(await breadcrumb.breadCrumbFirstLevel).toBeTruthy();
-      expect(await breadcrumb.breadCrumbSecondLevel).toBeTruthy();
-      expect(await breadcrumb.breadCrumbThirdLevel).toBeTruthy();
-      expect(await breadcrumb.currentPageIndicator).toBeTruthy();
+      await expect(breadcrumb.breadCrumbSection).toBeVisible();
+      await expect(breadcrumb.breadCrumbFirstLevel).toBeVisible();
+      await expect(breadcrumb.breadCrumbSecondLevel).toBeVisible();
+      await expect(breadcrumb.breadCrumbThirdLevel).toBeVisible();
+      await expect(breadcrumb.currentPageIndicator).toBeVisible();
     });
   });
 
@@ -37,7 +37,7 @@ test.describe('verify breadcrumb showing up with authored levels and each link n
     });
     await test.step('breadcrumb first level link clickable and goes to destination', async () => {
       await page.waitForLoadState();
-      expect(await breadcrumb.breadCrumbSection).toBeTruthy();
+      await expect(breadcrumb.breadCrumbSection).toBeVisible();
       await breadcrumb.firstLevelLink.click();
       await expect(page).toHaveURL(url);
     });
@@ -54,7 +54,7 @@ test.describe('verify breadcrumb showing up with authored levels and each link n
     });
     await test.step('breadcrumb patent link clickable and goes correct destination', async () => {
       await page.waitForLoadState();
-      expect(await breadcrumb.breadCrumbSection).toBeTruthy();
+      await expect(breadcrumb.breadCrumbSection).toBeVisible();
       await breadcrumb.pageParentLink.click();
       await expect(page).toHaveURL(url);
     });

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/accordion.spec.js';
 import Accordion from '../../selectors/cc/accordion.page.js';
 
@@ -18,13 +18,13 @@ test.describe('verify accordion showing up with authored question and answers wi
     });
     await test.step('accordion ui with expected elements', async () => {
       await page.waitForLoadState();
-      expect(await accordion.accordionSection).toBeTruthy();
-      expect(await accordion.accordionName).toBeTruthy();
-      expect(await accordion.accordionQuestion1).toBeTruthy();
-      expect(await accordion.accordionDefinition1).toBeTruthy();
-      expect(await accordion.accordionQuestion2).toBeTruthy();
-      expect(await accordion.accordionDefinition2).toBeTruthy();
-      expect(await accordion.DefaultState).toBeTruthy();
+      await expect(accordion.accordionSection).toBeVisible();
+      await expect(accordion.accordionName).toBeVisible();
+      await expect(accordion.accordionQuestion1).toBeVisible();
+      await expect(accordion.accordionDefinition1).toBeVisible();
+      await expect(accordion.accordionQuestion2).toBeVisible();
+      await expect(accordion.accordionDefinition2).toBeVisible();
+      await expect(accordion.DefaultState).toBeVisible();
     });
   });
 
@@ -38,11 +38,11 @@ test.describe('verify accordion showing up with authored question and answers wi
     });
     await test.step('accordion expand when first question clicked', async () => {
       await page.waitForLoadState();
-      expect(await accordion.accordionName).toBeTruthy();
-      expect(await accordion.accordionQuestion1).toBeTruthy();
-      expect(await accordion.accordionDefinition1).toBeTruthy();
+      await expect(accordion.accordionName).toBeVisible();
+      await expect(accordion.accordionQuestion1).toBeVisible();
+      await expect(accordion.accordionDefinition1).toBeVisible();
       await accordion.accordionQuestion1.click();
-      expect(await accordion.accordexpanded).toBeTruthy();
+      await expect(accordion.accordexpanded).toBeVisible();
     });
   });
 
@@ -56,13 +56,13 @@ test.describe('verify accordion showing up with authored question and answers wi
     });
     await test.step('accordion collapse when first question in expanded form', async () => {
       await page.waitForLoadState();
-      expect(await accordion.accordionName).toBeTruthy();
-      expect(await accordion.accordionQuestion1).toBeTruthy();
-      expect(await accordion.accordionDefinition1).toBeTruthy();
+      await expect(accordion.accordionName).toBeVisible();
+      await expect(accordion.accordionQuestion1).toBeVisible();
+      await expect(accordion.accordionDefinition1).toBeVisible();
       await accordion.accordionQuestion1.click();
-      expect(await accordion.accordexpanded).toBeTruthy();
+      await expect(accordion.accordexpanded).toBeVisible();
       await accordion.accordionQuestion1.click();
-      expect(await accordion.DefaultState).toBeTruthy();
+      await expect(accordion.DefaultState).toBeVisible();
     });
   });
 
@@ -77,10 +77,10 @@ test.describe('verify accordion showing up with authored question and answers wi
     });
     await test.step('links are functional in the given answers', async () => {
       await page.waitForLoadState();
-      expect(await accordion.accordionQuestion1).toBeTruthy();
-      expect(await accordion.accordionDefinition1).toBeTruthy();
+      await expect(accordion.accordionQuestion1).toBeVisible();
+      await expect(accordion.accordionDefinition1).toBeVisible();
       await accordion.accordionQuestion1.click();
-      expect(await accordion.accordexpanded).toBeTruthy();
+      await expect(accordion.accordexpanded).toBeVisible();
       await accordion.firstQuestionLink.click();
       await expect(page).toHaveURL(url);
     });

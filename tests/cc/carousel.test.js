@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/carousel.spec.js';
 import Carousel from '../../selectors/cc/carousel.page.js';
 
@@ -17,15 +17,16 @@ test.describe('verify carousel showing up with authored and navigations are work
     });
     await test.step('all carousel UI elements showup', async () => {
       await page.waitForLoadState();
-      expect(await carousel.carouselContainer).toBeTruthy();
-      expect(await carousel.carouselCenterSlideActive).toBeTruthy();
-      expect(await carousel.carouselActiveImage).toBeTruthy();
-      expect(await carousel.carouselTileText).toBeTruthy();
-      expect(await carousel.carouselButtonContainer).toBeTruthy();
-      expect(await carousel.carouselButtonLeft).toBeTruthy();
-      expect(await carousel.carouselButtonRight).toBeTruthy();
-      expect(await carousel.carouselIndicators).toBeTruthy();
-      expect(await carousel.carouselFirstCard_default).toBeTruthy(); 
+      await page.waitForTimeout(3000);
+      await expect(carousel.carouselContainer).toBeVisible();
+      await expect(carousel.carouselCenterSlideActive).toBeVisible();
+      await expect(carousel.carouselActiveImage).toBeVisible();
+      await expect(carousel.carouselTileText).toBeVisible();
+      await expect(carousel.carouselButtonContainer).toBeVisible();
+      await expect(carousel.carouselButtonLeft).toBeVisible();
+      await expect(carousel.carouselButtonRight).toBeVisible();
+      await expect(carousel.carouselIndicators).toBeAttached();
+      await expect(carousel.carouselFirstCard_default).toBeAttached();
     });
   });
 
@@ -39,12 +40,13 @@ test.describe('verify carousel showing up with authored and navigations are work
     });
     await test.step('carousel left navigation button is clickable and goes to destination', async () => {
       await page.waitForLoadState();
-      expect(await carousel.carouselContainer).toBeTruthy();
-      expect(await carousel.carouselButtonLeft).toBeTruthy();
+      await page.waitForTimeout(3000);
+      await expect(carousel.carouselContainer).toBeVisible();
+      await expect(carousel.carouselButtonLeft).toBeVisible();
       await carousel.carouselButtonLeft.click();
       await page.waitForTimeout(2000);
-      expect(await carousel.carouselCenterSlideActive).toBeTruthy();
-      expect(await carousel.carouselCard_load3).toBeTruthy();
+      await expect(carousel.carouselCenterSlideActive).toBeVisible();
+      await expect(carousel.carouselCard_load3).toBeAttached();
     });
   });
 
@@ -58,11 +60,12 @@ test.describe('verify carousel showing up with authored and navigations are work
     });
     await test.step('carousel right navigation button is clickable and goes to destination card', async () => {
       await page.waitForLoadState();
-      expect(await carousel.carouselContainer).toBeTruthy();
-      expect(await carousel.carouselButtonRight).toBeTruthy();
+      await page.waitForTimeout(3000);
+      await expect(carousel.carouselContainer).toBeVisible();
+      await expect(carousel.carouselButtonRight).toBeVisible();
       await carousel.carouselButtonRight.click();
       await page.waitForTimeout(2000);
-      expect(await carousel.carouselCard_load2).toBeTruthy();
+      await expect(carousel.carouselCard_load2).toBeAttached();
     });
   });
 });

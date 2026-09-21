@@ -21,13 +21,13 @@ const config = {
     timeout: 5000,
   },
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 2 : undefined,
+  workers: process.env.CI ? 2 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI
     ? [['github'], ['../utils/reporters/json-reporter.js'], ['../utils/reporters/json-reporter.js']]
@@ -41,14 +41,18 @@ const config = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    baseURL: process.env.BASE_URL || envs['@bacom_stage'] || 'https://business.stage.adobe.com',
+    // baseURL: process.env.BASE_URL || envs['@bacom_stage'] || 'https://business.stage.adobe.com',
+    baseURL: process.env.BASE_URL || envs['@adobe_stage'] || 'https://www.stage.adobe.com',
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'cc-live-chrome',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1720, height: 900 },
+      },
       retries: 2,
     },
 

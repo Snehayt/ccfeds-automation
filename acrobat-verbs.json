@@ -1,0 +1,207 @@
+[
+  {
+    "verb": "Compress-pdf",
+    "url": "https://www.adobe.com/acrobat/online/compress-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/compress-pdf"
+  },
+  {
+    "verb": "sign-pdf",
+    "url": "https://www.adobe.com/acrobat/online/sign-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/fillsign"
+  },
+  {
+    "verb": "delete-pdf-pages",
+    "url": "https://www.adobe.com/acrobat/online/delete-pdf-pages.html",
+    "redirection": "https://acrobat.adobe.com/us/en/delete-pages"
+  },
+  {
+    "verb": "insert-pdf",
+    "url": "https://www.adobe.com/acrobat/online/add-pages-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/insert-pdf"
+  },
+  {
+    "verb": "rearrange-pdf",
+    "url": "https://www.adobe.com/acrobat/online/rearrange-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/reorder-pages"
+  },
+  {
+    "verb": "extract-pdf-pages",
+    "url": "https://www.adobe.com/acrobat/online/extract-pdf-pages.html",
+    "redirection": "https://acrobat.adobe.com/us/en/extract-pages"
+  },
+  {
+    "verb": "request-signature",
+    "url": "https://www.adobe.com/acrobat/online/request-signature.html",
+    "redirection": "https://acrobat.adobe.com/us/en/sendforsignature"
+  },
+  {
+    "verb": "Split-pdf",
+    "url": "https://www.adobe.com/acrobat/online/split-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/split-pdf/noav"
+  },
+  {
+    "verb": "Crop-pdf",
+    "url": "https://www.adobe.com/acrobat/online/crop-pdf.html",
+    "redirection": "https://acrobat.adobe.com/blob/JTdCJTIyc291cmNlJTIyJTNBJTIyc2lnbmVkLXVyaSUyMiUyQyUyMml0ZW1OYW1lJTIyJTNBJTIyc2hlbGYtY2hyaXN0bWFzLWRlY29yYXRpb24lQzIlQTAoMyklMjAoMSkucGRmJTIyJTJDJTIyaXRlbVR5cGUlMjIlM0ElMjJhcHBsaWNhdGlvbiUyRnBkZiUyMiUyQyUyMml0ZW1JZCUyMiUzQSUyMmE0YWU4N2U5LTFjM2MtNDgwYy1hNjhhLWY5MzcxNTRkMTAzOCUyMiU3RA"
+  },
+  {
+    "verb": "number-pages",
+    "url": "https://www.adobe.com/acrobat/online/add-pdf-page-numbers.html",
+    "redirection": "https://acrobat.adobe.com/us/en/number-pages"
+  },
+  {
+    "verb": "Pdf-editor",
+    "url": "https://www.adobe.com/acrobat/online/pdf-editor.html",
+    "redirection": "https://acrobat.adobe.com/blob/JTdCJTIyc291cmNlJTIyJTNBJTIyc2lnbmVkLXVyaSUyMiUyQyUyMml0ZW1OYW1lJTIyJTNBJTIyc2hlbGYtY2hyaXN0bWFzLWRlY29yYXRpb24lMjAtJTIwISU0MCUyMyUyNCUyNSU1RSUyNigpXyUyQi0lM0QlN0IlN0QlNUIlNUQlM0InJTJDLiVDMiVBMCgxKS5wZGYlMjIlMkMlMjJpdGVtVHlwZSUyMiUzQSUyMmFwcGxpY2F0aW9uJTJGcGRmJTIyJTJDJTIyaXRlbUlkJTIyJTNBJTIyOTM2MDhkNjUtNDZlOS00MWEzLTk5ODUtZGMwMjE4NTA5NDEzJTIyJTdE"
+  },
+  {
+    "verb": "pdf-to-word",
+    "url": "https://www.adobe.com/acrobat/online/pdf-to-word.html",
+    "redirection": "https://acrobat.adobe.com/us/en/pdf-to-word"
+  },
+  {
+    "verb": "pdf-to-excel",
+    "url": "https://www.adobe.com/acrobat/online/pdf-to-excel.html",
+    "redirection": "https://acrobat.adobe.com/us/en/pdf-to-excel"
+  },
+  {
+    "verb": "pdf-to-ppt",
+    "url": "https://www.adobe.com/acrobat/online/pdf-to-ppt.html",
+    "redirection": "https://acrobat.adobe.com/us/en/pdf-to-ppt"
+  },
+  {
+    "verb": "pdf-to-jpg",
+    "url": "https://www.adobe.com/acrobat/online/pdf-to-jpg.html",
+    "redirection": "https://acrobat.adobe.com/us/en/pdf-to-image"
+  },
+  {
+    "verb": "pdf-to-png",
+    "url": "https://www.adobe.com/acrobat/online/pdf-to-png.html",
+    "redirection": "https://acrobat.adobe.com/us/en/pdf-to-png"
+  },
+  {
+    "verb": "convert-pdf",
+    "url": "https://www.adobe.com/acrobat/online/convert-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/createpdf"
+  },
+  {
+    "verb": "word-to-pdf",
+    "url": "https://www.adobe.com/acrobat/online/word-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/word-to-pdf"
+  },
+  {
+    "verb": "excel-to-pdf",
+    "url": "https://www.adobe.com/acrobat/online/excel-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/excel-to-pdf"
+  },
+  {
+    "verb": "ppt-to-pdf",
+    "url": "https://www.adobe.com/acrobat/online/ppt-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/ppt-to-pdf"
+  },
+  {
+    "verb": "jpg-to-pdf",
+    "url": "https://www.adobe.com/acrobat/online/jpg-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/jpg-to-pdf"
+  },
+  {
+    "verb": "png-to-pdf",
+    "url": "https://www.adobe.com/acrobat/online/png-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/png-to-pdf"
+  },
+  {
+    "verb": "rotate-pdf",
+    "url": "https://www.adobe.com/acrobat/online/rotate-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/rotate-pages"
+  },
+  {
+    "verb": "merge-pdf",
+    "url": "https://www.adobe.com/acrobat/online/merge-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/combine-pdf"
+  },
+  {
+    "verb": "protect-pdf",
+    "url": "https://www.adobe.com/acrobat/online/password-protect-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/protect-pdf"
+  },
+  {
+    "verb": "ocr-pdf",
+    "url": "https://www.adobe.com/acrobat/online/ocr-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/ocr-pdf"
+  },
+  {
+    "verb": "Ai-chat-pdf",
+    "url": "https://www.adobe.com/acrobat/online/ai-chat-pdf.html",
+    "redirection": "https://acrobat.adobe.com/blob/JTdCJTIyc291cmNlJTIyJTNBJTIyc2lnbmVkLXVyaSUyMiUyQyUyMml0ZW1OYW1lJTIyJTNBJTIyMTUtY29tcHJlc3NlZC1jb21wcmVzc2VkJUMyJUEwKDEpLnBkZiUyMiUyQyUyMml0ZW1UeXBlJTIyJTNBJTIyYXBwbGljYXRpb24lMkZwZGYlMjIlMkMlMjJpdGVtSWQlMjIlM0ElMjJjYTJkMmUyMS1jNzA1LTRlYTItYWNiNC04MzAyMjA2Y2JiZGYlMjIlN0Q"
+  },
+  {
+    "verb": "Ai-summary-generator",
+    "url": "https://www.adobe.com/acrobat/online/ai-summary-generator.html",
+    "redirection": "https://acrobat.adobe.com/blob/JTdCJTIyc291cmNlJTIyJTNBJTIyc2lnbmVkLXVyaSUyMiUyQyUyMml0ZW1OYW1lJTIyJTNBJTIyMTUtY29tcHJlc3NlZC1jb21wcmVzc2VkJUMyJUEwKDEpLnBkZiUyMiUyQyUyMml0ZW1UeXBlJTIyJTNBJTIyYXBwbGljYXRpb24lMkZwZGYlMjIlMkMlMjJpdGVtSWQlMjIlM0ElMjJkNjRhZDQ0ZS1mN2JjLTQyN2UtOGE0NC00NjU3ZDg3OGFlZTclMjIlN0Q"
+  },
+  {
+    "verb": "Pdf-ai",
+    "url": "https://www.adobe.com/acrobat/online/pdf-ai.html",
+    "redirection": "https://acrobat.adobe.com/blob/JTdCJTIyc291cmNlJTIyJTNBJTIyc2lnbmVkLXVyaSUyMiUyQyUyMml0ZW1OYW1lJTIyJTNBJTIyMTUtY29tcHJlc3NlZC1jb21wcmVzc2VkJUMyJUEwKDEpLnBkZiUyMiUyQyUyMml0ZW1UeXBlJTIyJTNBJTIyYXBwbGljYXRpb24lMkZwZGYlMjIlMkMlMjJpdGVtSWQlMjIlM0ElMjIwZDE1MTdhNi02YWUwLTQwNWQtOTdhNy0wZjc1ZWY1ZjBmOTQlMjIlN0Q"
+  },
+  {
+    "verb": "heic-to-pdf",
+    "url": "https://acrobat.adobe.com/heic-to-pdf",
+    "redirection": "https://acrobat.adobe.com/heic-to-pdf"
+  },
+  {
+    "verb": "Flashcard-maker",
+    "url": "https://www.adobe.com/acrobat/online/flashcard-maker.html",
+    "redirection": "https://acrobat.adobe.com/studentspaces/collection/urn:aaid:sc:AP:85294869-694a-41ab-af38-fca5be284360/"
+  },
+  {
+    "verb": "Quiz-maker",
+    "url": "https://www.adobe.com/acrobat/online/quiz-maker.html",
+    "redirection": "https://acrobat.adobe.com/studentspaces/collection/urn:aaid:sc:AP:5f638a9c-5f7c-4905-8c76-c4c43318850c/"
+  },
+  {
+    "verb": "Mind-map",
+    "url": "https://www.adobe.com/acrobat/online/mind-map.html",
+    "redirection": "https://acrobat.adobe.com/studentspaces/collection/urn:aaid:sc:AP:c402cd8b-fab7-475b-93be-522b6238e458/"
+  },
+  {
+    "verb": "image-to-pdf",
+    "url": "www.adobe.com/acrobat/online/image-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/png-to-pdf"
+  },
+  {
+    "verb": "tiff-to-pdf",
+    "url": "www.adobe.com/acrobat/online/tiff-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/jpg-to-pdf"
+  },
+  {
+    "verb": "bmp-to-pdf",
+    "url": "www.adobe.com/acrobat/online/bmp-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/jpg-to-pdf"
+  },
+  {
+    "verb": "gif-to-pdf",
+    "url": "www.adobe.com/acrobat/online/gif-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/jpg-to-pdf"
+  },
+  {
+    "verb": "indd-to-pdf",
+    "url": "www.adobe.com/acrobat/online/indd-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/createpdf"
+  },
+  {
+    "verb": "psd-to-pdf",
+    "url": "www.adobe.com/acrobat/online/psd-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/createpdf"
+  },
+  {
+    "verb": "ai-to-pdf",
+    "url": "www.adobe.com/acrobat/online/ai-to-pdf.html",
+    "redirection": "https://acrobat.adobe.com/us/en/createpdf"
+  },
+  {
+    "verb": "ai-resume-builder",
+    "url": "https://www.adobe.com/acrobat/online/ai-resume-builder.html",
+    "redirection": "https://acrobat.adobe.com/link/ai-resume-builder"
+  }
+]

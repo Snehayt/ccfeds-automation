@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/doodlebugaudiogeneration.spec.js';
 import DoodlebugAudioGeneration from '../../selectors/cc/doodlebugaudiogeneration.page.js';
 

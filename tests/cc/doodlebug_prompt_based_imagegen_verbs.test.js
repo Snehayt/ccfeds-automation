@@ -1,6 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/doodlebug_prompt_based_imagegen_verbs.spec.js';
 import DoodlebugPromptImageGen from '../../selectors/cc/doodlebug_prompt_based_imagegen_verbs.page.js';
+
+// Matches firefly.adobe.com, firefly-stage.corp.adobe.com, firefly.stage.adobe.com
+const isFireflyUrl = (url) => /firefly[^/]*\.adobe\.com/.test(url.toString());
 
 let doodlebug;
 
@@ -59,8 +62,8 @@ test.describe('CC Doodlebug Prompt Based Image Generation', () => {
         await doodlebug.dismissMepOverlay();
         await expect(doodlebug.generateCTA).toBeVisible();
         await doodlebug.generateCTA.click();
-        await page.waitForURL((url) => url.toString().includes('firefly-stage.corp.adobe.com'), { timeout: 20000 });
-        expect(page.url()).toContain('firefly-stage.corp.adobe.com');
+        await page.waitForURL(isFireflyUrl, { timeout: 20000 });
+        expect(isFireflyUrl(page.url())).toBe(true);
       });
     });
   });
@@ -94,8 +97,8 @@ test.describe('CC Doodlebug Prompt Based Image Generation', () => {
         await test.step('step-4: Click Generate CTA and verify navigation to Firefly stage page', async () => {
           await expect(doodlebug.generateCTA).toBeVisible();
           await doodlebug.generateCTA.click();
-          await page.waitForURL((url) => url.toString().includes('firefly-stage.corp.adobe.com'), { timeout: 15000 });
-          expect(page.url()).toContain('firefly-stage.corp.adobe.com');
+          await page.waitForURL(isFireflyUrl, { timeout: 15000 });
+          expect(isFireflyUrl(page.url())).toBe(true);
         });
       },
     );

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/FFGallery.spec.js';
 import FFGallery from '../../selectors/cc/FFGallery.page.js';
 
@@ -15,9 +15,9 @@ test.describe('firefly integration', () => {
       await expect(page).toHaveURL(`${baseURL}${features[0].path}`);
     });
     await test.step('Firefly gallery block User Interface checks', async () => {
-      expect(await ffgallery.FFGalleryBlock).toBeTruthy();
-      expect(await ffgallery.FFGalleryContent).toBeTruthy();
-      expect(await ffgallery.gridBlock_design).toBeTruthy();
+      await expect(ffgallery.FFGalleryBlock).toBeVisible();
+      await expect(ffgallery.FFGalleryContent).toBeVisible();
+      await expect(ffgallery.gridBlock_design).toBeVisible();
     });
   });
 
@@ -29,13 +29,13 @@ test.describe('firefly integration', () => {
       await expect(page).toHaveURL(`${baseURL}${features[1].path}`);
     });
     await test.step('gallery cards check', async () => {
-      expect(await ffgallery.grid_TallCards).toBeTruthy();
-      expect(await ffgallery.grid_ShortCards).toBeTruthy();
-      expect(await ffgallery.imageAuthorInfoSection).toBeTruthy();
-      expect(await ffgallery.imageAuthorName).toBeTruthy();
-      expect(await ffgallery.imageDisplayInCard).toBeTruthy();
-      expect(await ffgallery.imageHoverText).toBeTruthy();
-      expect(await ffgallery.imagePromptText).toBeTruthy();
+      await expect(ffgallery.grid_TallCards).toBeVisible();
+      await expect(ffgallery.grid_ShortCards).toBeVisible();
+      await expect(ffgallery.imageAuthorInfoSection).toBeVisible();
+      await expect(ffgallery.imageAuthorName).toBeVisible();
+      await expect(ffgallery.imageDisplayInCard).toBeVisible();
+      await expect(ffgallery.imageHoverText).toBeVisible();
+      await expect(ffgallery.imagePromptText).toBeVisible();
     });
   });
 
@@ -48,7 +48,7 @@ test.describe('firefly integration', () => {
     });
     await test.step('user select card and navigated to product', async () => {
       await ffgallery.cardViewCTA.click();
-      expect(await ffgallery.cardNavigationToProductPage).toBeTruthy();
+      await expect(ffgallery.cardNavigationToProductPage).toBeVisible();
     });
   });
 

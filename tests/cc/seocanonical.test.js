@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/seocanonical.spec.js';
 import Seo from '../../selectors/cc/seocanonical.page.js';
 
@@ -14,7 +14,7 @@ test.describe('canonical link presence in CC pages', () => {
     });
 
     await test.step('step-2: Check canonocal link presence in page DOM', async () => {
-      seo.checkPage();
+      await seo.checkPage();
     });
   });
 });
@@ -30,7 +30,7 @@ test.describe('canonical link presence in PS pages', () => {
     });
 
     await test.step('step-2: Check canonocal link presence in page DOM', async () => {
-      seo.checkPage();
+      await seo.checkPage();
     });
   });
 });

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/doodlebugvideoupload.spec.js';
 import DoodlebugVideoUpload from '../../selectors/cc/doodlebugvideoupload.page.js';
 
@@ -12,6 +12,10 @@ const errorFeatures = features.filter((f) => f.type === 'error');
 let doodlebugVideo;
 
 test.describe('CC Doodlebug Video Upload Widget', () => {
+  // step-3's retry reloads the page (up to 2 extra times) on backend rejection, and each
+  // reload's widget-ready wait can itself take up to 30s — give it headroom.
+  test.describe.configure({ timeout: 150000 });
+
   test.beforeEach(async ({ page }) => {
     doodlebugVideo = new DoodlebugVideoUpload(page);
   });
@@ -67,7 +71,7 @@ test.describe('CC Doodlebug Video Upload Widget', () => {
         });
 
         await test.step('step-3: Select and upload video file', async () => {
-          await doodlebugVideo.uploadVideoViaButton(feature.data.file);
+          await doodlebugVideo.uploadVideoWithRetry(feature.data.file);
         });
 
         await test.step('step-4: Verify splash screen and progress indicator appear', async () => {
@@ -82,8 +86,9 @@ test.describe('CC Doodlebug Video Upload Widget', () => {
         });
 
         await test.step('step-5: Verify user lands on Firefly product page', async () => {
-          // Firefly SPA fires domcontentloaded quickly but delays the load event — use domcontentloaded to avoid timeout
-          await page.waitForURL(isFireflyUrl, { timeout: 15000, waitUntil: 'domcontentloaded' });
+          // Firefly SPA fires domcontentloaded quickly but delays the load event — use domcontentloaded to avoid timeout.
+          // Stage redirect latency varies under repeated sequential runs, so allow extra headroom.
+          await page.waitForURL(isFireflyUrl, { timeout: 30000, waitUntil: 'domcontentloaded' });
         });
       });
     });

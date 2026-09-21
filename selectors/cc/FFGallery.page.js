@@ -11,8 +11,11 @@ export default class FFGallery {
     this.grid_ShortCards = this.FFGalleryBlock.locator('.firefly-gallery-item.skeleton-item.firefly-gallery-item-short.loaded').first();
     this.imageAuthorInfoSection = this.FFGalleryBlock.locator('.firefly-gallery-user-info').first();
     this.imageAuthorName = this.FFGalleryBlock.locator('.firefly-gallery-username').first();
-    this.imageDisplayInCard = this.FFGalleryBlock.locator('.firfirefly-gallery-image').first();
-    this.imageHoverText = this.FFGalleryBlock.locator('div.firefly-gallery-image:has(img[alt]:not([alt=""])').first();
+    // .firefly-gallery-image is a static, height:0 positioning wrapper by design — its
+    // absolutely-positioned <img> child sizes itself against the grandparent item instead,
+    // so the img itself is the element that's actually visible on screen.
+    this.imageDisplayInCard = this.FFGalleryBlock.locator('.firefly-gallery-img').first();
+    this.imageHoverText = this.FFGalleryBlock.locator('.firefly-gallery-content-wrapper').first();
     this.imagePromptText = this.FFGalleryBlock.locator('.firefly-gallery-prompt').first();
     this.cardViewCTA = this.FFGalleryBlock.locator('.firefly-gallery-view-button').first();
     this.cardNavigationToProductPage = page.locator('.firefly-gallery-overlay[href*="firefly.adobe.com"]').first();

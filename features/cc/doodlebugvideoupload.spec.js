@@ -7,7 +7,7 @@ module.exports = {
     {
       tcid: '0',
       name: '@cc-doodlebug-aivideoeditor-videoupload-ui',
-      path: '/products/firefly/features/ai-video-editor?georouting=off',
+      path: '/products/firefly/features/ai-video-editor.html?languageBanner=off',
       data: { file: VIDEO_FILE },
       type: 'ui',
       tags: '@cc @cc-doodlebug @cc-videobased-doodlebugchecks @cc-doodlebug-aivideoeditor',
@@ -15,7 +15,7 @@ module.exports = {
     {
       tcid: '1',
       name: '@cc-doodlebug-videoupscaler-videoupload-ui',
-      path: '/products/firefly/features/video-upscaler?georouting=off',
+      path: '/products/firefly/features/video-upscaler.html?languageBanner=off',
       data: { file: VIDEO_FILE },
       type: 'ui',
       tags: '@cc @cc-doodlebug @cc-videobased-doodlebugchecks @cc-doodlebug-videoupscaler',
@@ -23,7 +23,7 @@ module.exports = {
     {
       tcid: '2',
       name: '@cc-doodlebug-aivideoeditor-videoupload-functional',
-      path: '/products/firefly/features/ai-video-editor?georouting=off',
+      path: '/products/firefly/features/ai-video-editor.html?languageBanner=off',
       data: { file: VIDEO_FILE },
       type: 'functional',
       tags: '@cc @cc-doodlebug @cc-videobased-doodlebugchecks @cc-doodlebug-aivideoeditor-upload',
@@ -31,7 +31,7 @@ module.exports = {
     {
       tcid: '3',
       name: '@cc-doodlebug-videoupscaler-videoupload-functional',
-      path: '/products/firefly/features/video-upscaler?georouting=off',
+      path: '/products/firefly/features/video-upscaler.html?languageBanner=off',
       data: { file: VIDEO_FILE },
       type: 'functional',
       tags: '@cc @cc-doodlebug @cc-videobased-doodlebugchecks @cc-doodlebug-videoupscaler-upload',
@@ -39,7 +39,7 @@ module.exports = {
     {
       tcid: '4',
       name: '@cc-doodlebug-aivideoeditor-videoupload-error',
-      path: '/products/firefly/features/ai-video-editor?georouting=off',
+      path: '/products/firefly/features/ai-video-editor.html?languageBanner=off',
       data: { file: LONG_VIDEO_FILE },
       type: 'error',
       tags: '@cc @cc-doodlebug @cc-videobased-doodlebugchecks @cc-doodlebug-aivideoeditor-error',
@@ -47,7 +47,7 @@ module.exports = {
     {
       tcid: '5',
       name: '@cc-doodlebug-videoupscaler-videoupload-error',
-      path: '/products/firefly/features/video-upscaler?georouting=off',
+      path: '/products/firefly/features/video-upscaler.html?languageBanner=off',
       data: { file: LONG_VIDEO_FILE },
       type: 'error',
       tags: '@cc @cc-doodlebug @cc-videobased-doodlebugchecks @cc-doodlebug-videoupscaler-error',

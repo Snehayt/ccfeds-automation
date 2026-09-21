@@ -37,7 +37,7 @@ module.exports = {
     {
       tcid: '5',
       name: '@lingo-banner-no-geomodel',
-      path: '/creativecloud?georouting=off',
+      path: '/creativecloud?languageBanner=off',
       tags: '@cc @cc-lingo @lingo-feature-cc @cc-no-geomodel-display',
     },
     {
