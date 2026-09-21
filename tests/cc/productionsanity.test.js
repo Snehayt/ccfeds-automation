@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/productionsanity.spec.js';
 import Prodsanity from '../../selectors/cc/productionsanity.page.js';
 
@@ -17,16 +17,16 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('creativecloud page gnav, marquee cta, price pod checks', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.fedsNav).toBeTruthy();
-      expect(await prodsanity.signIn).toBeTruthy();
-      expect(await prodsanity.jarvisFeature).toBeTruthy();
-      expect(await prodsanity.plansPriceingCTA).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.fedsNav).toBeVisible();
+      await expect(prodsanity.signIn).toBeVisible();
+      await expect(prodsanity.jarvisFeature).toBeVisible();
+      await expect(prodsanity.plansPriceingCTA).toBeVisible();
       await prodsanity.plansPriceingCTA.click();
-      expect(await prodsanity.pricePods).toBeTruthy();
-      expect(await prodsanity.ccAllAppsPrice).toBeTruthy();
-      expect(await prodsanity.ccPhotographyPrice).toBeTruthy();
-      expect(await prodsanity.buyNowCTA).toBeTruthy();
+      await expect(prodsanity.pricePods).toBeVisible();
+      await expect(prodsanity.ccAllAppsPrice).toBeVisible();
+      await expect(prodsanity.ccPhotographyPrice).toBeVisible();
+      await expect(prodsanity.buyNowCTA).toBeVisible();
       await prodsanity.buyNowCTA.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(/^https:\/\/commerce.adobe.com\/store\/commitment/);
@@ -43,12 +43,12 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('After Effects product page sanity', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.localNav).toBeTruthy();
-      expect(await prodsanity.magaMenuItems).toBeTruthy();
-      expect(await prodsanity.localNavActiveItem).toBeTruthy();
-      expect(await prodsanity.afterEffectProductPriceInMarquee).toBeTruthy();
-      expect(await prodsanity.buyNowAECTA).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.localNav).toBeVisible();
+      await expect(prodsanity.magaMenuItems).toBeVisible();
+      await expect(prodsanity.localNavActiveItem).toBeVisible();
+      await expect(prodsanity.afterEffectProductPriceInMarquee).toBeVisible();
+      await expect(prodsanity.buyNowAECTA).toBeVisible();
       await prodsanity.buyNowAECTA.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(expectedUrl);
@@ -64,10 +64,10 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('creative cloud pricing page elements checks sanity', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.universalNav).toBeTruthy();
-      expect(await prodsanity.startFreeTrialCTA).toBeTruthy();
-      expect(await prodsanity.tabSection).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.universalNav).toBeVisible();
+      await expect(prodsanity.startFreeTrialCTA).toBeVisible();
+      await expect(prodsanity.tabSection).toBeVisible();
     });
   });
   // Illustrator page sanity checks
@@ -81,10 +81,10 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('Illustrator page sanity checks', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.appSwitcher).toBeTruthy();
-      expect(await prodsanity.breadCrumb).toBeTruthy();
-      expect(await prodsanity.freeTrialCTA).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.appSwitcher).toBeVisible();
+      await expect(prodsanity.breadCrumb).toBeVisible();
+      await expect(prodsanity.freeTrialCTA).toBeVisible();
       await prodsanity.freeTrialCTA.click();
       await expect(page).toHaveURL(expectedUrl);
     });
@@ -100,12 +100,12 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('CCT milo pages sanity checks', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.CCBusinessGnavLink).toBeTruthy();
-      expect(await prodsanity.CCTBuynowCTA).toBeTruthy();
-      expect(await prodsanity.supportContact).toBeTruthy();
-      expect(await prodsanity.CCTeamsSingleAppPrice).toBeTruthy();
-      expect(await prodsanity.jarvisFeature).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.CCBusinessGnavLink).toBeVisible();
+      await expect(prodsanity.CCTBuynowCTA).toBeVisible();
+      await expect(prodsanity.supportContact).toBeVisible();
+      await expect(prodsanity.CCTeamsSingleAppPrice).toBeVisible();
+      await expect(prodsanity.jarvisFeature).toBeVisible();
       await prodsanity.CCTBuynowCTA.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(expectedUrl);
@@ -121,18 +121,18 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('CC Model with price segments sanity check', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.modelNavList).toBeTruthy();
-      expect(await prodsanity.individualPlanTab).toBeTruthy();
-      expect(await prodsanity.businessPlanTab).toBeTruthy();
-      expect(await prodsanity.studentAndTeacherTab).toBeTruthy();
-      expect(await prodsanity.IndividualPlanProduct1).toBeTruthy();
-      expect(await prodsanity.IndividualPlanProduct2).toBeTruthy();
-      expect(await prodsanity.IndividualPlanProduct1Price).toBeTruthy();
-      expect(await prodsanity.IndividualPlanProduct2Price).toBeTruthy();
-      expect(await prodsanity.subscriptionModelPanel).toBeTruthy();
-      expect(await prodsanity.panelSubScriptionPick1).toBeTruthy();
-      expect(await prodsanity.panelSubScriptionPick2).toBeTruthy();
-      expect(await prodsanity.purchaseCTA).toBeTruthy();
+      await expect(prodsanity.modelNavList).toBeVisible();
+      await expect(prodsanity.individualPlanTab).toBeVisible();
+      await expect(prodsanity.businessPlanTab).toBeVisible();
+      await expect(prodsanity.studentAndTeacherTab).toBeVisible();
+      await expect(prodsanity.IndividualPlanProduct1).toBeVisible();
+      await expect(prodsanity.IndividualPlanProduct2).toBeVisible();
+      await expect(prodsanity.IndividualPlanProduct1Price).toBeVisible();
+      await expect(prodsanity.IndividualPlanProduct2Price).toBeVisible();
+      await expect(prodsanity.subscriptionModelPanel).toBeVisible();
+      await expect(prodsanity.panelSubScriptionPick1).toBeVisible();
+      await expect(prodsanity.panelSubScriptionPick2).toBeVisible();
+      await expect(prodsanity.purchaseCTA).toBeVisible();
     });
   });
   // CC UK animation discorvery page sanity
@@ -146,11 +146,11 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('CC UK animation discorvery page sanity check', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.UKGnavPriceCTA).toBeTruthy();
-      expect(await prodsanity.breadCrumbUKAnimationLink).toBeTruthy();
-      expect(await prodsanity.jarvisFeature).toBeTruthy();
-      expect(await prodsanity.LearnMoreLink).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.UKGnavPriceCTA).toBeVisible();
+      await expect(prodsanity.breadCrumbUKAnimationLink).toBeVisible();
+      await expect(prodsanity.jarvisFeature).toBeVisible();
+      await expect(prodsanity.LearnMoreLink).toBeVisible();
       await prodsanity.LearnMoreLink.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(expectedUrl);
@@ -167,12 +167,12 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('CC DE tools page sanity check', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.DEGnavPriceCTA).toBeTruthy();
-      expect(await prodsanity.ExpandableGnavMenuItems).toBeTruthy();
-      expect(await prodsanity.jarvisFeature).toBeTruthy();
-      expect(await prodsanity.NavLocalizaedItems1).toBeTruthy();
-      expect(await prodsanity.consonantCards).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.DEGnavPriceCTA).toBeVisible();
+      await expect(prodsanity.ExpandableGnavMenuItems).toBeVisible();
+      await expect(prodsanity.jarvisFeature).toBeVisible();
+      await expect(prodsanity.NavLocalizaedItems1).toBeVisible();
+      await expect(prodsanity.consonantCards).toBeVisible();
       await prodsanity.DEGnavPriceCTA.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(expectedUrl);
@@ -189,13 +189,13 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('CC JP file types page sanity check', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.JPGnavPriceCTA).toBeTruthy();
-      expect(await prodsanity.JPExpandableMegaMenu).toBeTruthy();
-      expect(await prodsanity.jarvisFeature).toBeTruthy();
-      expect(await prodsanity.LocalizedNavLinks).toBeTruthy();
-      expect(await prodsanity.CCJPAllAppsPrice).toBeTruthy();
-      expect(await prodsanity.checkOutLink).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.JPGnavPriceCTA).toBeVisible();
+      await expect(prodsanity.JPExpandableMegaMenu).toBeVisible();
+      await expect(prodsanity.jarvisFeature).toBeVisible();
+      await expect(prodsanity.LocalizedNavLinks).toBeVisible();
+      await expect(prodsanity.CCJPAllAppsPrice).toBeVisible();
+      await expect(prodsanity.checkOutLink).toBeVisible();
       await prodsanity.JPGnavPriceCTA.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(expectedUrl);
@@ -212,10 +212,10 @@ test.describe('verify Key product pages and features on Production pages', () =>
     });
     await test.step('CC FR animation discover page sanity check', async () => {
       await page.waitForLoadState();
-      expect(await prodsanity.Gnav).toBeTruthy();
-      expect(await prodsanity.FRLocalizedNavLinks).toBeTruthy();
-      expect(await prodsanity.jarvisFeature).toBeTruthy();
-      expect(await prodsanity.marqueeCTAFR).toBeTruthy();
+      await expect(prodsanity.Gnav).toBeVisible();
+      await expect(prodsanity.FRLocalizedNavLinks).toBeVisible();
+      await expect(prodsanity.jarvisFeature).toBeVisible();
+      await expect(prodsanity.marqueeCTAFR).toBeVisible();
       await prodsanity.marqueeCTAFR.click();
       await page.waitForTimeout(1000);
       await expect(page).toHaveURL(expectedUrl);
