@@ -5,6 +5,7 @@ import {
   lingoEnFeatures,
   lingoEnRootRedirectFeatures,
   lingoEnPricingPriorityFeatures,
+  lingoEnRegionPickerFeatures,
 } from '../../features/lingo-en/lingo.spec.js';
 import fs from 'fs';
 import path from 'path';
@@ -249,6 +250,7 @@ async function runLingoEnRow(page, context, feature, pagePath = feature.path) {
     await geo.setInternationalCookieValue(context, feature.cookieValue, pageUrl);
   }
   // feature.cookieValue === undefined means "no cookie set" — treated as US/EN default
+  console.info(`[LingoEn] Cookie set='${feature.cookieValue ?? '(none — US/EN default)'}'`);
 
   const { supportedMarketsData } = await geo.navigateAndCaptureSupportedMarkets(pageUrl);
 
@@ -401,11 +403,11 @@ for (const pagePath of PAGE_PATHS) {
 
         const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
         const finalUrl = page.url();
-        console.info(`[LingoEn] Write-Path Continue — Expected cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL: '${expectedHref}' | Actual URL: '${finalUrl}'`);
+        console.info(`[LingoEn] Write-Path Continue — Expected international cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL: '${expectedHref}' | Actual URL: '${finalUrl}'`);
         expect(
-          writtenValue,
-          `Clicking Continue on the [${f.name}] banner should write cookie='${f.recommendedRowPrefix}', got '${writtenValue}'`,
-        ).toBe(f.recommendedRowPrefix);
+          `international cookie='${writtenValue}'`,
+          `[${f.name}]`,
+        ).toBe(`international cookie='${f.recommendedRowPrefix}'`);
         expect(
           finalUrl,
           `Clicking Continue on the [${f.name}] banner should redirect to '${expectedHref}', actual '${finalUrl}'`,
@@ -423,21 +425,21 @@ for (const pagePath of PAGE_PATHS) {
         await geo.clickBannerCloseButton();
 
         const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
-        console.info(`[LingoEn] Write-Path Close — Expected cookie: 'us' | Actual: '${writtenValue}'`);
+        console.info(`[LingoEn] Write-Path Close — Expected international cookie: 'us' | Actual: '${writtenValue}'`);
         expect(
-          writtenValue,
-          `Closing (X) the [${f.name}] banner should write cookie='us', got '${writtenValue}'`,
-        ).toBe('us');
+          `international cookie='${writtenValue}'`,
+          `[${f.name}]`,
+        ).toBe(`international cookie='us'`);
       });
     }
   });
 }
 
 // ─── Modal write-path — clicking the recommendation redirects correctly + sets the cookie ──
-// One plain sample and one dropdown/tie-break sample (e.g. `ch` -> `ch_de` needs a second click
-// on a sub-option — see LingoEnBannerPage.clickModalContinue).
+// Only `ru` and `cn` remain as real Modal rows after root's supportedRegions expansion (see
+// lingo.spec.js) — both plain (no dropdown/tie-break candidate exists anymore dataset-wide).
 const MODAL_WRITE_PATH_SAMPLE = lingoEnFeatures.filter((f) =>
-  ['@lingoEN-geo-de-cookie-de', '@lingoEN-geo-dz-cookie-fi'].includes(f.name));
+  ['@lingoEN-geo-cn-cookie-cn'].includes(f.name));
 
 for (const pagePath of PAGE_PATHS) {
   const slug = pageSlug(pagePath);
@@ -475,16 +477,46 @@ for (const pagePath of PAGE_PATHS) {
         await page.waitForURL((url) => url.toString() !== urlBeforeClick, { timeout: 10000 }).catch(() => {});
 
         const writtenValue = await geo.getInternationalCookieValue(context, pageUrl);
+        const writtenCountry = await geo.getCountryCookieValue(context, pageUrl);
         const finalUrl = page.url();
-        console.info(`[LingoEn] Modal Write-Path — Expected cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL: '${expectedHref}' | Actual URL: '${finalUrl}'`);
+        console.info(`[LingoEn] Modal Write-Path — Expected international cookie: '${f.recommendedRowPrefix}' | Actual: '${writtenValue}' | Expected URL: '${expectedHref}' | Actual URL: '${finalUrl}'`);
+        console.info(`[LingoEn] Modal Write-Path — Expected country cookie: '${f.geoIp}' | Actual: '${writtenCountry}'`);
         expect(
-          writtenValue,
-          `Clicking the [${f.name}] Modal recommendation should write cookie='${f.recommendedRowPrefix}', got '${writtenValue}'`,
-        ).toBe(f.recommendedRowPrefix);
+          `international cookie='${writtenValue}'`,
+          `[${f.name}]`,
+        ).toBe(`international cookie='${f.recommendedRowPrefix}'`);
         expect(
-          finalUrl,
-          `Clicking the [${f.name}] Modal recommendation should redirect to '${expectedHref}', actual '${finalUrl}'`,
-        ).toBe(expectedHref);
+          `country cookie='${writtenCountry}'`,
+          `[${f.name}]`,
+        ).toBe(`country cookie='${f.geoIp}'`);
+
+        // `cn` is a confirmed real exception: its own backend routes the click through to a
+        // generic China business/catalog page instead of the mirrored URL. Observed per tenant:
+        //   pagePath                    | stage actual URL                                                              | prod actual URL
+        //   creativecloud.html          | https://www.adobe.com/cn/creativecloud/roc/business.html?akamaiLocale=cn&country=cn          | https://www.adobe.com/cn/creativecloud/roc/business.html
+        //   creativecloud/plans.html    | https://www.adobe.com/cn/creativecloud/roc/business.html?akamaiLocale=cn&country=cn          | https://www.adobe.com/cn/creativecloud/roc/business.html?sdid=...
+        //   acrobat.html                | https://www.adobe.com/cn/acrobat/roc/business.html?akamaiLocale=cn&country=cn               | https://www.adobe.com/cn/acrobat/roc/business.html?trackingid=...
+        //   products/catalog.html       | https://www.adobe.com/cn/?akamaiLocale=cn&country=cn (bare root, no catalog path at all)    | https://www.adobe.com/cn/?akamaiLocale=cn&country=cn (bare root, no catalog path at all)
+        //   products/photoshop.html     | https://www.adobe.com/cn/creativecloud/roc/business.html?akamaiLocale=cn&country=cn          | https://www.adobe.com/cn/creativecloud/roc/business.html
+        //   products/illustrator.html   | https://www.adobe.com/cn/creativecloud/roc/business.html?akamaiLocale=cn&country=cn          | https://www.adobe.com/cn/creativecloud/roc/business.html?msockid=...
+        // On stage this also lands cross-origin (stage -> www.adobe.com), which the old
+        // origin-only check happened to catch; on prod the origin is already www.adobe.com on
+        // both sides, so an origin-only check misses it. Key off "didn't land on the exact
+        // expected href" instead of origin, on both environments, but still confirm it actually
+        // reached a China ('/cn/') page rather than silently failing to redirect at all (wrong
+        // country, broken link, stuck on the source page).
+        if (f.recommendedRowPrefix === 'cn' && finalUrl !== expectedHref) {
+          expect(
+            finalUrl,
+            `[${f.name}] cn redirect should land on a China ('/cn/') page, actual '${finalUrl}'`,
+          ).toMatch(/\/cn\//);
+          console.info(`[LingoEn] [${f.name}] China's expected URL: redirect set to different page '${finalUrl}'`);
+        } else {
+          expect(
+            finalUrl,
+            `Clicking the [${f.name}] Modal recommendation should redirect to '${expectedHref}', actual '${finalUrl}'`,
+          ).toBe(expectedHref);
+        }
       });
     }
   });
@@ -549,5 +581,60 @@ test.describe('LingoEn | Pricing Priority Chain', () => {
     });
   }
 });
+
+// ─── Footer region picker — africa/cis_en/mena_en umbrella-market sub-locales ──────────────
+// These countries have no dedicated page, so selecting one from the "Choose your region" modal
+// redirects back to the base US page. Confirmed live: international cookie -> 'us', country
+// cookie -> the country's own GeoIP code, pricing NOT uniformly US$ (om/ma/jo/bh show their own
+// real local currency).
+
+for (const pagePath of PAGE_PATHS) {
+  const slug = pageSlug(pagePath);
+  const base = process.env.BASE_URL || 'https://www.stage.adobe.com';
+  const rootUrl = new URL(pagePath, base).toString();
+
+  test.describe(`LingoEn | Region Picker | ${pagePath}`, () => {
+    // Opening the region picker requires scrolling through pages' own scroll-jacked animated
+    // sections (confirmed live: up to ~40s under parallel load, e.g. on `creativecloud.html`) —
+    // scoped to just this describe block so it doesn't inflate the timeout for every other group.
+    test.describe.configure({ timeout: 150000 });
+
+    test(`@lingoEN-regionpicker-labels-visible-page-${slug}`, { tag: ['@lingo-en', '@region-picker', `@page-${slug}`] }, async ({ page }) => {
+      const geo = new LingoEnBannerPage(page);
+      await page.goto(rootUrl, { waitUntil: 'domcontentloaded' });
+      await geo.openRegionPickerModal();
+      const labels = await geo.getRegionPickerLabels();
+      for (const f of lingoEnRegionPickerFeatures) {
+        expect(labels, `[region-picker] expected '${f.label}' to be listed in the "Choose your region" modal`).toContain(f.label);
+      }
+    });
+
+    for (const f of lingoEnRegionPickerFeatures) {
+      test(`${f.name}-page-${slug}`, { tag: [...f.tags.split(' ').filter(Boolean), `@page-${slug}`] }, async ({ page, context }) => {
+        const geo = new LingoEnBannerPage(page);
+        await page.goto(rootUrl, { waitUntil: 'domcontentloaded' });
+        await geo.openRegionPickerModal();
+        const { url, internationalCookie, countryCookie } = await geo.selectRegionAndReadState(f.label, context);
+
+        console.info(`[LingoEn] Region picker '${f.label}' — Redirect | Expected: '${rootUrl}' | Actual: '${url}'`);
+        console.info(`[LingoEn] Region picker '${f.label}' — Cookies | Expected: international='us', country='${f.geoCode}' | Actual: international='${internationalCookie}', country='${countryCookie}'`);
+
+        expect(url, `[${f.name}] expected redirect to this page's own root (no dedicated page for '${f.label}')`).toBe(rootUrl);
+        // Labeling the compared value itself (not just the assertion message) so a failure's
+        // Expected/Received diff reads unambiguously — bare "us" is easy to misread as belonging
+        // to the OTHER cookie, since 'international' also expects 'us'.
+        expect(`international cookie='${internationalCookie}'`, `[${f.name}]`).toBe(`international cookie='us'`);
+        expect(`country cookie='${countryCookie}'`, `[${f.name}]`).toBe(`country cookie='${f.geoCode}'`);
+
+        const { distinct: pricingSymbols, totalCount: pricingSymbolCount } = await geo.getPricingSymbols();
+        console.info(`[LingoEn] Region picker '${f.label}' — Pricing | Expected: '${f.expectedSymbol}' | Rendered: ${JSON.stringify(pricingSymbols)} (${pricingSymbolCount} currency symbol(s))`);
+        expect(
+          pricingSymbols.includes(f.expectedSymbol),
+          `[${f.name}] expected '${f.expectedSymbol}' pricing for '${f.label}', got: ${JSON.stringify(pricingSymbols)}`,
+        ).toBe(true);
+      });
+    }
+  });
+}
 
 

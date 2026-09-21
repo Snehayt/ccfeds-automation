@@ -48,6 +48,15 @@ export class LingoEnBannerPage {
     // Pricing (merchandising card price blocks — .price-currency-symbol seen across current/
     // struck-through/alternative price variants, e.g. "Ar$" for Argentina, "US$"/"$" for US).
     this.priceCurrencySymbols = page.locator('.price-currency-symbol');
+
+    // Footer "Change region" picker (`#langnav` modal, fragment lazy-loaded from
+    // /cc-shared/fragments/regions). The button itself only exists once the footer has scrolled
+    // into view (lazy-mounted), and its FIRST click after that only attaches the modal's own click
+    // handler rather than opening it — confirmed live: a second click is required to actually open
+    // the modal. See `openRegionPickerModal()` below, which handles both quirks.
+    this.regionPickerButton = page.locator('div.feds-regionPicker-wrapper a.feds-regionPicker');
+    this.regionPickerModal = page.locator('#langnav');
+    this.regionPickerLinks = this.regionPickerModal.locator('a');
   }
 
   // ─── URL / path parsing ────────────────────────────────────────────────────
@@ -408,6 +417,16 @@ export class LingoEnBannerPage {
   }
 
   /**
+   * Read back the current `country` cookie value. Confirmed live: only the Modal write-path
+   * sets this (alongside `international`, both equal to the GeoIP, e.g. `ru`→`international=ru`
+   * + `country=ru`) — Banner Continue/Close only ever write `international`, never `country`.
+   */
+  async getCountryCookieValue(context, pageUrl) {
+    const cookies = await context.cookies(pageUrl);
+    return cookies.find((c) => c.name === 'country')?.value;
+  }
+
+  /**
    * Click the banner's "Continue" link (navigates to the recommended market's site). On some
    * pages (confirmed on /acrobat.html and /creativecloud.html — real navigation confirmed
    * manually, e.g. to /be_nl/acrobat.html) the resulting navigation isn't reliably auto-waited
@@ -507,36 +526,51 @@ export class LingoEnBannerPage {
   }
 
   /**
-   * Confirmed live (not ISO-4217 guesswork — a prior version of this map used country-currency
-   * facts and was wrong for at least `vn`, which genuinely prices in USD): the real price symbol
-   * shown on each recommended market's own dedicated prod page (e.g.
-   * `www.adobe.com/il_he/creativecloud.html` for `il_he`). `null` means the page's price block
-   * wasn't found at all when checked (`cis_en`, `cn`, `ru`) — a separate concern from a currency
-   * mismatch, not asserted here. Prod is just where these reference numbers were gathered from —
-   * the same expectation applies however the suite is run (stage/prod/aem.live).
+   * `ROOT_SUPPORTED_GEO_PRICE_SYMBOL` (keyed by GeoIP) — price on THIS page itself when visited
+   * as that GeoIP, e.g. `www.stage.adobe.com/creativecloud.html?akamaiLocale=jp`. Used for
+   * Banner/No-Action outcomes.
    *
-   * Two different things use this data, depending on which UI outcome the row produced:
-   *   - `ROOT_SUPPORTED_GEO_PRICE_SYMBOL` (by bare GeoIP) — for Banner/No Action rows, where the
-   *     GeoIP IS one of root's own supportedRegions, so the visitor sees their own real price.
-   *   - `MARKET_PRICE_SYMBOL_BY_PREFIX` (by recommended row prefix) — for Modal rows, where the
-   *     GeoIP ISN'T one of root's supportedRegions, so the check looks at the RECOMMENDED
-   *     market's own real price instead.
+   * `MARKET_PRICE_SYMBOL_BY_PREFIX` (keyed by market/row prefix) — price on THAT market's own
+   * page instead, e.g. `www.stage.adobe.com/jp/creativecloud.html`. Only used as a fallback when
+   * a GeoIP has no entry yet in `ROOT_SUPPORTED_GEO_PRICE_SYMBOL` (same real currency either way).
+   * `null` = no independent page to check (redirects to root, e.g. `cis_en`/`africa`/`mena_en`;
+   * or price block never found, e.g. `cn`/`ru`).
+   *
+   * Modal outcomes use neither table — see `BASE_PAGE_DEFAULT_PRICE_SYMBOL` below.
    */
   static ROOT_SUPPORTED_GEO_PRICE_SYMBOL = {
     be: '€', ph: '₱', il: 'NIS', id: 'Rp', my: 'RM', th: '฿', vn: 'US$', lu: '€',
     hk: 'HK$', eg: 'LE', kw: 'KD', qa: 'QR', sa: 'SAR', ae: 'AED', gr: '€',
     ca: 'CAD $', nz: 'NZ$', ng: '₦', sg: 'S$', us: 'US$', ie: '€', za: 'R',
+    ar: 'Ar$', au: 'A$', bg: '€', br: 'R$', ch: 'CHF', cl: 'Ch$', co: 'Col$', cr: 'US$',
+    cz: '€', de: '€', dk: 'DKK', ec: 'US$', ee: '€', es: '€', fi: '€', fr: '€', gb: '£',
+    gt: 'US$', hu: '€', in: '₹', it: '€', jp: '円', kr: '₩', lt: '€', lv: '€', mx: 'MXN $',
+    nl: '€', no: 'NOK', pe: 'S/', pl: '€', pr: 'US$', pt: '€', ro: '€', se: 'SEK', si: '€',
+    sk: '€', tr: '₺', tw: 'NT$', ua: 'US$', at: '€',
+    // africa/cis_en/mena_en sub-locale GeoIPs — confirmed NOT uniformly US$: mena_en's om/ma/jo/bh
+    // show their own real local currency, the rest of africa/cis_en/mena_en price in US$.
+    mu: 'US$', ke: 'US$', gh: 'US$', tz: 'US$',
+    am: 'US$', az: 'US$', ge: 'US$', md: 'US$', kz: 'US$', kg: 'US$', tj: 'US$', tm: 'US$', uz: 'US$',
+    om: 'RO', ma: 'DH', lb: 'US$', jo: 'JD', iq: 'US$', dz: 'US$', bh: 'BD',
   };
 
   static MARKET_PRICE_SYMBOL_BY_PREFIX = {
-    ae_ar: 'AED', africa: 'US$', ar: 'Ar$', at: '€', au: 'A$', be_nl: '€', bg: '€', br: 'R$',
+    ae_ar: 'AED', ar: 'Ar$', at: '€', au: 'A$', be_nl: '€', bg: '€', br: 'R$',
     ch_de: 'CHF', ch_it: 'CHF', cis_en: null, cl: 'Ch$', cn: null, co: 'Col$', cr: 'US$',
     cz: '€', de: '€', dk: 'DKK', ec: 'US$', ee: '€', eg_ar: 'LE', es: '€', fi: '€', fr: '€',
     gr_el: '€', gt: 'US$', hk_zh: 'HK$', hu: '€', id_id: 'Rp', il_he: 'NIS', in: '₹',
     in_hi: '₹', it: '€', jp: '円', kr: '₩', kw_ar: 'KD', lt: '€', lu_de: '€', lv: '€',
-    mena_ar: 'US$', mena_en: 'US$', mx: 'MXN $', my_ms: 'RM', nl: '€', no: 'NOK', pe: 'S/',
+    // `africa` and `mena_en` no longer have their own dedicated page — they redirect straight to
+    // root (see the R22/R24 redirect rows), so there's no independent price to verify against;
+    // `null` here matches `cis_en`/`cn`/`ru`'s existing "no page to check" convention. Confirmed
+    // live: visiting /africa/ or /mena_en/ without a locale override just shows root's own price
+    // for whoever's real IP hits it, not a fixed value.
+    africa: null, mena_ar: 'US$', mena_en: null, mx: 'MXN $', my_ms: 'RM', nl: '€', no: 'NOK', pe: 'S/',
     ph_fil: '₱', pl: '€', pr: 'US$', pt: '€', qa_ar: 'QR', ro: '€', ru: null, sa_ar: 'SAR',
     se: 'SEK', si: '€', sk: '€', th_th: '฿', tr: '₺', tw: 'NT$', ua: 'US$', uk: '£', vn_vi: 'US$',
+    // `ch`/`gb` are GeoIP codes, not market prefixes — there's no `/ch/` or `/gb/` page (the real
+    // pages are `/ch_de/`, `/ch_it/`, `/uk/`); their real ground truth lives in
+    // ROOT_SUPPORTED_GEO_PRICE_SYMBOL instead, keyed by GeoIP.
   };
 
   /**
@@ -572,10 +606,10 @@ export class LingoEnBannerPage {
     // it's valid for any base whose own supportedRegions also covers that GeoIP, not just root.
     if (geoIpSupported) {
       const byGeoIp = LingoEnBannerPage.ROOT_SUPPORTED_GEO_PRICE_SYMBOL[(geoIp ?? '').toLowerCase()];
-      if (byGeoIp) return { symbol: byGeoIp, reason: `GeoIP '${geoIp}' is in the base page's own supportedRegions — real pricing expected` };
+      if (byGeoIp) return { symbol: byGeoIp, reason: `region '${geoIp}' is supported on this site, so '${geoIp}'s own pricing is shown` };
       const byMarket = LingoEnBannerPage.MARKET_PRICE_SYMBOL_BY_PREFIX[recommendedRowPrefix];
       return byMarket
-        ? { symbol: byMarket, reason: `GeoIP '${geoIp}' has no direct ground truth yet — market '${recommendedRowPrefix}'s own real price applies regardless of language` }
+        ? { symbol: byMarket, reason: `region '${geoIp}' maps to market '${recommendedRowPrefix}', so '${recommendedRowPrefix}'s pricing is shown` }
         : { symbol: null, reason: null };
     }
     const symbol = LingoEnBannerPage.BASE_PAGE_DEFAULT_PRICE_SYMBOL[pagePrefix ?? ''];
@@ -599,6 +633,62 @@ export class LingoEnBannerPage {
     if (!expected) return null;
     if (symbols.includes(expected)) return null;
     return `GeoIP '${geoIp}'${recommendedRowPrefix ? ` / market '${recommendedRowPrefix}'` : ''} expected '${expected}' pricing, got: ${JSON.stringify(symbols)}`;
+  }
+
+  // ─── Footer region picker ───────────────────────────────────────────────────
+
+  /**
+   * Opens the footer "Choose your region" modal (`#langnav`). The button is lazy-mounted — it
+   * doesn't exist in the DOM at all until the footer's own content loads, which only happens once
+   * the page has actually been scrolled near it. Confirmed live: some pages have scroll-jacked
+   * animated sections that hold the scroll position (and `document.body.scrollHeight`) frozen for
+   * several seconds before releasing — under real parallel-worker load, `home` takes ~30-35s and
+   * `creativecloud` ~40s. This repeatedly jumps to the current bottom of the page and re-checks
+   * for the button, rather than waiting once with a fixed timeout, so it naturally keeps retrying
+   * through any such freeze. Once the button exists, its FIRST click only attaches the modal's own
+   * click handler rather than opening it — confirmed live on stage: a second click is required.
+   */
+  async openRegionPickerModal() {
+    for (let attempt = 0; attempt < 90; attempt += 1) {
+      if (await this.regionPickerButton.count()) break;
+      await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+      await this.page.waitForTimeout(500);
+    }
+    await this.regionPickerButton.waitFor({ state: 'visible', timeout: 20000 });
+    await this.regionPickerButton.click();
+    await this.regionPickerModal.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
+    if (!(await this.regionPickerModal.isVisible())) {
+      await this.regionPickerButton.click();
+      await this.regionPickerModal.waitFor({ state: 'visible', timeout: 15000 });
+    }
+  }
+
+  /** All region link labels currently shown in the open "Choose your region" modal. */
+  async getRegionPickerLabels() {
+    return (await this.regionPickerLinks.allTextContents()).map((t) => t.trim()).filter(Boolean);
+  }
+
+  /**
+   * Clicks a region by its exact visible label (e.g. "Bahrain"), waits for the resulting
+   * navigation, and returns the `international`/`country` cookie values plus the resolved URL —
+   * umbrella markets (africa/cis_en/mena_en sub-locales) have no dedicated page, so selecting one
+   * redirects back to the base US page rather than a country-specific path.
+   */
+  async selectRegionAndReadState(label, context) {
+    await this.regionPickerModal.getByRole('link', { name: label, exact: true }).click();
+    await this.page.waitForLoadState('domcontentloaded');
+    const cookies = await context.cookies();
+    const byName = (name) => cookies.find((c) => c.name === name)?.value;
+    // Countries with no dedicated page (e.g. sub-locale umbrella markets) just close the modal
+    // without clearing the `#langnav` hash it was opened with — strip it, it's leftover from
+    // opening the modal, not part of the actual navigation destination.
+    const url = new URL(this.page.url());
+    url.hash = '';
+    return {
+      url: url.toString(),
+      internationalCookie: byName('international'),
+      countryCookie: byName('country'),
+    };
   }
 
   // ─── UI helpers ─────────────────────────────────────────────────────────────
