@@ -2,6 +2,9 @@ import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/doodlebugaudiogeneration.spec.js';
 import DoodlebugAudioGeneration from '../../selectors/cc/doodlebugaudiogeneration.page.js';
 
+// Matches firefly.adobe.com, firefly-stage.corp.adobe.com, firefly.stage.adobe.com
+const isFireflyUrl = (url) => /firefly[^/]*\.adobe\.com/.test(url.toString());
+
 const uiFeatures = features.filter((f) => f.type === 'ui');
 const functionalFeatures = features.filter((f) => f.type === 'functional');
 const customPromptFeatures = features.filter((f) => f.type === 'customprompt');
@@ -91,10 +94,7 @@ test.describe('CC Doodlebug AI Voice Generator Widget', () => {
         });
 
         await test.step('step-5: Verify Generate navigates to Firefly text-to-speech page with custom prompt', async () => {
-          await page.waitForURL(
-            (url) => url.toString().includes('firefly-stage.corp.adobe.com'),
-            { timeout: 15000, waitUntil: 'domcontentloaded' },
-          );
+          await page.waitForURL(isFireflyUrl, { timeout: 15000, waitUntil: 'domcontentloaded' });
           expect(page.url()).toContain('textToSpeech');
         });
       });
@@ -126,10 +126,7 @@ test.describe('CC Doodlebug AI Voice Generator Widget', () => {
 
         await test.step('step-4: Verify Generate navigates to Firefly text-to-speech page', async () => {
           // Firefly SPA fires domcontentloaded quickly but delays the load event — use domcontentloaded to avoid timeout.
-          await page.waitForURL(
-            (url) => url.toString().includes('firefly-stage.corp.adobe.com'),
-            { timeout: 15000, waitUntil: 'domcontentloaded' },
-          );
+          await page.waitForURL(isFireflyUrl, { timeout: 15000, waitUntil: 'domcontentloaded' });
           expect(page.url()).toContain('textToSpeech');
         });
       });

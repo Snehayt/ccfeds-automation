@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/ostprices.spec.js';
 import Ostprices from '../../selectors/cc/ostprices.page.js';
 
@@ -21,8 +21,8 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
     await test.step('step-2: Test CC all apps price and UCv3 email checkout, buy button checks in marquee', async () => {
       await page.waitForLoadState();
       
-      expect(await ost.productName).toBeTruthy();
-      expect(await ost.usCurrencySymbol).toBeTruthy();
+      await expect(ost.productName).toBeVisible();
+      await expect(ost.usCurrencySymbol).toBeVisible();
 
       await expect(await ost.price).toBeVisible();
       await expect(await ost.emailBuynowCta).toBeVisible();
@@ -47,16 +47,16 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   
   await test.step('step-2: Verify the month and year price display , CTA for UCv3 segment checkout destination', async () => {
    await page.waitForLoadState();
-   expect(ost.productName1).toBeTruthy();
-   expect(ost.usCurrencySymbol).toBeTruthy();
+   await expect(ost.productName1).toBeVisible();
+   await expect(ost.usCurrencySymbol).toBeVisible();
 
    await expect(ost.ccPriceBeforeDelimiter).toBeVisible();
    await expect(ost.ccPriceAfterDelimiter).toBeVisible();
    await expect(ost.ccLicenseCommitment).toBeVisible();
    await expect(ost.ccNumberOfLicenses).toBeVisible();
 
-   await expect(ost.productName2).toBeTruthy();
-   await expect(ost.usCurrencySymbol).toBeTruthy();
+   await expect(ost.productName2).toBeVisible();
+   await expect(ost.usCurrencySymbol).toBeVisible();
 
    await expect(ost.psPriceBeforeDelimiter).toBeVisible();
    await expect(ost.psPriceAfterDelimiter).toBeVisible();
@@ -82,8 +82,8 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   
   await test.step('step-2: verify LR STU price and email CTA', async () => {
    await page.waitForLoadState();
-   await expect(ost.SteProductName).toBeTruthy();
-   await expect(ost.usCurrencySymbol).toBeTruthy();
+   await expect(ost.SteProductName).toBeVisible();
+   await expect(ost.usCurrencySymbol).toBeVisible();
    await expect(ost.SteLrPrice).toBeVisible();
 
    await ost.emailBuynowCta.click();
@@ -105,9 +105,9 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   await test.step('step-2: verify CC strike through prices are showup correctly with valid store bundle CTA destination', async () => {
    await page.waitForLoadState();
    await expect(ost.productName3).toBeVisible();
-   await expect(ost.usCurrencySymbol).toBeTruthy();
+   await expect(ost.usCurrencySymbol).toBeVisible();
    await expect(ost.priceLabelActual).toBeVisible();
-   await expect(ost.strikeThroughProperty).toBeTruthy();
+   await expect(ost.strikeThroughProperty).toBeVisible();
    await expect(ost.strikeThroughPrice).toBeVisible();
    await expect(ost.priceLabelNow).toBeVisible();
 
@@ -131,8 +131,8 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   
   await test.step('step-2: Photoshop product month, year price with CTAs', async () => {
    await page.waitForLoadState();
-   await expect(ost.headingDiscription).toBeTruthy();
-   await expect(ost.headingDiscription2).toBeTruthy();
+   await expect(ost.headingDiscription).toBeVisible();
+   await expect(ost.headingDiscription2).toBeVisible();
    await expect(ost.firstCardHeading).toBeVisible();
    await expect(ost.individualPsPriceMonth).toBeVisible();
    await expect(ost.individualPsPriceYear).toBeVisible();
@@ -184,7 +184,7 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
    await expect(ost.productName2).toBeVisible();
    await expect(ost.cc_pricemonth_jp).toBeVisible();
    await expect(ost.ps_priceyear_jp).toBeVisible();
-   await expect(ost.jpCurrencySymbol).toBeTruthy();
+   await expect(ost.jpCurrencySymbol).toBeVisible();
 
 
    // click 'Buy now' (ucv3 checkout, checkout workflow = segmentation ) button and verify the checkout page.   
@@ -208,8 +208,8 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   
   await test.step('step-2: Verify STE price for Lighthouse in JP currency', async () => {
    await page.waitForLoadState();
-   await expect(ost.SteProductName).toBeTruthy();
-   await expect(ost.jpCurrencySymbol).toBeTruthy();
+   await expect(ost.SteProductName).toBeVisible();
+   await expect(ost.jpCurrencySymbol).toBeVisible();
    await expect(ost.SteLrJpPrice).toBeVisible();
 
   // click 'Get started' (ucv3 checkout, checkout workflow = email ) button and verify the checkout page.   
@@ -234,9 +234,9 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   await test.step('step-2: JP locale monthly, year subscriptions', async () => {
    await page.waitForLoadState();
    await expect(ost.productName3).toBeVisible();
-   await expect(ost.jpCurrencySymbol).toBeTruthy();
+   await expect(ost.jpCurrencySymbol).toBeVisible();
    await expect(ost.priceLabelActual).toBeVisible();
-   await expect(ost.strikeThroughProperty).toBeTruthy();
+   await expect(ost.strikeThroughProperty).toBeVisible();
    await expect(ost.strikeThroughPriceJp1).toBeVisible();
    await expect(ost.priceLabelNow).toBeVisible();
 
@@ -261,8 +261,8 @@ test.describe('test Offer selector tool price formats and checkout flows in US &
   
   await test.step('step-2: JP locale monthly, year subscriptions', async () => {
    await page.waitForLoadState();
-   await expect(ost.headingDiscription).toBeTruthy();
-   await expect(ost.headingDiscription2).toBeTruthy();
+   await expect(ost.headingDiscription).toBeVisible();
+   await expect(ost.headingDiscription2).toBeVisible();
    await expect(ost.firstCardHeading).toBeVisible();
    await expect(ost.individualPsPriceMonthJP).toBeVisible();
    await expect(ost.individualPsPriceYearJP).toBeVisible();

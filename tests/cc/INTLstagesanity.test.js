@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/INTLstagesanity.spec.js';
 import Stageintlpages from '../../selectors/cc/INTLstagesanity.page.js';
 
@@ -16,13 +16,13 @@ test.describe('INTL CC, CCT page checks', () => {
     });
     await test.step('STAGE CC business US page checks', async () => {
       await page.waitForLoadState();
-      expect(await stageintlpages.gnavFreeTrial).toBeTruthy();
-      expect(await stageintlpages.gnavBuyNow).toBeTruthy();
-      expect(await stageintlpages.gnavContactSalesPhoneNumner).toBeTruthy();
-      expect(await stageintlpages.freeTrial).toBeTruthy();
-      expect(await stageintlpages.jarvisFeature).toBeTruthy();
-      expect(await stageintlpages.merchCard).toBeTruthy();
-      expect(await stageintlpages.cardPrice).toBeTruthy();
+      await expect(stageintlpages.gnavFreeTrial).toBeVisible();
+      await expect(stageintlpages.gnavBuyNow).toBeVisible();
+      await expect(stageintlpages.gnavContactSalesPhoneNumner).toBeVisible();
+      await expect(stageintlpages.freeTrial).toBeVisible();
+      await expect(stageintlpages.jarvisFeature).toBeVisible();
+      await expect(stageintlpages.merchCard).toBeVisible();
+      await expect(stageintlpages.cardPrice).toBeVisible();
     });
   });
   test(`${features[1].name},${features[1].tags}`, async ({ page, baseURL }) => {
@@ -34,12 +34,12 @@ test.describe('INTL CC, CCT page checks', () => {
     });
     await test.step('CC IN locale Gnav, Marquee, tabs, price, javis checks', async () => {
       await page.waitForLoadState();
-      expect(await stageintlpages.gnavFeatures).toBeTruthy();
-      expect(await stageintlpages.gnavComparePlans).toBeTruthy();
-      expect(await stageintlpages.marqueeFreeTrial).toBeTruthy();
-      expect(await stageintlpages.tabsFeature).toBeTruthy();
-      expect(await stageintlpages.stickyPromoBar).toBeTruthy();
-      expect(await stageintlpages.jarvisFeature).toBeTruthy();
+      await expect(stageintlpages.gnavFeatures).toBeVisible();
+      await expect(stageintlpages.gnavComparePlans).toBeVisible();
+      await expect(stageintlpages.marqueeFreeTrial).toBeVisible();
+      await expect(stageintlpages.tabsFeature).toBeVisible();
+      await expect(stageintlpages.stickyPromoBar).toBeVisible();
+      await expect(stageintlpages.jarvisFeature).toBeVisible();
     });
   });
   test(`${features[2].name},${features[2].tags}`, async ({ page, baseURL }) => {
@@ -51,14 +51,14 @@ test.describe('INTL CC, CCT page checks', () => {
     });
     await test.step('KR locale CC Stu page for megamenu,bread crumbs, masonry blk, marquee , prices, student phno, footer ', async () => {
       await page.waitForLoadState();
-      expect(await stageintlpages.megaMenuItem).toBeTruthy();
-      expect(await stageintlpages.breadCrumb).toBeTruthy();
-      expect(await stageintlpages.marqueeBuyCTA).toBeTruthy();
-      expect(await stageintlpages.masonryLayout).toBeTruthy();
-      expect(await stageintlpages.marqueePrice).toBeTruthy();
-      expect(await stageintlpages.priceCard).toBeTruthy();
-      expect(await stageintlpages.studentSupportPhoneNumber).toBeTruthy();
-      expect(await stageintlpages.globelFooter).toBeTruthy();
+      await expect(stageintlpages.megaMenuItem).toBeVisible();
+      await expect(stageintlpages.breadCrumb).toBeVisible();
+      await expect(stageintlpages.marqueeBuyCTA).toBeVisible();
+      await expect(stageintlpages.masonryLayout).toBeVisible();
+      await expect(stageintlpages.marqueePrice).toBeVisible();
+      await expect(stageintlpages.priceCard).toBeVisible();
+      await expect(stageintlpages.studentSupportPhoneNumber).toBeVisible();
+      await expect(stageintlpages.globelFooter).toBeVisible();
     });
   });
   test(`${features[3].name},${features[3].tags}`, async ({ page, baseURL }) => {
@@ -70,14 +70,14 @@ test.describe('INTL CC, CCT page checks', () => {
     });
     await test.step('JP PS product integreation,mobile/tablet/desktop promo presence check', async () => {
       await page.waitForLoadState();
-      expect(await stageintlpages.psNavigationToProduct).toBeTruthy();
-      expect(await stageintlpages.mobilePromoText).toBeTruthy();
-      expect(await stageintlpages.tabletPromoText).toBeTruthy();
-      expect(await stageintlpages.desktopPromoText).toBeTruthy();
+      await expect(stageintlpages.psNavigationToProduct).toBeVisible();
+      await expect(stageintlpages.mobilePromoText).toBeVisible();
+      await expect(stageintlpages.tabletPromoText).toBeVisible();
+      await expect(stageintlpages.desktopPromoText).toBeVisible();
     });
   });
   test(`${features[4].name},${features[4].tags}`, async ({ page, baseURL }) => {
-    console.info(`[Test Page]: ${baseURL}${features[1].path}`);
+    console.info(`[Test Page]: ${baseURL}${features[4].path}`);
     await test.step('FR locale premiere product page checks', async () => {
       await page.goto(`${baseURL}${features[4].path}`);
       await page.waitForLoadState('domcontentloaded');
@@ -85,14 +85,14 @@ test.describe('INTL CC, CCT page checks', () => {
     });
     await test.step('FR Premier page for princing , merch card checks', async () => {
       await page.waitForLoadState();
-      expect(await stageintlpages.pricingModelReferece).toBeTruthy();
-      expect(await stageintlpages.merchCard1).toBeTruthy();
-      expect(await stageintlpages.merchCard2).toBeTruthy();
-      expect(await stageintlpages.jarvisFeature).toBeTruthy();
+      await expect(stageintlpages.pricingModelReferece).toBeVisible();
+      await expect(stageintlpages.merchCard1).toBeVisible();
+      await expect(stageintlpages.merchCard2).toBeVisible();
+      await expect(stageintlpages.jarvisFeature).toBeVisible();
     });
   });
   test(`${features[5].name},${features[5].tags}`, async ({ page, baseURL }) => {
-    console.info(`[Test Page]: ${baseURL}${features[1].path}`);
+    console.info(`[Test Page]: ${baseURL}${features[5].path}`);
     await test.step('FR CC Business page checks', async () => {
       await page.goto(`${baseURL}${features[5].path}`);
       await page.waitForLoadState('domcontentloaded');
@@ -100,12 +100,12 @@ test.describe('INTL CC, CCT page checks', () => {
     });
     await test.step('FR business admin console, sale contact, bu tabs, product feature table test', async () => {
       await page.waitForLoadState();
-      expect(await stageintlpages.adminConsoleGnavLink).toBeTruthy();
-      expect(await stageintlpages.salesContactGnavLink).toBeTruthy();
-      expect(await stageintlpages.businessTabListContainer).toBeTruthy();
-      expect(await stageintlpages.productFeatureTable).toBeTruthy();
-      expect(await stageintlpages.firstRow).toBeTruthy();
-      expect(await stageintlpages.secondRow).toBeTruthy();
+      await expect(stageintlpages.adminConsoleGnavLink).toBeVisible();
+      await expect(stageintlpages.salesContactGnavLink).toBeVisible();
+      await expect(stageintlpages.businessTabListContainer).toBeVisible();
+      await expect(stageintlpages.productFeatureTable).toBeVisible();
+      await expect(stageintlpages.firstRow).toBeVisible();
+      await expect(stageintlpages.secondRow).toBeVisible();
     });
   });
 });

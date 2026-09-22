@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/mobile-branch-banner.spec.js';
 import Mobilebanner from '../../selectors/cc/mobile-branch-banner.page.js';
 
@@ -17,13 +17,13 @@ test.describe('verify mobile branch banner presence CC pages', () => {
     await test.step('mobile branch banner shows in page', async () => {
       await page.waitForLoadState();
       await page.waitForTimeout(6000);
-      expect(await mobilebanner.branchBanner).toBeTruthy();
-      expect(await mobilebanner.branchBannerAnimation).toBeTruthy();
-      expect(await mobilebanner.branchBannerIcon).toBeTruthy();
-      expect(await mobilebanner.branchBannerDescription).toBeTruthy();
-      expect(await mobilebanner.branchBannerProductRatings).toBeTruthy();
-      expect(await mobilebanner.branchBannerReviews).toBeTruthy();
-      expect(await mobilebanner.branchProductCTA).toBeTruthy();
+      await expect(mobilebanner.branchBanner).toBeVisible();
+      await expect(mobilebanner.branchBannerAnimation).toBeVisible();
+      await expect(mobilebanner.branchBannerIcon).toBeVisible();
+      await expect(mobilebanner.branchBannerDescription).toBeVisible();
+      await expect(mobilebanner.branchBannerProductRatings).toBeVisible();
+      await expect(mobilebanner.branchBannerReviews).toBeVisible();
+      await expect(mobilebanner.branchProductCTA).toBeVisible();
     });
   });
   test(`${features[1].name},${features[1].tags}`, async ({ page, baseURL }) => {

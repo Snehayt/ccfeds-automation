@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../../utils/fixtures/test.fixture.js';
 import { features } from '../../features/cc/youtubeGallery.spec.js';
 import YoutubeGallery from '../../selectors/cc/youtubeGallery.page.js';
 
@@ -37,7 +37,8 @@ test.describe('youtube gallery', () => {
     });
   });
 
-  test(`${features[2].name},${features[2].tags}`, async ({ page, baseURL }) => {
+  test(`${features[2].name},${features[2].tags}`, async ({ page, baseURL, isMobile }) => {
+    test.skip(isMobile, 'card enlarge is a mouse-hover effect; touch devices have no hover state to trigger it');
     console.info(`[Test Page]: ${baseURL}${features[2].path}`);
     await test.step('open youtube gallery page', async () => {
       await page.goto(`${baseURL}${features[2].path}`);
@@ -49,7 +50,8 @@ test.describe('youtube gallery', () => {
     });
   });
 
-  test(`${features[3].name},${features[3].tags}`, async ({ page, baseURL }) => {
+  test(`${features[3].name},${features[3].tags}`, async ({ page, baseURL, isMobile }) => {
+    test.skip(isMobile, 'video-on-hover is a mouse-hover effect; touch devices have no hover state to trigger it');
     console.info(`[Test Page]: ${baseURL}${features[3].path}`);
     await test.step('open youtube gallery page', async () => {
       await page.goto(`${baseURL}${features[3].path}`);
