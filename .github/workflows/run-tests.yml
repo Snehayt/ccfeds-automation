@@ -329,7 +329,23 @@ jobs:
           esac
 
       - name: Run tests
+        shell: bash
         run: |
+          set -Eeuo pipefail
+
+          cleanup() {
+            local rc=$?
+            if [ -n "${PLAYWRIGHT_PID:-}" ] && kill -0 "$PLAYWRIGHT_PID" 2>/dev/null; then
+              kill -INT -- -"$PLAYWRIGHT_PID" 2>/dev/null || \
+              kill -TERM -- -"$PLAYWRIGHT_PID" 2>/dev/null || \
+              kill -KILL -- -"$PLAYWRIGHT_PID" 2>/dev/null || true
+              wait "$PLAYWRIGHT_PID" 2>/dev/null || true
+            fi
+            exit "$rc"
+          }
+
+          trap cleanup INT TERM
+
           GREP="${{ needs.setup.outputs.grep_value }}"
 
           npx playwright test ${{ needs.setup.outputs.test_path }} \
@@ -338,7 +354,13 @@ jobs:
             ${GREP:+--grep "$GREP"} \
             ${{ needs.setup.outputs.retries_flag }} \
             ${{ needs.setup.outputs.workers_flag }} \
-            --output=test-results
+            --output=test-results &
+
+          PLAYWRIGHT_PID=$!
+          wait "$PLAYWRIGHT_PID"
+          status=$?
+          trap - INT TERM
+          exit "$status"
         env:
           BASE_URL:     ${{ matrix.url }}
           LOCALE:       ${{ needs.setup.outputs.locale }}
@@ -351,7 +373,6 @@ jobs:
           TRIGGERED_BY:   ${{ github.event.client_payload.triggered_by || github.actor }}
           RUN_URL:        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           CI:             ''
-        continue-on-error: true
 
       - name: Upload results artifact
         uses: actions/upload-artifact@v4
