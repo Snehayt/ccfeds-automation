@@ -390,7 +390,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    if: always()
+    if: ${{ !cancelled() }}
     permissions:
       contents: write
 
@@ -510,7 +510,7 @@ jobs:
           keep_files: true
 
       - name: Notify Slack
-        if: always()
+        if: ${{ !cancelled() }}
         env:
           SLACK_WH: ${{ secrets.SLACK_WH }}
           SUITE: ${{ needs.setup.outputs.suite }}
