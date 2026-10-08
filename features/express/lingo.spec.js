@@ -37,6 +37,7 @@ const selectorContentsFeatures = [
   { tcid: 'SC16', name: '@express-geo-contents-no',    path: '/no/express/?akamaiLocale=no&mep=off&languageBanner=off',    tags: '@express-lingo-geo-suite @selectorContents' },
   { tcid: 'SC17', name: '@express-geo-contents-se',    path: '/se/express/?akamaiLocale=se&mep=off&languageBanner=off',    tags: '@express-lingo-geo-suite @selectorContents' },
   { tcid: 'SC18', name: '@express-geo-contents-id_id', path: '/id_id/express/?akamaiLocale=id&mep=off&languageBanner=off', tags: '@express-lingo-geo-suite @selectorContents' },
+  { tcid: 'SC19', name: '@express-geo-contents-ara',   path: '/ara/express/?akamaiLocale=sa&mep=off&languageBanner=off',   tags: '@express-lingo-geo-suite @selectorContents' },
 ];
 
 const features = [
@@ -955,6 +956,48 @@ const features = [
       path: '/id_id/express/?akamaiLocale=id&mep=off',
       tags: '@express-lingo-geo-suite @express-geo-surface-banner @express-geo-language-id @express-geo-indonesian-id @defaultCurrency @smoke',
     },
+    {
+      tcid: '130',
+      name: '@express-geo-ara-sa',
+      uiExpectation: 'banner',
+      path: '/ara/express/?akamaiLocale=sa&mep=off',
+      tags: '@express-lingo-geo-suite @express-geo-surface-banner @express-geo-language-ara @express-geo-arabic-sa @defaultCurrency @smoke',
+    },
+
+    // Regression — `us` was added to supportedRegions for de/uk/br/jp rows in
+    // supported-markets-express.json. pagePrefix+geoIp('us') is now a supported combo,
+    // so with no pref cookie (default pref='' → 'en' column) the flowchart no longer
+    // falls into the ACOM geo-routing MODAL branch. `uk`'s own column also resolves to
+    // 'en' (LANG_TO_MARKET_KEY), so it matches the default pref column → 'none' instead
+    // of 'banner' (de/br/jp columns differ from 'en', so those resolve to 'banner').
+    {
+      tcid: '131',
+      name: '@express-geo-de-us',
+      uiExpectation: 'banner',
+      path: '/de/express/?akamaiLocale=us&mep=off',
+      tags: '@express-lingo-geo-suite @express-geo-surface-banner @express-geo-language-de @express-geo-german-us @defaultCurrency @smoke',
+    },
+    {
+      tcid: '132',
+      name: '@express-geo-uk-us',
+      uiExpectation: 'none',
+      path: '/uk/express/?akamaiLocale=us&mep=off',
+      tags: '@express-lingo-geo-suite @express-geo-surface-none @express-geo-language-en @express-geo-english-uk-us @defaultCurrency @smoke',
+    },
+    {
+      tcid: '133',
+      name: '@express-geo-br-us',
+      uiExpectation: 'banner',
+      path: '/br/express/?akamaiLocale=us&mep=off',
+      tags: '@express-lingo-geo-suite @express-geo-surface-banner @express-geo-language-pt @express-geo-portuguese-us @defaultCurrency',
+    },
+    {
+      tcid: '134',
+      name: '@express-geo-jp-us',
+      uiExpectation: 'banner',
+      path: '/jp/express/?akamaiLocale=us&mep=off',
+      tags: '@express-lingo-geo-suite @express-geo-surface-banner @express-geo-language-ja @express-geo-japanese-us @defaultCurrency @smoke',
+    },
 ];
 
 // ─── Default Currency — Negative / Priority Scenarios ────────────────────────
@@ -1681,6 +1724,7 @@ const searchFeatures = [
     { tcid: '202SR16', name: '@express-geo-search-no-no', path: '/no/express/?akamaiLocale=no&mep=off&languageBanner=off', tags: '@express-lingo-geo-suite @search' },
     { tcid: '202SR17', name: '@express-geo-search-se-se', path: '/se/express/?akamaiLocale=se&mep=off&languageBanner=off', tags: '@express-lingo-geo-suite @search' },
     { tcid: '202SR18', name: '@express-geo-search-id_id-id', path: '/id_id/express/?akamaiLocale=id&mep=off&languageBanner=off', tags: '@express-lingo-geo-suite @search' },
+    { tcid: '202SR19', name: '@express-geo-search-ara-sa', path: '/ara/express/?akamaiLocale=sa&mep=off&languageBanner=off', tags: '@express-lingo-geo-suite @search' },
 ];
 
 /**
