@@ -95,6 +95,14 @@ on:
         description: '🔍 Tag filter (optional)  |  Overrides locale/page filters  ·  e.g. @smoke · @unav-us-photoshop  ·  Leave empty to use locale/page filters'
         required: false
         default: ''
+      base_url_override:
+        description: '🌐 Optional BASE_URL override  |  Example: https://www.adobe.com/express or https://www.stage.adobe.com/express  ·  Leave empty to use environment selection'
+        required: false
+        default: ''
+      url_extra_params:
+        description: '🔗 Optional URL params  |  Example: languageBanner=on&langfirst=on  ·  Works for Express tests and other URL-based flags'
+        required: false
+        default: ''
       retries:
         description: '🔁 Retries  |  Times to re-run a failed test before marking it failed'
         required: false
@@ -130,11 +138,13 @@ jobs:
       suite:        ${{ steps.resolve.outputs.suite }}
       browser:      ${{ steps.resolve.outputs.browser }}
       device:       ${{ steps.resolve.outputs.device }}
-      locale:       ${{ steps.resolve.outputs.locale }}
-      test_page:    ${{ steps.resolve.outputs.test_page }}
-      environment:  ${{ steps.resolve.outputs.environment }}
-      retries_flag: ${{ steps.resolve.outputs.retries_flag }}
-      workers_flag: ${{ steps.resolve.outputs.workers_flag }}
+      locale:             ${{ steps.resolve.outputs.locale }}
+      test_page:          ${{ steps.resolve.outputs.test_page }}
+      environment:        ${{ steps.resolve.outputs.environment }}
+      base_url_override:  ${{ steps.resolve.outputs.base_url_override }}
+      url_extra_params:    ${{ steps.resolve.outputs.url_extra_params }}
+      retries_flag:       ${{ steps.resolve.outputs.retries_flag }}
+      workers_flag:       ${{ steps.resolve.outputs.workers_flag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -173,6 +183,8 @@ jobs:
           PAGE="${{ github.event.inputs.page          || github.event.client_payload.page         || '' }}"
           RETRIES="${{ github.event.inputs.retries    || github.event.client_payload.retries      || '0' }}"
           WORKERS="${{ github.event.inputs.workers    || github.event.client_payload.workers      || '' }}"
+          BASE_URL_OVERRIDE="${{ github.event.inputs.base_url_override || github.event.client_payload.base_url_override || '' }}"
+          URL_EXTRA_PARAMS="${{ github.event.inputs.url_extra_params || github.event.client_payload.url_extra_params || '' }}"
 
           # ── Suite → config + testPath from configs/suites.js ───────────────
           SUITE_JSON=$(node -e "
@@ -231,12 +243,16 @@ jobs:
           fi
 
           # ── Base URL ───────────────────────────────────────────────────────
-          case "$ENV" in
-            prod)     BASE_URL="https://www.adobe.com" ;;
-            aem-live) BASE_URL="https://main--upp--adobecom.aem.live" ;;
-            stage)    BASE_URL="https://www.stage.adobe.com" ;;
-            *)        BASE_URL="https://www.adobe.com" ;;
-          esac
+          if [ -n "$BASE_URL_OVERRIDE" ]; then
+            BASE_URL="$BASE_URL_OVERRIDE"
+          else
+            case "$ENV" in
+              prod)     BASE_URL="https://www.adobe.com" ;;
+              aem-live) BASE_URL="https://main--upp--adobecom.aem.live" ;;
+              stage)    BASE_URL="https://www.stage.adobe.com" ;;
+              *)        BASE_URL="https://www.adobe.com" ;;
+            esac
+          fi
 
           # ── Locale + page → grep pattern ──────────────────────────────────
           # Manual grep takes full precedence. Otherwise, translate locale/page
@@ -272,6 +288,8 @@ jobs:
           echo "locale=$LOCALE"                   >> $GITHUB_OUTPUT
           echo "test_page=$TEST_PAGE"             >> $GITHUB_OUTPUT
           echo "environment=$ENV"                 >> $GITHUB_OUTPUT
+          echo "base_url_override=$BASE_URL_OVERRIDE" >> $GITHUB_OUTPUT
+          echo "url_extra_params=$URL_EXTRA_PARAMS"   >> $GITHUB_OUTPUT
           echo "retries_flag=$RETRIES_FLAG"       >> $GITHUB_OUTPUT
           echo "workers_flag=$WORKERS_FLAG"       >> $GITHUB_OUTPUT
 
@@ -328,10 +346,11 @@ jobs:
           SUITE:        ${{ needs.setup.outputs.suite }}
           BROWSER:      ${{ needs.setup.outputs.browser }}
           DEVICE:       ${{ needs.setup.outputs.device }}
-          ENVIRONMENT:  ${{ needs.setup.outputs.environment }}
-          TRIGGERED_BY: ${{ github.event.client_payload.triggered_by || github.actor }}
-          RUN_URL:      ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          CI:           ''
+          ENVIRONMENT:    ${{ needs.setup.outputs.environment }}
+          URL_EXTRA_PARAMS: ${{ needs.setup.outputs.url_extra_params }}
+          TRIGGERED_BY:   ${{ github.event.client_payload.triggered_by || github.actor }}
+          RUN_URL:        ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          CI:             ''
         continue-on-error: true
 
       - name: Upload results artifact
