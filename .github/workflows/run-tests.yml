@@ -61,7 +61,7 @@ on:
           - 'CC - stickypromo'
           - 'CC - youtube'
           # ── Express ───────────────────────────────────────────────────────
-          - 'EXPRESS >>> all tests'
+          - 'EXPRESS - lingo'
       environment:
         description: '🌍 Where to run  |  prod = adobe.com  ·  stage = stage.adobe.com  ·  aem-live = branch preview'
         required: true

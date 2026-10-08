@@ -171,6 +171,7 @@ const SUITES = {
   'cc-youtube':         { config: C, testPath: 'tests/cc/youtubeGallery.test.js',                                                                              family: 'cc', description: 'YouTube gallery' },
 
   // ── Express ──────────────────────────────────────────────────────────────────
+  'express-lingo': { config: E, testPath: 'tests/express/lingo.test.js', family: 'express', description: 'Express Lingo geo-routing', localeMap: EXPRESS },
   'express': { config: E, testPath: 'tests/express/lingo.test.js', family: 'express', description: 'Express Lingo geo-routing', localeMap: EXPRESS },
 };
 
