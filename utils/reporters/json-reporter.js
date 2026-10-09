@@ -29,6 +29,19 @@ class JSONReporter extends BaseReporter {
     } catch (_) {}
 
     const run = this.getPersistedDataObject();
+    const total = Number(run.total || 0);
+    const passed = Number(run.passed || 0);
+    const failed = Number(run.failed || 0);
+    const hasMeaningfulResult = total > 0 || passed > 0 || failed > 0;
+    const suite = String(run.suite || '').trim();
+    const env = String(run.environment || '').trim();
+    const hasMeaningfulSuite = suite && suite !== 'N/A' && suite !== 'null';
+    const hasMeaningfulEnv = env && env !== 'N/A' && env !== 'null';
+
+    if (!hasMeaningfulResult && !(hasMeaningfulSuite || hasMeaningfulEnv)) {
+      return;
+    }
+
     history.unshift({
       runId:        run.runId        || `local-${Date.now()}`,
       suite:        run.suite,

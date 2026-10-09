@@ -450,8 +450,32 @@ jobs:
           node -e "
             const fs = require('fs');
             const history = JSON.parse(fs.readFileSync('run-history.json', 'utf8'));
-            const run    = JSON.parse(fs.readFileSync('nala-results.json', 'utf8'));
-            history.unshift({
+            const run = JSON.parse(fs.readFileSync('nala-results.json', 'utf8'));
+            const suite = String(run.suite || '${{ needs.setup.outputs.suite }}').trim();
+            const env = String(run.environment || '${{ needs.setup.outputs.environment }}').trim();
+            const total = Number(run.total || 0);
+            const passed = Number(run.passed || 0);
+            const failed = Number(run.failed || 0);
+            const hasMeaningfulResult = total > 0 || passed > 0 || failed > 0;
+            const hasMeaningfulSuite = suite && suite !== 'N/A' && suite !== 'null';
+            const hasMeaningfulEnv = env && env !== 'N/A' && env !== 'null';
+
+            if (!hasMeaningfulResult && !(hasMeaningfulSuite || hasMeaningfulEnv)) {
+              console.log('Skipping empty/cancelled run from dashboard history.');
+              process.exit(0);
+            }
+
+            const filtered = history.filter((item) => {
+              if (!item || typeof item !== 'object') return false;
+              const itemTotal = Number(item.total || 0);
+              const itemPassed = Number(item.passed || 0);
+              const itemFailed = Number(item.failed || 0);
+              const itemSuite = String(item.suite || '').trim();
+              const itemEnv = String(item.environment || '').trim();
+              return !(itemTotal === 0 && itemPassed === 0 && itemFailed === 0 && (!itemSuite || itemSuite === 'N/A' || !itemEnv || itemEnv === 'N/A'));
+            });
+
+            filtered.unshift({
               runId:       run.runId       || '${{ github.run_id }}',
               suite:       run.suite       || '${{ needs.setup.outputs.suite }}',
               environment: run.environment || '${{ needs.setup.outputs.environment }}',
@@ -470,8 +494,7 @@ jobs:
               total:       run.total       || 0,
               qualityScore: run.qualityScore || 0,
             });
-            // Keep last 100 runs
-            fs.writeFileSync('run-history.json', JSON.stringify(history.slice(0, 100)));
+            fs.writeFileSync('run-history.json', JSON.stringify(filtered.slice(0, 100)));
           "
         continue-on-error: true
 
