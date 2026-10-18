@@ -376,6 +376,24 @@
       return null;
     }
 
+    function isValidHistoryRun(run) {
+      if (!run || typeof run !== 'object') return false;
+      const total = Number(run.total ?? 0);
+      const passed = Number(run.passed ?? 0);
+      const failed = Number(run.failed ?? 0);
+      const suite = String(run.suite || '').trim();
+      const env = String(run.environment || '').trim();
+      const hasMeaningfulSuite = suite && suite !== 'N/A' && suite !== 'null';
+      const hasMeaningfulEnv = env && env !== 'N/A' && env !== 'null';
+      const hasRealResults = total > 0 || passed > 0 || failed > 0;
+      if (!hasRealResults && !hasMeaningfulSuite && !hasMeaningfulEnv) return false;
+      return true;
+    }
+
+    function normalizeHistory(raw) {
+      return Array.isArray(raw) ? raw.filter(isValidHistoryRun) : [];
+    }
+
     async function loadData() {
       const t = Date.now();
       const [run, hist] = await Promise.all([
@@ -383,7 +401,7 @@
         fetchJSON([`./run-history.json?t=${t}`,   `../run-history.json?t=${t}`]),
       ]);
       if (run)  latestRun = run;
-      if (hist) history   = Array.isArray(hist) ? hist : [];
+      if (hist) history   = normalizeHistory(hist);
       render();
     }
 
