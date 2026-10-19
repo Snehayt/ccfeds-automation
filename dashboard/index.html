@@ -363,6 +363,24 @@
     const DASHBOARD_URL = `https://${REPO.owner}.github.io/${REPO.repo}/`;
     // Real schedule already defined in run-tests.yml — shown as-is, not fabricated.
     const KNOWN_CRON = { expr: '0 3 * * *', label: '8:30 AM IST, every day' };
+    const ALLOWED_SUITE_NAMES = ['express', 'feds-unav', 'cc-firefly'];
+
+    function isAllowedSuiteName(value) {
+      const raw = String(value ?? '').trim().toLowerCase();
+      if (!raw) return false;
+      return ALLOWED_SUITE_NAMES.some(name => raw === name || raw.includes(name));
+    }
+
+    function filterVisibleRuns(runs) {
+      return (Array.isArray(runs) ? runs : []).filter(run => isAllowedSuiteName(run?.suite));
+    }
+
+    function applyUiSuiteFilter() {
+      history = filterVisibleRuns(history);
+      if (latestRun && !isAllowedSuiteName(latestRun.suite)) {
+        latestRun = history[0] || null;
+      }
+    }
 
     async function fetchJSON(paths) {
       for (const p of paths) {
@@ -420,6 +438,7 @@
 
     // ── Render ─────────────────────────────────────────────────────────────
     function render() {
+      applyUiSuiteFilter();
       const { page, param } = getRoute();
 
       document.querySelectorAll('.nav-item').forEach(el => {
@@ -464,6 +483,12 @@
 
     function runSuitesBtn(cls = 'btn-primary') {
       return `<a class="btn ${cls}" href="${ACTIONS_URL}" target="_blank" rel="noopener">▶ Run Suites</a>`;
+    }
+
+    function visibleSuiteList(suites) {
+      const all = [...new Set((suites || []).filter(Boolean).map(String))];
+      const visible = all.filter(suite => isAllowedSuiteName(suite));
+      return visible.length ? visible : all;
     }
 
     function soonBtn(label) {
@@ -537,7 +562,7 @@
         </div>`;
       }
 
-      const suitesAvail = [...new Set([latestRun.suite, ...history.map(h => h.suite)].filter(Boolean))];
+      const suitesAvail = visibleSuiteList([latestRun.suite, ...history.map(h => h.suite)]);
       const run = getActiveHomeSummary();
       const isGlobalLatest = run === latestRun;
 
@@ -1235,10 +1260,10 @@
         ['us','gb','de','fr','jp','au','ca','mx','br','in','es','it','kr','nl','se'].includes(tag)
       )))].sort();
 
-      const suites = [...new Set(tests.map(t => {
+      const suites = visibleSuiteList([...new Set(tests.map(t => {
         const m = (t.name || '').match(/^([a-z]+(?:-[a-z]+)?)-/);
         return m ? m[1] : null;
-      }).filter(Boolean))].sort();
+      }).filter(Boolean))]).sort();
 
       return `
         <div class="page">
@@ -1308,7 +1333,7 @@
 
     // ── Analytics Page ──────────────────────────────────────────────────────────
     function renderAnalytics() {
-      const suites   = [...new Set(history.map(h => h.suite).filter(Boolean))].sort();
+      const suites   = visibleSuiteList([...new Set(history.map(h => h.suite).filter(Boolean))]).sort();
       const envs     = [...new Set(history.map(h => h.environment).filter(Boolean))].sort();
       const browsers = [...new Set(history.map(h => h.browser).filter(Boolean))].sort();
       const locales  = [...new Set(history.map(h => h.locale).filter(Boolean))].sort();
@@ -1954,7 +1979,7 @@ ${localeMapLines}
 
     // ── Schedules Page (Coming Soon, but shows the real cron) ───────────────
     function renderSchedules() {
-      const suitesAvail = [...new Set([latestRun && latestRun.suite, ...history.map(h => h.suite)].filter(Boolean))];
+      const suitesAvail = visibleSuiteList([latestRun && latestRun.suite, ...history.map(h => h.suite)]);
       return `
         <div class="page">
           <h1 class="page-title">Schedules</h1>
@@ -2115,3 +2140,5 @@ ${localeMapLines}
   </script>
 </body>
 </html>
+
+
