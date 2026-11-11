@@ -1,0 +1,12 @@
+{
+  "_comment": "Maps plan fields to YOUR workflow_dispatch input names. Change the right-hand side to match run-tests.yml.",
+  "suite": "suite",
+  "environment": "environment",
+  "browser": "browser",
+  "device": "device",
+  "locale": "locale",
+  "page": "page",
+  "grep": "grep",
+  "retries": "retries",
+  "workers": "workers"
+}

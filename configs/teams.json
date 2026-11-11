@@ -1,0 +1,19 @@
+{
+  "teams": {
+    "tattva": {
+      "displayName": "Tattva",
+      "jiraProject": "MWPW",
+      "jiraTeamNames": ["Tattva" ],
+      "labels": ["gnav", "c2-site-redesign-2026"],
+      
+      "targetRepo": "/adobecom/federal",
+      "tattvaPathPatterns": [
+        "blocks/tattva/**",
+        "libs/tattva/**"
+      ],
+      "defaultSuite": "feds-unav",
+      "configPath": "feds.config.js",
+      "eligibleReviewers": ["syt", "snehayt"]
+    }
+  }
+}

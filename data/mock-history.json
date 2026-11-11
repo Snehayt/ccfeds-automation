@@ -1,0 +1,10 @@
+{
+  "_comment": "Sample history used for comparisons. In real mode this comes from your run-history.json / per-run JSON.",
+  "previousRun": { "id": "RUN-prev", "passRate": 94.4, "failed": ["feds-unav::us::cc-business::sign-in and search"] },
+  "knownIssues": [
+    { "testId": "feds-unav::us::cc-business::sign-in and search", "ticket": "FEDS-998", "note": "Sign-in label casing differs on cc-business; fix scheduled" }
+  ],
+  "flakyHistory": [
+    { "testId": "feds-unav::us::illustrator::menu links open", "flips": 4, "window": "last 10 runs" }
+  ]
+}

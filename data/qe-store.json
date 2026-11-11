@@ -1,0 +1,294 @@
+{
+  "tasks": [
+    {
+      "id": "TASK-1794366686169-MWPW-210873",
+      "jiraKey": "MWPW-210873",
+      "team": "tattva",
+      "summary": "[Perf] Gnav: set explicit dimensions on brand logo image (CLS)",
+      "status": "READY_TO_RUN",
+      "prUrl": "https://github.com/adobecom/federal/pull/286",
+      "prNumber": "286",
+      "changedFiles": [
+        "federal/libs/global-navigation/dist/main.js",
+        "federal/libs/global-navigation/dist/main.js.map",
+        "federal/libs/global-navigation/src/Components/Brand/Parse.ts",
+        "federal/libs/global-navigation/src/Components/Brand/Render.ts",
+        "federal/libs/global-navigation/src/Components/Brand/brand.css",
+        "federal/libs/global-navigation/test/Components/Brand/Parse.test.js",
+        "federal/libs/global-navigation/test/Components/Brand/Render.test.js",
+        "federal/libs/global-navigation/test/Components/Brand/Styles.test.js"
+      ],
+      "urls": [
+        "https://main--da-bacom--adobecom.aem.page/drafts/blaishram/bacom-c2?fedsbranch=feds-profile",
+        "https://main--da-dc--adobecom.aem.page/acrobat?fedsbranch=brand-logo",
+        "https://main--da-bacom--adobecom.aem.page/drafts/blaishram/bacom-c2?fedsbranch=brand-logo",
+        "https://main--da-dc--adobecom.aem.page/acrobat?fedsbranch=stage",
+        "https://main--da-dc–adobecom.aem.page/acrobat?fedsbranch=stage",
+        "https://jira.corp.adobe.com/browse/MWPW-210873",
+        "https://main--da-dc--adobecom.aem.page/acrobat",
+        "https://main--da-bacom--adobecom.aem.page/drafts/blaishram/bacom-c2"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:26.169Z"
+    },
+    {
+      "id": "TASK-1794366680243-MWPW-214400",
+      "jiraKey": "MWPW-214400",
+      "team": "tattva",
+      "summary": "Ara locale setup not available ",
+      "status": "READY_TO_RUN",
+      "prUrl": null,
+      "prNumber": null,
+      "changedFiles": [],
+      "urls": [
+        "https://main--upp--adobecom.aem.page/sa_ar/homepage/drafts/soujanya/c2market/testpage?milolibs=acom-ms&mas-geo-detection=on&marketsSource=acomupp"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:20.243Z"
+    },
+    {
+      "id": "TASK-1794366681413-MWPW-214470",
+      "jiraKey": "MWPW-214470",
+      "team": "tattva",
+      "summary": "Federal PRs : validations",
+      "status": "READY_TO_RUN",
+      "prUrl": "https://github.com/adobecom/federal/pull/285",
+      "prNumber": "285",
+      "changedFiles": [
+        "federal/libs/global-navigation/README.md",
+        "federal/libs/global-navigation/dist/main.js",
+        "federal/libs/global-navigation/dist/main.js.map",
+        "federal/libs/global-navigation/src/PostRendering/ClickListeners.ts",
+        "federal/libs/global-navigation/src/PostRendering/ClickListeners/Animations.ts",
+        "federal/libs/global-navigation/src/PostRendering/ClickListeners/LinksCard.ts",
+        "federal/libs/global-navigation/src/PostRendering/ClickListeners/SkipLink.ts",
+        "federal/libs/global-navigation/src/PostRendering/ClickListeners/Tabs.ts",
+        "federal/libs/global-navigation/src/PostRendering/PopupWiring.ts",
+        "federal/libs/global-navigation/src/PostRendering/Unav/Unav.config.ts",
+        "federal/libs/global-navigation/src/PostRendering/Unav/Unav.loader.ts",
+        "federal/libs/global-navigation/src/PostRendering/Unav/Unav.utils.ts",
+        "federal/libs/global-navigation/test/PostRendering/ClickListeners.test.js",
+        "federal/libs/global-navigation/test/PostRendering/PopupWiring.test.js",
+        "federal/libs/global-navigation/test/PostRendering/Unav.config.test.js"
+      ],
+      "urls": [
+        "https://main--da-dc--adobecom.aem.page/acrobat?fedsbranch=sonar-issues",
+        "https://main--da-cc--adobecom.aem.page/drafts/maagrawal/products/aftereffects?fedsbranch=sonar-issues",
+        "https://main--da-cc--adobecom.aem.page/mena_ar/products/photoshop?fedsbranch=sonar-issues"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:21.413Z"
+    },
+    {
+      "id": "TASK-1794366681732-MWPW-213135",
+      "jiraKey": "MWPW-213135",
+      "team": "tattva",
+      "summary": "Update supported-markets mapping for Lingo Phase 5",
+      "status": "READY_TO_RUN",
+      "prUrl": null,
+      "prNumber": null,
+      "changedFiles": [],
+      "urls": [
+        "https://main--upp--adobecom.aem.page/upp-shared/assets/supported-markets/supported-markets-acomupp.json",
+        "https://wiki.corp.adobe.com/spaces/adobedotcom/pages/4003614326/ROL+Market+Scope+-+Lingo+Phase+5",
+        "https://main--da-cc--adobecom.aem.page/cc-shared/assets/supported-markets/supported-markets-acomph5.json",
+        "https://wiki.corp.adobe.com/spaces/adobedotcom/pages/3768561426/ACOM+Supported+Markets+for+Lingo+Lang+Matching",
+        "https://main--da-cc--adobecom.aem.page/cc-shared/assets/supported-markets/supported-markets-acomcc.json",
+        "https://main--da-dc--adobecom.aem.page/dc-shared/assets/supported-markets/supported-markets-acomdc.json",
+        "https://main--federal--adobecom.aem.page/federal/assets/supported-markets/supported-markets.json"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:21.732Z"
+    },
+    {
+      "id": "TASK-1794366682634-MWPW-213872",
+      "jiraKey": "MWPW-213872",
+      "team": "tattva",
+      "summary": "Resolve sonar issue: Federal: MerchLinks.ts ",
+      "status": "READY_TO_RUN",
+      "prUrl": "https://github.com/adobecom/federal/pull/289",
+      "prNumber": "289",
+      "changedFiles": [
+        "federal/libs/global-navigation/src/PostRendering/MerchLinks.ts"
+      ],
+      "urls": [
+        "https://main--da-dc--adobecom.aem.page/drafts/snehal/acrobat-edu-student-spaces?fedsbranch=sonar-feds",
+        "https://main--da-cc--adobecom.aem.page/drafts/maagrawal/products/aftereffects?fedsbranch=sonar-feds",
+        "https://main--edu--adobecom.aem.page/drafts/snehal/site-redesign/localnav-edu?fedsbranch=sonar-feds",
+        "https://main--da-dc--adobecom.aem.page/drafts/snehal/acrobat-edu-student-spaces-linkcard?milolibs=stage&fedsbranch=sonar-feds",
+        "https://main--da-cc--adobecom.aem.page/drafts/handoo/site-redesign/page/localnav-framemaker?milolibs=stage&fedsbranch=sonar-feds",
+        "https://main--da-cc--adobecom.aem.page/drafts/handoo/site-redesign/page/localnav-premiere-elements?milolibs=stage&fedsbranch=sonar-feds",
+        "https://main--upp--adobecom.aem.page/homepage/drafts/snehal/testpage-loggedout?fedsbranch=sonar-feds",
+        "https://jira.corp.adobe.com/browse/MWPW-213872"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:22.634Z"
+    },
+    {
+      "id": "TASK-1794366683676-MWPW-212527",
+      "jiraKey": "MWPW-212527",
+      "team": "tattva",
+      "summary": "[MAX 2026][Session Page] Extend session detail background behind GNAV on mobile",
+      "status": "READY_TO_RUN",
+      "prUrl": "https://github.com/adobecom/event-libs/pull/596",
+      "prNumber": "596",
+      "changedFiles": [
+        "event-libs/v1/c2/blocks/event-session-details/event-session-details.css",
+        "event-libs/v1/c2/blocks/event-session-details/event-session-details.js",
+        "test/unit/c2/blocks/event-session-details/event-session-details.test.js"
+      ],
+      "urls": [
+        "https://www.adobe.com/max/2026/sessions/adobe-live-community-vodcast-with-justin-serran-al685.html",
+        "https://jira.corp.adobe.com/browse/MWPW-212527",
+        "https://main--da-events-fg-pink--adobecom.aem.page/max/2026/sessions/adobe-live-community-vodcast-with-justin-serran-al685.html?eventlibs=t3-26-47&serverTime=1794341100000",
+        "https://main--da-events-fg-pink--adobecom.aem.page/max/2026/sessions/adobe-live-community-vodcast-with-justin-serran-al685.html?eventlibs=mwpw-212527&serverTime=1794341100000",
+        "https://mwpw-212527--event-libs--adobecom.aem.page/"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:23.676Z"
+    },
+    {
+      "id": "TASK-1794366684647-MWPW-210416",
+      "jiraKey": "MWPW-210416",
+      "team": "tattva",
+      "summary": "Resolve sonar issue: Federal: CTA and LinksCard Component",
+      "status": "READY_TO_RUN",
+      "prUrl": "https://github.com/adobecom/federal/pull/276",
+      "prNumber": "276",
+      "changedFiles": [
+        "federal/libs/global-navigation/dist/main.js",
+        "federal/libs/global-navigation/dist/main.js.map",
+        "federal/libs/global-navigation/src/Components/CTA/Parse.ts",
+        "federal/libs/global-navigation/src/Components/LinksCard/Parse.ts",
+        "federal/libs/global-navigation/src/Components/LinksCard/Render.ts"
+      ],
+      "urls": [
+        "https://main--da-cc--adobecom.aem.page/drafts/handoo/site-redesign/page/localnav-framemaker?milolibs=stage&fedsbranch=mwpw-210416",
+        "https://main--da-cc--adobecom.aem.page/drafts/handoo/site-redesign/page/localnav-framemaker?milolibs=stage&fedsbranch=stage",
+        "https://jira.corp.adobe.com/browse/MWPW-210416"
+      ],
+      "suite": "feds-unav",
+      "checks": [
+        {
+          "id": "network",
+          "name": "Network 200 & DOM Presence",
+          "verified": false
+        },
+        {
+          "id": "cls",
+          "name": "Gnav Brand Logo CLS & Dimensions",
+          "verified": false
+        },
+        {
+          "id": "a11y",
+          "name": "WCAG Accessibility Audit (@axe-core)",
+          "verified": false
+        }
+      ],
+      "createdAt": "2026-11-11T03:11:24.647Z"
+    }
+  ],
+  "runs": []
+}

@@ -1,0 +1,14 @@
+{
+  "_comment": "Guardrails. The orchestrator refuses any plan that falls outside these lists. Edit to match your real suites, pages and environments.",
+  "suites": ["feds-unav"],
+  "environments": ["stage", "prod"],
+  "confirmEnvironments": ["prod"],
+  "browsers": ["chrome", "firefox", "webkit"],
+  "devices": ["desktop", "mobile"],
+  "locales": ["us"],
+  "pages": ["acrobat-online", "sign", "catalog", "cc", "cc-all-apps", "cc-business", "cc-business-teams", "cc-plans", "cc-students", "express", "education", "community", "learn", "genuine", "helpx", "home", "illustrator", "photoshop-teams"],
+  "maxPages": 12,
+  "maxRetries": 2,
+  "maxWorkers": 4,
+  "grepPattern": "^[A-Za-z0-9@_ |().-]{0,120}$"
+}

@@ -1,0 +1,39 @@
+{
+  "482": {
+    "number": 482,
+    "title": "FEDS-1423: restructure global navigation menu",
+    "author": "dev-one",
+    "state": "open",
+    "url": "https://github.com/example/product/pull/482",
+    "files": [
+      { "filename": "libs/blocks/global-navigation/global-navigation.js", "status": "modified", "additions": 84, "deletions": 31 },
+      { "filename": "libs/blocks/global-navigation/utilities/menu.js", "status": "modified", "additions": 42, "deletions": 18 },
+      { "filename": "libs/blocks/global-navigation/global-navigation.css", "status": "modified", "additions": 20, "deletions": 9 },
+      { "filename": "libs/features/placeholders.js", "status": "modified", "additions": 6, "deletions": 2 },
+      { "filename": "libs/blocks/new-widget/new-widget.js", "status": "added", "additions": 120, "deletions": 0 },
+      { "filename": "test/blocks/global-navigation/global-navigation.test.js", "status": "modified", "additions": 40, "deletions": 12 },
+      { "filename": "README.md", "status": "modified", "additions": 3, "deletions": 1 }
+    ]
+  },
+  "470": {
+    "number": 470,
+    "title": "FEDS-1311: footer link and spacing fix",
+    "author": "dev-two",
+    "state": "open",
+    "url": "https://github.com/example/product/pull/470",
+    "files": [
+      { "filename": "libs/blocks/global-footer/global-footer.js", "status": "modified", "additions": 5, "deletions": 5 },
+      { "filename": "libs/blocks/global-footer/global-footer.css", "status": "modified", "additions": 12, "deletions": 4 }
+    ]
+  },
+  "483": {
+    "number": 483,
+    "title": "Update footer wording",
+    "author": "dev-two",
+    "state": "open",
+    "url": "https://github.com/example/product/pull/483",
+    "files": [
+      { "filename": "libs/blocks/global-footer/global-footer.js", "status": "modified", "additions": 2, "deletions": 2 }
+    ]
+  }
+}

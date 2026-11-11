@@ -1,0 +1,24 @@
+{
+  "_comment": "SAMPLE mapping from changed files to pages/areas. Replace with your real suites.js pages. Every matching rule contributes; wildcard pages use widePages.",
+  "suite": "feds-unav",
+  "testsPerPage": 3,
+  "minutesPerTest": 1,
+  "alwaysPages": ["home"],
+  "widePages": ["home", "cc", "cc-all-apps", "cc-business", "cc-plans", "cc-students", "express", "helpx"],
+  "jiraComponents": {
+    "Global Navigation": "Global navigation",
+    "Footer": "Global footer"
+  },
+  "rules": [
+    { "match": "libs/blocks/global-navigation/**", "area": "Global navigation", "pages": ["home", "cc", "cc-all-apps", "cc-business", "cc-plans", "cc-students", "express"], "risk": "high" },
+    { "match": "libs/blocks/global-footer/**", "area": "Global footer", "pages": ["home", "cc", "helpx"], "risk": "medium" },
+    { "match": "libs/features/placeholders.js", "area": "Placeholders", "pages": ["home", "cc-plans"], "risk": "medium" },
+    { "match": "libs/blocks/search/**", "area": "Search", "pages": ["helpx", "learn", "community"], "risk": "medium" },
+    { "match": "libs/utils/utils.js", "area": "Core utilities (affects every page)", "pages": "*", "risk": "high" },
+    { "match": "libs/styles/**", "area": "Global styles", "pages": "*", "risk": "medium" },
+    { "match": "**/*.md", "ignore": true },
+    { "match": "test/**", "ignore": true },
+    { "match": "nala/**", "ignore": true },
+    { "match": ".github/**", "ignore": true }
+  ]
+}
